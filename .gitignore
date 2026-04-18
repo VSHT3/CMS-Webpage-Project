@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+
+# Webstudio raw export — source of truth is legacy/source-html/
+mesoamerica/
+
+# Uploaded assets before migration
+assets_old/
+
+# Large binary assets — upload directly to server, not tracked in git
+public/legacy-assets/

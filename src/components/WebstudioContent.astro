@@ -1,0 +1,21 @@
+---
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+const { source } = Astro.props;
+const raw = readFileSync(resolve('.', source), 'utf-8');
+
+// Extract <head> link/style tags (CSS + preloads from Webstudio)
+const headLinks = [...raw.matchAll(/<link[^>]+>/gi)].map(m => m[0]).join('\n');
+
+// Extract body content
+const bodyMatch = raw.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+let body = bodyMatch ? bodyMatch[1] : raw;
+
+// Strip Grammarly / Zotero injections
+body = body
+  .replace(/<iframe id="zotero-modal-prompt"[\s\S]*?<\/iframe>/gi, '')
+  .replace(/<grammarly-desktop-integration[\s\S]*?<\/grammarly-desktop-integration>/gi, '');
+---
+<Fragment set:html={headLinks} />
+<Fragment set:html={body} />

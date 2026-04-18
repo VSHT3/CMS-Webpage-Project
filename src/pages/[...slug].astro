@@ -1,0 +1,15 @@
+---
+import { readdirSync, existsSync } from 'node:fs';
+import WebstudioPage from '../layouts/WebstudioPage.astro';
+
+export function getStaticPaths() {
+  const base = 'legacy/source-html';
+  return readdirSync(base, { withFileTypes: true })
+    .filter(d => d.isDirectory() && existsSync(`${base}/${d.name}/index.html`))
+    .map(d => ({ params: { slug: d.name } }));
+}
+
+const { slug } = Astro.params;
+const source = `legacy/source-html/${slug}/index.html`;
+---
+<WebstudioPage source={source} />
