@@ -138,14 +138,14 @@
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap');
 
   :root {
-    --nav-bg: #192220;
-    --nav-bg-dark: #111918;
-    --nav-text: #ddd4c0;
-    --nav-text-dim: #9a8f78;
-    --nav-gold: #c9a55a;
-    --nav-gold-light: #e0bc78;
-    --nav-border: #2e4540;
-    --nav-logo-h: 78px;
+    --nav-bg: #31555a;
+    --nav-bg-dark: #274449;
+    --nav-text: #f4ecde;
+    --nav-text-dim: #d8ccb6;
+    --nav-gold: #e0bb70;
+    --nav-gold-light: #f0cf8c;
+    --nav-border: #52747a;
+    --nav-logo-h: 108px;
     --nav-font: 'Cinzel', 'Palatino Linotype', Georgia, serif;
   }
 
@@ -153,9 +153,9 @@
     position: sticky;
     top: 0;
     z-index: 9999;
-    background: var(--nav-bg);
+    background: linear-gradient(180deg, #3d666c 0%, var(--nav-bg) 100%);
     border-bottom: 1px solid var(--nav-border);
-    box-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 10px 28px rgba(7, 24, 27, 0.24);
     color: var(--nav-text);
   }
 
@@ -174,8 +174,8 @@
     align-items: center;
     flex-shrink: 0;
     text-decoration: none !important;
-    border-right: 1px solid var(--nav-border);
     line-height: 0;
+    padding-right: 0.75rem;
   }
 
   .nav-logo-img {
@@ -189,11 +189,13 @@
   .nav-links {
     display: flex;
     align-items: stretch;
+    justify-content: space-between;
     list-style: none;
     margin: 0;
-    padding: 0 4px;
+    padding: 0 1rem;
     flex: 1;
-    overflow-x: auto;
+    min-width: 0;
+    overflow: visible;
     scrollbar-width: none;
   }
 
@@ -206,17 +208,22 @@
     position: relative;
     display: flex;
     align-items: stretch;
+    flex: 1 1 auto;
+    justify-content: center;
   }
 
   .nav-link {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
-    padding: 0 13px;
+    width: 100%;
+    padding: 0 clamp(0.95rem, 1.4vw, 1.5rem);
     font-family: var(--nav-font);
-    font-size: 11.5px;
-    font-weight: 500;
-    letter-spacing: 0.07em;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: 0.045em;
+    line-height: 1.15;
     text-transform: uppercase;
     color: var(--nav-text) !important;
     text-decoration: none !important;
@@ -249,20 +256,23 @@
     display: none;
     position: absolute;
     top: 100%;
-    left: 0;
-    min-width: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: max-content;
+    width: max-content;
+    max-width: min(24rem, calc(100vw - 2rem));
     background: var(--nav-bg-dark);
     border: 1px solid var(--nav-border);
     border-top: 2px solid var(--nav-gold);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 16px 32px rgba(7, 24, 27, 0.24);
     list-style: none;
     margin: 0;
     padding: 6px 0;
     z-index: 10000;
   }
 
-  .nav-item:hover .dropdown,
-  .nav-item:focus-within .dropdown {
+  .has-dropdown:hover > .dropdown,
+  .has-dropdown:focus-within > .dropdown {
     display: block;
   }
 
@@ -273,23 +283,21 @@
 
   .dropdown a {
     display: block;
-    padding: 9px 18px;
+    padding: 11px 18px;
     font-family: var(--nav-font);
-    font-size: 11px;
+    font-size: 12.5px;
     font-weight: 400;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--nav-text-dim) !important;
     text-decoration: none !important;
-    transition: color 0.15s ease, background 0.15s ease, padding-left 0.15s ease;
-    border-left: 2px solid transparent;
+    transition: color 0.15s ease, background 0.15s ease, padding-inline 0.15s ease;
   }
 
   .dropdown a:hover {
     color: var(--nav-gold-light) !important;
-    background: rgba(201, 165, 90, 0.06);
-    padding-left: 22px;
-    border-left-color: var(--nav-gold);
+    background: rgba(240, 207, 140, 0.12);
+    padding-inline: 22px 14px;
   }
 
   /* ── Mobile hamburger (simple) ──────── */
@@ -328,12 +336,14 @@
       bottom: 0;
       background: var(--nav-bg-dark);
       overflow-y: auto;
+      overflow-x: hidden;
       padding: 12px 0;
       z-index: 9998;
     }
 
     .nav-links.open .nav-item {
       width: 100%;
+      flex: 0 0 auto;
       flex-direction: column;
       align-items: flex-start;
     }
@@ -341,13 +351,15 @@
     .nav-links.open .nav-link {
       width: 100%;
       padding: 14px 24px;
-      font-size: 13px;
+      font-size: 14px;
       border-bottom: 1px solid var(--nav-border);
+      justify-content: flex-start;
     }
 
     .nav-links.open .dropdown {
       display: block;
       position: static;
+      transform: none;
       border: none;
       border-top: none;
       box-shadow: none;
