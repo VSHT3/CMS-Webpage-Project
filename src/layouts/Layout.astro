@@ -1,0 +1,173 @@
+---
+import Nav from '../components/Nav.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Mesoamerica', description = 'Center for Mesoamerican Studies, Comenius University Bratislava' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/assets/LogoTest_ULR2LENFW1uu6krJGVj2C.png" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Nav />
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img
+            src="/assets/LogoTest_ULR2LENFW1uu6krJGVj2C.png"
+            alt="CMS Logo"
+            width="56"
+            height="56"
+          />
+          <span class="footer-wordmark">mesoamerica.eu</span>
+        </div>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="/">Home</a>
+          <a href="/about-us">About</a>
+          <a href="/about-us-contacts">Contact</a>
+        </nav>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/" target="_blank" rel="noopener">Facebook ↗</a>
+          <a href="mailto:jakub.spotak@uniba.sk">Email ↗</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  :root {
+    --site-bg: #053342;
+    --site-bg-alt: #0a2a36;
+    --site-text: #e8ddd0;
+    --site-text-dim: #8fa8b0;
+    --site-gold: #c9a55a;
+    --site-teal: #28a9a5;
+    --site-border: #1a4a55;
+    --site-font: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  }
+
+  html {
+    background: var(--site-bg);
+    color: var(--site-text);
+    font-family: var(--site-font);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    margin: 0;
+    background: var(--site-bg);
+    min-height: 100vh;
+  }
+
+  main {
+    min-height: 60vh;
+  }
+
+  a {
+    color: var(--site-teal);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--site-gold);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Cinzel', 'Palatino Linotype', Georgia, serif;
+    color: var(--site-text);
+    line-height: 1.25;
+  }
+
+  p {
+    color: var(--site-text);
+    margin: 0 0 1.25rem;
+  }
+
+  b, strong {
+    color: #f0e8d8;
+  }
+</style>
+
+<style>
+  .site-footer {
+    background: #02212d;
+    border-top: 1px solid var(--site-border);
+    padding: 2.5rem 0;
+    margin-top: 4rem;
+  }
+
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .footer-brand img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    opacity: 0.9;
+  }
+
+  .footer-wordmark {
+    font-family: 'Cinzel', Georgia, serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    color: var(--site-text);
+  }
+
+  .footer-links,
+  .footer-social {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a,
+  .footer-social a {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'Cinzel', Georgia, serif;
+    color: var(--site-text-dim);
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover,
+  .footer-social a:hover {
+    color: var(--site-gold);
+  }
+
+  .footer-social {
+    margin-left: auto;
+  }
+</style>

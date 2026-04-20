@@ -1,6 +1,7 @@
 ---
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import Nav from '../components/Nav.astro';
 
 const { source } = Astro.props;
 const raw = readFileSync(resolve('.', source), 'utf-8');
@@ -14,6 +15,14 @@ const bodyContent = raw.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? '';
     <Fragment set:html={headContent} />
   </head>
   <body>
+    <Nav />
+    <style is:global>
+      .Mobile,
+      .Computer,
+      .BigComputer {
+        display: none !important;
+      }
+    </style>
     <Fragment set:html={bodyContent} />
   </body>
 </html>
