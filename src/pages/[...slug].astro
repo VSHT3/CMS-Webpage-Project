@@ -1,15 +1,32 @@
 ---
 import { readdirSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import WebstudioPage from '../layouts/WebstudioPage.astro';
 
 export function getStaticPaths() {
   const base = 'legacy/source-html';
-  return readdirSync(base, { withFileTypes: true })
-    .filter(d => d.isDirectory() && existsSync(`${base}/${d.name}/index.html`))
-    .map(d => ({ params: { slug: d.name } }));
+  const collectLegacyPages = (dir: string, segments: string[] = []): string[][] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+      if (!entry.isDirectory()) {
+        return [];
+      }
+
+      const nextSegments = [...segments, entry.name];
+      const nextDir = join(dir, entry.name);
+      const children = collectLegacyPages(nextDir, nextSegments);
+
+      if (existsSync(join(nextDir, 'index.html'))) {
+        return [nextSegments, ...children];
+      }
+
+      return children;
+    });
+
+  return collectLegacyPages(base).map((slug) => ({ params: { slug: slug.join('/') } }));
 }
 
 const { slug } = Astro.params;
-const source = `legacy/source-html/${slug}/index.html`;
+const segments = (slug ?? '').split('/').filter(Boolean);
+const source = `legacy/source-html/${segments.join('/')}/index.html`;
 ---
 <WebstudioPage source={source} />

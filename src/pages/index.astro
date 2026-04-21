@@ -2,10 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 ---
 <Layout title="Home — Center for Mesoamerican Studies">
-
-  <!-- Hero: 3D model viewer -->
   <section class="hero">
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" is:inline></script>
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+      is:inline
+    ></script>
     <model-viewer
       src="https://raw.githubusercontent.com/VSHT3/MESOAMERICA-ASSETS/main/statue%20compressed.glb"
       camera-controls
@@ -18,7 +20,6 @@ import Layout from '../layouts/Layout.astro';
     ></model-viewer>
   </section>
 
-  <!-- About section -->
   <section class="about">
     <div class="content-block">
       <h1 class="section-title">About Us</h1>
@@ -29,8 +30,8 @@ import Layout from '../layouts/Layout.astro';
         <strong>The Center for Mesoamerican Studies</strong> (CMS) was founded in 2015 as a
         multidisciplinary scientific hub at the Faculty of Arts, Comenius University in Bratislava.
         It was created to <strong>unite Slovak experts</strong> focused on the
-        <strong>cultures and history of Mesoamerica</strong>, particularly the <strong>Maya</strong> and
-        <strong>Nahua</strong> regions. After forming a
+        <strong>cultures and history of Mesoamerica</strong>, particularly the <strong>Maya</strong>
+        and <strong>Nahua</strong> regions. After forming a
         <strong>collaborative group across several universities</strong>, our team requested and
         received <strong>formal approval from the Academic Senate</strong>. Over time, additional
         international scholars joined the center.
@@ -91,11 +92,9 @@ import Layout from '../layouts/Layout.astro';
       </a>
     </div>
   </section>
-
 </Layout>
 
 <style>
-  /* ── Hero ─────────────────────────────── */
   .hero {
     background: #021e28;
     border-bottom: 1px solid var(--site-border);
@@ -103,54 +102,59 @@ import Layout from '../layouts/Layout.astro';
 
   .hero model-viewer {
     width: 100%;
-    height: 480px;
+    height: clamp(21rem, 52vw, 30rem);
     display: block;
     --poster-color: transparent;
   }
 
-  /* ── About section ────────────────────── */
   .about {
-    padding: 4rem 1.5rem;
+    padding: clamp(3rem, 7vw, 5rem) 1.5rem;
   }
 
   .content-block {
-    max-width: 800px;
+    max-width: min(100%, 46rem);
     margin: 0 auto;
   }
 
   .section-title {
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-size: clamp(2rem, 4.8vw, 3.15rem);
     font-weight: 400;
-    letter-spacing: 0.04em;
-    margin: 0 0 0.5rem;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.65rem;
     color: var(--site-text);
   }
 
   .divider {
     border: none;
     border-top: 1px solid var(--site-gold);
-    width: 6rem;
-    margin: 0 0 2.5rem;
+    width: clamp(5rem, 10vw, 6.5rem);
+    margin: 0 0 2.75rem;
     opacity: 0.6;
   }
 
   .subsection-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 500;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--site-gold);
-    margin: 2.5rem 0 1rem;
+    margin: 2.65rem 0 0.95rem;
   }
 
-  p {
+  .content-block p {
     font-size: 0.975rem;
-    line-height: 1.8;
+    line-height: 1.9;
     color: #c8bfb0;
+    text-wrap: pretty;
+  }
+
+  .content-block p:first-of-type {
+    font-size: 1.04rem;
+    color: #e2d5c5;
   }
 
   .cms-logo-wrap {
-    margin: 1.5rem 0;
+    margin: 2rem 0 1.25rem;
     display: flex;
     justify-content: center;
     width: 100%;
@@ -160,27 +164,45 @@ import Layout from '../layouts/Layout.astro';
     display: block;
     border-radius: 50%;
     opacity: 0.9;
+    box-shadow: 0 14px 28px rgb(0 0 0 / 0.18);
   }
 
   .learn-more {
     display: inline-block;
-    margin-top: 2rem;
+    margin-top: 2.3rem;
     font-family: 'Cinzel', Georgia, serif;
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 400;
     color: var(--site-text);
     border-bottom: 1px solid var(--site-gold);
-    padding-bottom: 2px;
-    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.06em;
+    padding-bottom: 0.18rem;
+    transition: color 0.2s, border-color 0.2s, transform 0.2s;
   }
 
   .learn-more:hover {
     color: var(--site-gold);
     border-bottom-color: var(--site-gold);
+    transform: translateY(-1px);
   }
 
   .learn-more em {
     font-style: italic;
     color: var(--site-gold);
+  }
+
+  @media (max-width: 640px) {
+    .about {
+      padding-inline: 1rem;
+    }
+
+    .content-block p {
+      font-size: 1rem;
+      line-height: 1.82;
+    }
+
+    .subsection-title {
+      margin-top: 2.2rem;
+    }
   }
 </style>

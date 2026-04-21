@@ -1,28 +1,540 @@
 ---
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import Nav from '../components/Nav.astro';
+import { parse, renderSync } from 'ultrahtml';
+import Layout from './Layout.astro';
 
 const { source } = Astro.props;
 const raw = readFileSync(resolve('.', source), 'utf-8');
 
-const headContent = raw.match(/<head[^>]*>([\s\S]*?)<\/head>/i)?.[1] ?? '';
-const bodyContent = raw.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? '';
----
-<!doctype html>
-<html lang="en">
-  <head>
-    <Fragment set:html={headContent} />
-  </head>
-  <body>
-    <Nav />
-    <style is:global>
-      .Mobile,
-      .Computer,
-      .BigComputer {
-        display: none !important;
+const title =
+  raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.replace(/\s+/g, ' ').trim() ??
+  'Mesoamerica';
+
+const description =
+  raw.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["'][^>]*>/i)?.[1] ??
+  'Center for Mesoamerican Studies, Comenius University Bratislava';
+
+const preloadLinks = [...raw.matchAll(/<link[^>]+rel=["']preload["'][^>]*>/gi)]
+  .map((match) => match[0])
+  .filter((link) => /as=["']image["']/i.test(link))
+  .join('\n');
+
+type LegacyNode = {
+  type: number;
+  name?: string;
+  value?: string;
+  attributes?: Record<string, string>;
+  children?: LegacyNode[];
+};
+
+const VOID_TAGS = new Set(['br', 'hr', 'img']);
+const BLOCKED_TAGS = new Set([
+  'script',
+  'style',
+  'noscript',
+  'link',
+  'meta',
+  'svg',
+  'path',
+  'button',
+  'nav',
+  'form',
+  'input',
+  'textarea',
+  'select',
+  'option',
+  'label',
+]);
+const CONTENT_TAGS = new Set([
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'p',
+  'section',
+  'article',
+  'ul',
+  'ol',
+  'li',
+  'a',
+  'img',
+  'iframe',
+  'figure',
+  'figcaption',
+  'blockquote',
+  'hr',
+]);
+const ATTR_WHITELIST: Record<string, Set<string>> = {
+  a: new Set(['href', 'target', 'download', 'rel']),
+  img: new Set(['src', 'alt', 'loading', 'decoding']),
+  iframe: new Set(['src', 'title', 'allow', 'allowfullscreen', 'loading', 'referrerpolicy']),
+};
+
+const bodyMatch = raw.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+const bodyHtml = bodyMatch ? bodyMatch[1] : raw;
+const bodyTree = parse(bodyHtml);
+
+const escapeHtml = (value: string) =>
+  value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+const escapeAttribute = (value: string) =>
+  escapeHtml(value).replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+
+const decodeEntities = (value: string) => {
+  let output = value;
+
+  for (let index = 0; index < 3; index += 1) {
+    const next = output
+      .replaceAll('&amp;', '&')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'")
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&nbsp;', ' ');
+
+    if (next === output) {
+      break;
+    }
+
+    output = next;
+  }
+
+  return output;
+};
+
+const isElement = (node?: LegacyNode | null): node is LegacyNode => Boolean(node && node.type === 1);
+const isText = (node?: LegacyNode | null): node is LegacyNode => Boolean(node && node.type === 2);
+
+const getClassName = (node: LegacyNode) => node.attributes?.class ?? '';
+const serializeNode = (node: LegacyNode) => renderSync(node as never);
+
+const hasContentTag = (node: LegacyNode): boolean => {
+  if (isElement(node) && CONTENT_TAGS.has(node.name?.toLowerCase() ?? '')) {
+    return true;
+  }
+
+  return (node.children ?? []).some(hasContentTag);
+};
+
+const isLegacyHeaderNode = (node: LegacyNode) => {
+  const html = serializeNode(node);
+  return /\bMobile\b|\bComputer\b|\bBigComputer\b/.test(html);
+};
+
+const isLegacyFooterNode = (node: LegacyNode) => {
+  const html = serializeNode(node);
+  return html.includes('mesoamerica.eu') && html.includes('/#home-btn');
+};
+
+const isScaffoldNode = (node: LegacyNode) => {
+  if (!isElement(node)) {
+    return false;
+  }
+
+  const tag = node.name?.toLowerCase() ?? '';
+  if (BLOCKED_TAGS.has(tag)) {
+    return true;
+  }
+
+  if (tag === 'div' && !hasContentTag(node) && !isLegacyHeaderNode(node) && !isLegacyFooterNode(node)) {
+    return true;
+  }
+
+  return false;
+};
+
+const topLevelNodes = (bodyTree.children ?? []).filter(
+  (node) => isElement(node) || (isText(node) && node.value?.trim()),
+);
+
+const contentNodes: LegacyNode[] = [];
+let contentStarted = false;
+
+for (const node of topLevelNodes) {
+  if (isText(node)) {
+    if (contentStarted && node.value?.trim()) {
+      contentNodes.push(node);
+    }
+    continue;
+  }
+
+  if (isLegacyHeaderNode(node) || isScaffoldNode(node)) {
+    continue;
+  }
+
+  if (isLegacyFooterNode(node)) {
+    break;
+  }
+
+  if (hasContentTag(node)) {
+    contentStarted = true;
+  }
+
+  if (contentStarted) {
+    contentNodes.push(node);
+  }
+}
+
+const renderAttrs = (tag: string, attrs: Record<string, string> = {}) => {
+  const allowed = ATTR_WHITELIST[tag];
+  if (!allowed) {
+    return '';
+  }
+
+  const rendered: string[] = [];
+
+  for (const [name, rawValue] of Object.entries(attrs)) {
+    const attr = name.toLowerCase();
+    if (!allowed.has(attr)) {
+      continue;
+    }
+
+    const value = decodeEntities(rawValue).trim();
+    if (!value) {
+      continue;
+    }
+
+    if (
+      tag === 'iframe' &&
+      (attr === 'allowfullscreen' || attr === 'mozallowfullscreen' || attr === 'webkitallowfullscreen')
+    ) {
+      if (!rendered.includes('allowfullscreen')) {
+        rendered.push('allowfullscreen');
       }
-    </style>
-    <Fragment set:html={bodyContent} />
-  </body>
-</html>
+      continue;
+    }
+
+    rendered.push(`${attr}="${escapeAttribute(value)}"`);
+  }
+
+  if (tag === 'a') {
+    const hasTargetBlank = rendered.some((attr) => attr === 'target="_blank"');
+    const hasRel = rendered.some((attr) => attr.startsWith('rel="'));
+    if (hasTargetBlank && !hasRel) {
+      rendered.push('rel="noopener noreferrer"');
+    }
+  }
+
+  return rendered.length ? ` ${rendered.join(' ')}` : '';
+};
+
+const renderChildren = (node: LegacyNode) =>
+  (node.children ?? [])
+    .map((child) => renderCleanNode(child))
+    .join('')
+    .replace(/\s{3,}/g, '  ');
+
+const renderWrapper = (html: string) => {
+  const trimmed = html.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  const itemCount =
+    (trimmed.match(/<(h[1-6]|p|ul|ol|li|a|img|iframe|figure|figcaption|blockquote|hr|section)\b/gi) ??
+      []).length;
+
+  if (itemCount <= 1) {
+    return trimmed;
+  }
+
+  return `<section>${trimmed}</section>`;
+};
+
+const renderCleanNode = (node: LegacyNode): string => {
+  if (node.type === 3 || node.type === 4) {
+    return '';
+  }
+
+  if (isText(node)) {
+    const value = decodeEntities(node.value ?? '');
+    if (value.trim() === '|') {
+      return '<span class="legacy-inline-sep" aria-hidden="true"></span>';
+    }
+    return escapeHtml(value);
+  }
+
+  if (!isElement(node)) {
+    return '';
+  }
+
+  const tag = node.name?.toLowerCase() ?? '';
+  if (!tag || BLOCKED_TAGS.has(tag)) {
+    return '';
+  }
+
+  const className = getClassName(node);
+  if (className.includes('w-html-embed')) {
+    return renderWrapper(renderChildren(node));
+  }
+
+  const children = renderChildren(node).trim();
+
+  if (tag === 'br') {
+    return '<br>';
+  }
+
+  if (tag === 'hr') {
+    return '<hr>';
+  }
+
+  if (tag === 'img') {
+    const attrs = renderAttrs('img', node.attributes);
+    return node.attributes?.src ? `<img${attrs}>` : '';
+  }
+
+  if (tag === 'iframe') {
+    const attrs = renderAttrs('iframe', node.attributes);
+    return node.attributes?.src ? `<iframe${attrs}></iframe>` : '';
+  }
+
+  if (tag === 'a') {
+    const attrs = renderAttrs('a', node.attributes);
+    if (!node.attributes?.href) {
+      return children;
+    }
+    return `<a${attrs}>${children}</a>`;
+  }
+
+  if (['strong', 'b', 'em', 'i'].includes(tag)) {
+    return children ? `<${tag}>${children}</${tag}>` : '';
+  }
+
+  if (CONTENT_TAGS.has(tag)) {
+    if (!children && !VOID_TAGS.has(tag)) {
+      return '';
+    }
+    return `<${tag}>${children}</${tag}>`;
+  }
+
+  if (tag === 'div' || tag === 'span') {
+    return renderWrapper(children);
+  }
+
+  return children;
+};
+
+const cleanedBody = contentNodes
+  .map((node) => renderCleanNode(node))
+  .join('\n')
+  .replace(/&amp;([a-z0-9#]+;)/gi, '&$1')
+  .replace(/<\/a>\s*\|\s*<a/gi, '</a><span class="legacy-inline-sep" aria-hidden="true"></span><a')
+  .replace(/<section>\s*<\/section>/gi, '')
+  .replace(/<p>\s*<\/p>/gi, '')
+  .replace(/\s*<section>\s*(<h1[\s\S]*?<\/h1>|<hr>)\s*<\/section>\s*/gi, '\n$1\n')
+  .replace(/(<\/(h1|h2|h3|h4|h5|h6|p|ul|ol|li|section|figure|blockquote)>)(?=<)/gi, '$1\n')
+  .replace(/(<hr>)(?=<)/gi, '$1\n')
+  .replace(/\n{3,}/g, '\n\n')
+  .trim();
+---
+<Layout title={title} description={description} bodyClass="legacy-page">
+  <Fragment slot="head" set:html={preloadLinks} />
+
+  <section class="legacy-page-shell">
+    <article class="legacy-page-content">
+      <Fragment set:html={cleanedBody} />
+    </article>
+  </section>
+</Layout>
+
+<style is:global>
+  body.legacy-page {
+    background:
+      radial-gradient(circle at top, rgb(40 169 165 / 0.16), transparent 38%),
+      linear-gradient(180deg, #052a36 0%, #053342 24%, #042632 100%);
+  }
+
+  .legacy-page-shell {
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 1.5rem) 0;
+  }
+
+  .legacy-page-content {
+    width: min(100%, 74rem);
+    margin: 0 auto;
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.65rem);
+    color: var(--site-text);
+  }
+
+  .legacy-page-content > * {
+    min-width: 0;
+  }
+
+  .legacy-page-content > :first-child {
+    background: none;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .legacy-page-content > :first-child h1 {
+    margin: 0;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    letter-spacing: 0.06em;
+    text-wrap: balance;
+  }
+
+  .legacy-page-content > :first-child hr {
+    margin: 0;
+  }
+
+  .legacy-page-content > *:not(:first-child) {
+    background: rgb(6 31 39 / 0.72);
+    border: 1px solid rgb(201 165 90 / 0.22);
+    border-radius: 1.5rem;
+    box-shadow: 0 18px 36px rgb(1 13 17 / 0.22);
+    padding: clamp(1.1rem, 2.4vw, 1.8rem);
+  }
+
+  .legacy-page-content h1,
+  .legacy-page-content h2,
+  .legacy-page-content h3,
+  .legacy-page-content h4 {
+    margin: 0;
+    font-family: 'Cinzel', 'Palatino Linotype', Georgia, serif;
+    color: var(--site-text);
+    text-wrap: balance;
+  }
+
+  .legacy-page-content h2 {
+    font-size: clamp(1.35rem, 3vw, 1.9rem);
+    letter-spacing: 0.04em;
+  }
+
+  .legacy-page-content h3 {
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    letter-spacing: 0.03em;
+  }
+
+  .legacy-page-content p,
+  .legacy-page-content li {
+    color: #d4cabc;
+    line-height: 1.82;
+    text-wrap: pretty;
+  }
+
+  .legacy-page-content p:last-child,
+  .legacy-page-content li:last-child,
+  .legacy-page-content ul:last-child,
+  .legacy-page-content ol:last-child {
+    margin-bottom: 0;
+  }
+
+  .legacy-page-content section {
+    display: grid;
+    gap: 0.95rem;
+  }
+
+  .legacy-page-content > section > section + section {
+    margin-top: 1.2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgb(201 165 90 / 0.18);
+  }
+
+  .legacy-page-content a {
+    color: var(--site-teal);
+    text-decoration: none;
+    text-underline-offset: 0.18em;
+    overflow-wrap: anywhere;
+  }
+
+  .legacy-page-content section > a,
+  .legacy-page-content p > a {
+    font-weight: 600;
+  }
+
+  .legacy-page-content a:hover,
+  .legacy-page-content a:focus-visible {
+    color: var(--site-gold);
+  }
+
+  .legacy-inline-sep {
+    display: inline-block;
+    width: 0.8rem;
+  }
+
+  .legacy-page-content hr {
+    border: 0;
+    border-top: 1px solid rgb(201 165 90 / 0.42);
+    width: 100%;
+  }
+
+  .legacy-page-content img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 1rem;
+  }
+
+  .legacy-page-content iframe {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: min(70vw, 32rem);
+    border: 0;
+    border-radius: 1rem;
+    background: rgb(4 20 25 / 0.7);
+  }
+
+  .legacy-page-content ul,
+  .legacy-page-content ol {
+    padding-left: 1.25rem;
+  }
+
+  .legacy-page-content strong,
+  .legacy-page-content b {
+    color: #f0e8d8;
+  }
+
+  .legacy-page-content em,
+  .legacy-page-content i {
+    color: #e8ddd0;
+  }
+
+  @media (max-width: 900px) {
+    .legacy-page-shell {
+      padding-inline: 0.9rem;
+    }
+
+    .legacy-page-content > *:not(:first-child) {
+      border-radius: 1.15rem;
+      padding: 1rem;
+    }
+
+    .legacy-page-content > section > section + section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+    }
+
+    .legacy-page-content iframe {
+      min-height: 18rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .legacy-page-content {
+      gap: 0.85rem;
+    }
+
+    .legacy-page-content > *:not(:first-child) {
+      padding: 0.95rem;
+    }
+
+    .legacy-page-content > section > section + section {
+      margin-top: 0.9rem;
+      padding-top: 0.9rem;
+    }
+
+    .legacy-inline-sep {
+      width: 0.5rem;
+    }
+
+    .legacy-page-content iframe {
+      min-height: 14rem;
+    }
+  }
+</style>

@@ -4,9 +4,14 @@ import Nav from '../components/Nav.astro';
 interface Props {
   title?: string;
   description?: string;
+  bodyClass?: string;
 }
 
-const { title = 'Mesoamerica', description = 'Center for Mesoamerican Studies, Comenius University Bratislava' } = Astro.props;
+const {
+  title = 'Mesoamerica',
+  description = 'Center for Mesoamerican Studies, Comenius University Bratislava',
+  bodyClass = '',
+} = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
@@ -16,10 +21,11 @@ const { title = 'Mesoamerica', description = 'Center for Mesoamerican Studies, C
     <meta name="description" content={description} />
     <link rel="icon" href="/assets/LogoTest_ULR2LENFW1uu6krJGVj2C.png" />
     <title>{title}</title>
+    <slot name="head" />
   </head>
-  <body>
+  <body class={bodyClass}>
     <Nav />
-    <main>
+    <main class="site-main">
       <slot />
     </main>
     <footer class="site-footer">
@@ -48,7 +54,9 @@ const { title = 'Mesoamerica', description = 'Center for Mesoamerican Studies, C
 </html>
 
 <style is:global>
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
   }
 
@@ -61,6 +69,7 @@ const { title = 'Mesoamerica', description = 'Center for Mesoamerican Studies, C
     --site-teal: #28a9a5;
     --site-border: #1a4a55;
     --site-font: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    --site-measure: 68ch;
   }
 
   html {
@@ -68,42 +77,61 @@ const { title = 'Mesoamerica', description = 'Center for Mesoamerican Studies, C
     color: var(--site-text);
     font-family: var(--site-font);
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
   }
 
   body {
     margin: 0;
     background: var(--site-bg);
     min-height: 100vh;
+    overflow-x: clip;
   }
 
-  main {
+  .site-main {
     min-height: 60vh;
+    width: 100%;
   }
 
   a {
     color: var(--site-teal);
     text-decoration: none;
+    transition: color 0.18s ease;
   }
 
-  a:hover {
+  a:hover,
+  a:focus-visible {
     color: var(--site-gold);
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: 'Cinzel', 'Palatino Linotype', Georgia, serif;
     color: var(--site-text);
-    line-height: 1.25;
+    line-height: 1.18;
+    letter-spacing: 0.02em;
+    text-wrap: balance;
   }
 
   p {
     color: var(--site-text);
     margin: 0 0 1.25rem;
+    max-width: var(--site-measure);
   }
 
-  b, strong {
+  b,
+  strong {
     color: #f0e8d8;
+  }
+
+  ::selection {
+    background: rgb(201 165 90 / 0.28);
+    color: #fff6e6;
   }
 </style>
 
@@ -141,7 +169,7 @@ const { title = 'Mesoamerica', description = 'Center for Mesoamerican Studies, C
   .footer-wordmark {
     font-family: 'Cinzel', Georgia, serif;
     font-size: 1.05rem;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     color: var(--site-text);
   }
 
@@ -155,7 +183,7 @@ const { title = 'Mesoamerica', description = 'Center for Mesoamerican Studies, C
   .footer-links a,
   .footer-social a {
     font-size: 0.8rem;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     font-family: 'Cinzel', Georgia, serif;
     color: var(--site-text-dim);
@@ -169,5 +197,22 @@ const { title = 'Mesoamerica', description = 'Center for Mesoamerican Studies, C
 
   .footer-social {
     margin-left: auto;
+  }
+
+  @media (max-width: 720px) {
+    .site-footer {
+      margin-top: 3rem;
+      padding: 2rem 0 2.5rem;
+    }
+
+    .footer-inner {
+      padding: 0 1rem;
+      gap: 1.5rem;
+    }
+
+    .footer-social {
+      margin-left: 0;
+      width: 100%;
+    }
   }
 </style>
