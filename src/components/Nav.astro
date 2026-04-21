@@ -6,7 +6,7 @@
       <img src="/navimg.png" alt="Mesoamerica Research Institute" class="nav-logo-img" />
     </a>
 
-    <ul class="nav-links" role="list">
+    <ul class="nav-links" id="site-nav-links" role="list">
 
       <li class="nav-item">
         <a href="/" class="nav-link">Home</a>
@@ -124,7 +124,13 @@
 
     </ul>
 
-    <button class="nav-mobile-toggle" aria-label="Toggle menu" aria-expanded="false">
+    <button
+      class="nav-mobile-toggle"
+      type="button"
+      aria-label="Toggle menu"
+      aria-controls="site-nav-links"
+      aria-expanded="false"
+    >
       <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <line x1="3" y1="6" x2="21" y2="6"/>
         <line x1="3" y1="12" x2="21" y2="12"/>
@@ -163,9 +169,10 @@
     display: flex;
     align-items: stretch;
     height: var(--nav-logo-h);
-    padding: 0;
+    padding: 0 max(0.9rem, env(safe-area-inset-right));
     margin: 0;
     overflow: visible;
+    gap: 1rem;
   }
 
   /* ── Logo ───────────────────────────── */
@@ -175,7 +182,7 @@
     flex-shrink: 0;
     text-decoration: none !important;
     line-height: 0;
-    padding-right: 0.75rem;
+    padding-right: 0.25rem;
   }
 
   .nav-logo-img {
@@ -197,6 +204,7 @@
     min-width: 0;
     overflow: visible;
     scrollbar-width: none;
+    gap: 0.15rem;
   }
 
   .nav-links::-webkit-scrollbar {
@@ -306,18 +314,29 @@
   }
 
   @media (max-width: 900px) {
+    :global(body.nav-open) {
+      overflow: hidden;
+    }
+
     .nav-links {
       display: none;
     }
 
     .site-nav {
       justify-content: space-between;
+      min-height: 88px;
+      height: auto;
+      padding-left: max(0.75rem, env(safe-area-inset-left));
+      padding-right: max(0.75rem, env(safe-area-inset-right));
     }
 
     .nav-mobile-toggle {
       display: flex;
       align-items: center;
-      padding: 0 20px;
+      justify-content: center;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0;
       background: none;
       border: none;
       color: var(--nav-text);
@@ -350,10 +369,11 @@
 
     .nav-links.open .nav-link {
       width: 100%;
-      padding: 14px 24px;
+      padding: 16px 24px;
       font-size: 14px;
       border-bottom: 1px solid var(--nav-border);
       justify-content: flex-start;
+      white-space: normal;
     }
 
     .nav-links.open .dropdown {
@@ -368,17 +388,59 @@
     }
 
     .nav-links.open .dropdown a {
-      padding: 10px 40px;
+      padding: 12px 40px;
       font-size: 11px;
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 560px) {
+    :root {
+      --nav-logo-h: 82px;
+    }
+
+    .nav-logo-img {
+      max-width: min(68vw, 16rem);
+      object-position: left center;
+    }
+
+    .nav-links.open {
+      top: var(--nav-logo-h);
     }
   }
 </style>
 
 <script>
   const toggle = document.querySelector('.nav-mobile-toggle') as HTMLButtonElement | null;
-  const links = document.querySelector('.nav-links') as HTMLElement | null;
+  const links = document.querySelector('#site-nav-links') as HTMLElement | null;
+  const docBody = document.body;
+
+  const setMenuState = (open: boolean) => {
+    links?.classList.toggle('open', open);
+    toggle?.setAttribute('aria-expanded', String(open));
+    docBody.classList.toggle('nav-open', open);
+  };
+
   toggle?.addEventListener('click', () => {
-    const open = links?.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', String(open));
+    setMenuState(!(links?.classList.contains('open') ?? false));
+  });
+
+  links?.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    if (window.innerWidth <= 900 && target?.closest('a')) {
+      setMenuState(false);
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) {
+      setMenuState(false);
+    }
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setMenuState(false);
+    }
   });
 </script>
