@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-const members = [
+const members: { name: string; role: string; email?: string; bio?: string }[] = [
   // {
   //   name: 'Jakub Špoták',
   //   role: 'Director',
@@ -18,8 +18,14 @@ const members = [
 >
   <div class="members-shell">
 
-    <header class="members-header">
-      <h1 class="members-page-title">About Us</h1>
+    <header class="members-header reveal-target">
+      <div class="members-header-row">
+        <h1 class="members-page-title">About Us</h1>
+        <div class="members-institution" aria-label="Institutional affiliation">
+          <span>Faculty of Arts</span>
+          <span>Comenius University Bratislava</span>
+        </div>
+      </div>
       <hr class="members-rule" />
       <nav class="members-subnav" aria-label="About Us pages">
         <a href="/about-us" class="members-subnav-link">Overview</a>
@@ -30,30 +36,31 @@ const members = [
       </nav>
     </header>
 
+    <div class="members-intro reveal-target" style="--reveal-delay: 80ms">
+      <h2 class="members-section-title">Members</h2>
+    </div>
+
     <article class="members-content">
-
-      <div class="members-intro reveal-target">
-        <h2 class="members-section-title">Members</h2>
-      </div>
-
       {members.length === 0 ? (
-        <p class="members-empty reveal-target">Member profiles coming soon.</p>
+        <p class="members-empty reveal-target" style="--reveal-delay: 140ms">Member profiles coming soon.</p>
       ) : (
         <ul class="members-list">
-          {members.map((member) => (
-            <li class="members-item reveal-target">
+          {members.map((member, i) => (
+            <li class="members-item reveal-target" style={`--reveal-delay: ${140 + i * 55}ms`}>
               <div class="members-item-name">{member.name}</div>
-              <div class="members-item-role">{member.role}</div>
-              {member.bio && <p class="members-item-bio">{member.bio}</p>}
-              {member.email && (
-                <a href={`mailto:${member.email}`} class="members-item-email">{member.email}</a>
-              )}
+              <div class="members-item-body">
+                <div class="members-item-role">{member.role}</div>
+                {member.bio && <p class="members-item-bio">{member.bio}</p>}
+                {member.email && (
+                  <a href={`mailto:${member.email}`} class="members-item-email">{member.email}</a>
+                )}
+              </div>
             </li>
           ))}
         </ul>
       )}
-
     </article>
+
   </div>
 </Layout>
 
@@ -66,12 +73,14 @@ const members = [
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            (entry.target as HTMLElement).style.transitionDelay =
+              (entry.target as HTMLElement).style.getPropertyValue('--reveal-delay') || '0ms';
             entry.target.classList.add('is-visible');
             observer.unobserve(entry.target);
           }
         });
       },
-      { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
     );
     targets.forEach((el) => {
       el.classList.add('will-reveal');
@@ -82,31 +91,58 @@ const members = [
 
 <style>
   .members-shell {
-    width: min(100%, 74rem);
+    width: min(100%, 90rem);
     margin: 0 auto;
-    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 1.5rem) clamp(3rem, 6vw, 5rem);
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
   }
 
+  /* ── Header ── */
   .members-header {
     margin-bottom: clamp(2.5rem, 5vw, 4rem);
   }
 
+  .members-header-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  }
+
   .members-page-title {
-    margin: 0 0 0.6rem;
+    margin: 0;
     font-family: var(--site-font);
-    font-size: clamp(2.4rem, 6vw, 4.5rem);
-    font-weight: 400;
-    line-height: 1.02;
-    letter-spacing: 0.02em;
+    font-size: clamp(3.2rem, 7.5vw, 7rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: 0.04em;
     color: var(--site-text);
     text-wrap: balance;
+    flex-shrink: 0;
+  }
+
+  .members-institution {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    padding-bottom: 0.3rem;
+  }
+
+  .members-institution span {
+    font-family: var(--site-font);
+    font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    text-align: right;
+    line-height: 1.4;
   }
 
   .members-rule {
     border: 0;
-    border-top: 1px solid oklch(0.76 0.08 92 / 0.42);
-    margin: 0 0 1.25rem;
-    width: min(8rem, 100%);
+    border-top: 1px solid oklch(0.76 0.08 92 / 0.5);
+    margin: 0 0 1.4rem;
   }
 
   .members-subnav {
@@ -144,31 +180,34 @@ const members = [
     opacity: 0.7;
   }
 
-  .members-content {
-    display: grid;
-    gap: 0;
-  }
-
+  /* ── Intro ── */
   .members-intro {
-    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
-    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    padding: clamp(2rem, 4vw, 3rem) 0;
     border-bottom: 1px solid var(--site-border);
   }
 
   .members-section-title {
     margin: 0;
     font-family: var(--site-font);
-    font-size: clamp(1.35rem, 3vw, 1.95rem);
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+    font-weight: 400;
+    letter-spacing: 0.03em;
     color: var(--site-text-strong);
+    text-wrap: balance;
+  }
+
+  /* ── Content ── */
+  .members-content {
+    display: grid;
+    gap: 0;
   }
 
   .members-empty {
     color: var(--site-text-dim);
-    font-size: 0.95rem;
+    font-size: 1.0625rem;
     margin: 0;
-    padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+    padding: clamp(2rem, 4vw, 3rem) 0;
+    -webkit-font-smoothing: auto;
   }
 
   .members-list {
@@ -179,8 +218,9 @@ const members = [
 
   .members-item {
     display: grid;
-    gap: 0.85rem;
-    padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+    grid-template-columns: 1fr;
+    gap: 0.6rem 0;
+    padding: clamp(1.75rem, 3.5vw, 2.75rem) 0;
     border-bottom: 1px solid var(--site-border);
   }
 
@@ -190,34 +230,58 @@ const members = [
 
   @media (min-width: 680px) {
     .members-item {
-      grid-template-columns: 11rem 1fr;
-      gap: 0 clamp(2rem, 4vw, 3.5rem);
+      grid-template-columns: 13rem 1fr;
+      gap: 0 clamp(2rem, 3.5vw, 3rem);
       align-items: start;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .members-item {
+      grid-template-columns: 5.5rem 14rem 1fr;
+      gap: 0 clamp(1.5rem, 2.5vw, 2.5rem);
+    }
+
+    .members-item::before {
+      content: '';
+      display: block;
+    }
+  }
+
+  @media (min-width: 1400px) {
+    .members-item {
+      grid-template-columns: 5.5rem 16rem 1fr;
     }
   }
 
   .members-item-name {
     font-family: var(--site-font);
-    font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+    font-size: clamp(0.78rem, 1.1vw, 0.88rem);
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--site-text-dim);
-    padding-top: 0.28rem;
+    padding-top: 0.35rem;
+  }
+
+  .members-item-body {
+    display: grid;
+    gap: 0.55rem;
   }
 
   .members-item-role {
     font-size: 0.88rem;
     color: var(--site-text-dim);
     letter-spacing: 0.04em;
-    margin-bottom: 0.4rem;
   }
 
   .members-item-bio {
-    margin: 0 0 0.5rem;
-    color: var(--site-text);
-    line-height: 1.82;
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: 1.0625rem;
+    line-height: 1.88;
     max-width: 68ch;
+    -webkit-font-smoothing: auto;
   }
 
   .members-item-email {
@@ -232,13 +296,13 @@ const members = [
     color: var(--site-gold);
   }
 
-  /* Scroll reveal */
+  /* ── Scroll reveal ── */
   .will-reveal {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px);
     transition:
-      opacity 440ms var(--site-ease-out),
-      transform 540ms var(--site-ease-out);
+      opacity 500ms var(--site-ease-out),
+      transform 600ms var(--site-ease-out);
     will-change: opacity, transform;
   }
 
@@ -255,14 +319,25 @@ const members = [
     }
   }
 
-  @media (max-width: 680px) {
-    .members-item {
-      gap: 0.4rem;
+  /* ── Mobile ── */
+  @media (max-width: 679px) {
+    .members-header-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .members-institution {
+      align-items: flex-start;
+    }
+
+    .members-institution span {
+      text-align: left;
     }
 
     .members-item-name {
       color: var(--site-gold);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
     }
   }
 </style>

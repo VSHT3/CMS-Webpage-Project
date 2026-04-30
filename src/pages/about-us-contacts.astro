@@ -9,8 +9,14 @@ import Layout from '../layouts/Layout.astro';
 >
   <div class="contacts-shell">
 
-    <header class="contacts-header">
-      <h1 class="contacts-page-title">About Us</h1>
+    <header class="contacts-header reveal-target">
+      <div class="contacts-header-row">
+        <h1 class="contacts-page-title">About Us</h1>
+        <div class="contacts-institution" aria-label="Institutional affiliation">
+          <span>Faculty of Arts</span>
+          <span>Comenius University Bratislava</span>
+        </div>
+      </div>
       <hr class="contacts-rule" />
       <nav class="contacts-subnav" aria-label="About Us pages">
         <a href="/about-us" class="contacts-subnav-link">Overview</a>
@@ -21,39 +27,35 @@ import Layout from '../layouts/Layout.astro';
       </nav>
     </header>
 
+    <div class="contacts-intro reveal-target" style="--reveal-delay: 80ms">
+      <h2 class="contacts-section-title">Contacts</h2>
+    </div>
+
     <article class="contacts-content">
 
-      <div class="contacts-intro reveal-target">
-        <h2 class="contacts-section-title">Contacts</h2>
-      </div>
+      <section class="contacts-block reveal-target" style="--reveal-delay: 120ms">
+        <h3 class="contacts-label">Address</h3>
+        <address class="contacts-address">
+          Štúrova 9<br />
+          811 02 Bratislava<br />
+          Slovakia
+        </address>
+      </section>
 
-      <div class="contacts-grid">
+      <section class="contacts-block reveal-target" style="--reveal-delay: 175ms">
+        <h3 class="contacts-label">Phone</h3>
+        <ul class="contacts-phones">
+          <li><a href="tel:+421911623174">T: (+421) 911 623 174</a></li>
+          <li><a href="tel:+420723928022">T: (+420) 723 928 022</a></li>
+        </ul>
+      </section>
 
-        <section class="contacts-block reveal-target">
-          <h3 class="contacts-label">Address</h3>
-          <address class="contacts-address">
-            Štúrova 9<br />
-            811 02 Bratislava<br />
-            Slovakia
-          </address>
-        </section>
+      <section class="contacts-block reveal-target" style="--reveal-delay: 230ms">
+        <h3 class="contacts-label">Email</h3>
+        <a href="mailto:jakub.spotak@uniba.sk" class="contacts-email">jakub.spotak@uniba.sk</a>
+      </section>
 
-        <section class="contacts-block reveal-target">
-          <h3 class="contacts-label">Phone</h3>
-          <ul class="contacts-phones">
-            <li><a href="tel:+421911623174">T: (+421) 911 623 174</a></li>
-            <li><a href="tel:+420723928022">T: (+420) 723 928 022</a></li>
-          </ul>
-        </section>
-
-        <section class="contacts-block reveal-target">
-          <h3 class="contacts-label">Email</h3>
-          <a href="mailto:jakub.spotak@uniba.sk" class="contacts-email">jakub.spotak@uniba.sk</a>
-        </section>
-
-      </div>
-
-      <div class="contacts-map reveal-target" aria-label="Location map">
+      <div class="contacts-map reveal-target" style="--reveal-delay: 285ms" aria-label="Location map">
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d5324.721393266933!2d17.110756!3d48.141851!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476c89417ff82023%3A0xa847e9437ca633a4!2zxaB0w7pyb3ZhIDIyLzksIDgxMSAwMiBTdGFyw6kgTWVzdG8sIFNsb3Zha2lh!5e0!3m2!1sen!2sus!4v1763308996382!5m2!1sen!2sus"
           width="100%"
@@ -79,12 +81,14 @@ import Layout from '../layouts/Layout.astro';
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            (entry.target as HTMLElement).style.transitionDelay =
+              (entry.target as HTMLElement).style.getPropertyValue('--reveal-delay') || '0ms';
             entry.target.classList.add('is-visible');
             observer.unobserve(entry.target);
           }
         });
       },
-      { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
     );
     targets.forEach((el) => {
       el.classList.add('will-reveal');
@@ -95,31 +99,58 @@ import Layout from '../layouts/Layout.astro';
 
 <style>
   .contacts-shell {
-    width: min(100%, 74rem);
+    width: min(100%, 90rem);
     margin: 0 auto;
-    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 1.5rem) clamp(3rem, 6vw, 5rem);
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
   }
 
+  /* ── Header ── */
   .contacts-header {
     margin-bottom: clamp(2.5rem, 5vw, 4rem);
   }
 
+  .contacts-header-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  }
+
   .contacts-page-title {
-    margin: 0 0 0.6rem;
+    margin: 0;
     font-family: var(--site-font);
-    font-size: clamp(2.4rem, 6vw, 4.5rem);
-    font-weight: 400;
-    line-height: 1.02;
-    letter-spacing: 0.02em;
+    font-size: clamp(3.2rem, 7.5vw, 7rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: 0.04em;
     color: var(--site-text);
     text-wrap: balance;
+    flex-shrink: 0;
+  }
+
+  .contacts-institution {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    padding-bottom: 0.3rem;
+  }
+
+  .contacts-institution span {
+    font-family: var(--site-font);
+    font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    text-align: right;
+    line-height: 1.4;
   }
 
   .contacts-rule {
     border: 0;
-    border-top: 1px solid oklch(0.76 0.08 92 / 0.42);
-    margin: 0 0 1.25rem;
-    width: min(8rem, 100%);
+    border-top: 1px solid oklch(0.76 0.08 92 / 0.5);
+    margin: 0 0 1.4rem;
   }
 
   .contacts-subnav {
@@ -157,62 +188,80 @@ import Layout from '../layouts/Layout.astro';
     opacity: 0.7;
   }
 
-  .contacts-content {
-    display: grid;
-    gap: 0;
-  }
-
+  /* ── Intro ── */
   .contacts-intro {
-    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
-    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    padding: clamp(2rem, 4vw, 3rem) 0;
     border-bottom: 1px solid var(--site-border);
   }
 
   .contacts-section-title {
     margin: 0;
     font-family: var(--site-font);
-    font-size: clamp(1.35rem, 3vw, 1.95rem);
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+    font-weight: 400;
+    letter-spacing: 0.03em;
     color: var(--site-text-strong);
+    text-wrap: balance;
   }
 
-  .contacts-grid {
+  /* ── Blocks ── */
+  .contacts-content {
     display: grid;
     gap: 0;
   }
 
   .contacts-block {
     display: grid;
-    gap: 0.85rem;
-    padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+    grid-template-columns: 1fr;
+    gap: 0.6rem 0;
+    padding: clamp(1.75rem, 3.5vw, 2.75rem) 0;
     border-bottom: 1px solid var(--site-border);
   }
 
   @media (min-width: 680px) {
     .contacts-block {
-      grid-template-columns: 11rem 1fr;
-      gap: 0 clamp(2rem, 4vw, 3.5rem);
+      grid-template-columns: 13rem 1fr;
+      gap: 0 clamp(2rem, 3.5vw, 3rem);
       align-items: start;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .contacts-block {
+      grid-template-columns: 5.5rem 14rem 1fr;
+      gap: 0 clamp(1.5rem, 2.5vw, 2.5rem);
+    }
+
+    .contacts-block::before {
+      content: '';
+      display: block;
+    }
+  }
+
+  @media (min-width: 1400px) {
+    .contacts-block {
+      grid-template-columns: 5.5rem 16rem 1fr;
     }
   }
 
   .contacts-label {
     margin: 0;
     font-family: var(--site-font);
-    font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+    font-size: clamp(0.78rem, 1.1vw, 0.88rem);
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--site-text-dim);
-    padding-top: 0.28rem;
+    padding-top: 0.35rem;
   }
 
   .contacts-address {
     font-style: normal;
-    color: var(--site-text);
-    line-height: 1.82;
+    color: var(--site-text-strong);
+    font-size: 1.0625rem;
+    line-height: 1.88;
     margin: 0;
+    -webkit-font-smoothing: auto;
   }
 
   .contacts-phones {
@@ -224,9 +273,11 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .contacts-phones a {
-    color: var(--site-text);
+    color: var(--site-text-strong);
+    font-size: 1.0625rem;
     text-decoration: none;
     transition: color 180ms var(--site-ease-out);
+    -webkit-font-smoothing: auto;
   }
 
   .contacts-phones a:hover,
@@ -236,8 +287,10 @@ import Layout from '../layouts/Layout.astro';
 
   .contacts-email {
     color: var(--site-teal);
+    font-size: 1.0625rem;
     text-decoration: none;
     transition: color 180ms var(--site-ease-out);
+    -webkit-font-smoothing: auto;
   }
 
   .contacts-email:hover,
@@ -257,13 +310,13 @@ import Layout from '../layouts/Layout.astro';
     width: 100%;
   }
 
-  /* Scroll reveal */
+  /* ── Scroll reveal ── */
   .will-reveal {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px);
     transition:
-      opacity 440ms var(--site-ease-out),
-      transform 540ms var(--site-ease-out);
+      opacity 500ms var(--site-ease-out),
+      transform 600ms var(--site-ease-out);
     will-change: opacity, transform;
   }
 
@@ -280,14 +333,25 @@ import Layout from '../layouts/Layout.astro';
     }
   }
 
-  @media (max-width: 680px) {
-    .contacts-block {
-      gap: 0.4rem;
+  /* ── Mobile ── */
+  @media (max-width: 679px) {
+    .contacts-header-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .contacts-institution {
+      align-items: flex-start;
+    }
+
+    .contacts-institution span {
+      text-align: left;
     }
 
     .contacts-label {
       color: var(--site-gold);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
     }
   }
 </style>
