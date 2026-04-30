@@ -1,0 +1,316 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const sections = [
+  {
+    heading: 'Establishment',
+    href: null,
+    body: [
+      'The Center for Mesoamerican Studies (CMS) was founded in 2015 as a multidisciplinary scientific hub at the Faculty of Arts, Comenius University in Bratislava. It was created to unite Slovak experts focused on the cultures and history of Mesoamerica, particularly the Maya and Nahua regions. After forming a collaborative group across several universities, the team requested and received formal approval from the Academic Senate. Over time, additional international scholars joined the center.',
+    ],
+  },
+  {
+    heading: 'Headquarters',
+    href: null,
+    body: [
+      'CMS is located at Štúrova 9, within the Department of Comparative Religious Studies, where it occupies dedicated rooms on the first floor, with additional space on the third floor and in the attic. Although based in the department\'s building, it functions independently and reports directly to the dean of the Faculty of Arts.',
+    ],
+  },
+  {
+    heading: 'Education',
+    href: '/education-published-thesis',
+    body: [
+      'CMS places strong emphasis on supporting doctoral studies in Mesoamerican topics, while also assisting Bachelor\'s and Master\'s students. This includes specialist consultations, help with field research, and opportunities for students to participate in major scientific projects. A unique part of the center\'s academic mission is its instruction in Maya hieroglyphic writing.',
+    ],
+  },
+  {
+    heading: 'Research',
+    href: '/research',
+    body: [
+      'Since its founding, CMS has become a strong base for a wide range of scientific projects. Early research included Maya astronomy, the epigraphy of Uaxactun stelae, Aztec legal history, and sacred mountains of central Mexico. Over the years, the scope expanded to Pre-classic ceramics, Maya agriculture, calendar studies, Lacandon mythology, ancient Maya codices, and Nahuatl manuscripts.',
+      'The center also works with advanced technologies such as LiDAR rainforest scanning in Petén (Guatemala), LAP ceramic scanning, photogrammetry, RTI documentation, and 3D modeling of archaeological objects. Further areas include early Pre-classic sculpture, cave art, Maya economics, iconography, religion, and dramatic traditions.',
+      'One of its flagship projects is the Uaxactun Regional Archaeological Project (PARU), which CMS has overseen since 2016. The center provides funding, technical support, research coordination, and publication work. PARU is one of the most significant European research initiatives in the Maya area.',
+    ],
+  },
+  {
+    heading: 'Conferences & Events',
+    href: '/events',
+    body: [
+      'CMS organizes the annual Bratislava Maya Meeting (BMM), held since 2009. The event combines workshops in Maya hieroglyphic decipherment with a scholarly conference featuring both Slovak and international researchers.',
+      'The center is also a co-organizer of the European Maya Conference, contributing since 2014 and formally representing the event in 2020 and 2025. This conference is the leading Maya-focused academic gathering in Europe.',
+      'CMS additionally participates in the recurring conference cycle <em>Search for Indigenous America</em>, held in both the Czech Republic and Slovakia, where many of the center\'s researchers regularly present.',
+    ],
+  },
+  {
+    heading: 'Collections',
+    href: '/gallery',
+    body: [
+      'The center manages ethnographic and archaeological collections from Mesoamerica. It actively preserves and develops these collections, organizes exhibitions, and provides students access to objects for study and research.',
+    ],
+  },
+  {
+    heading: 'Library',
+    href: '/ferdinand-anders-library-history',
+    body: [
+      'CMS oversees the Ferdinand Anders Library, a specialized repository holding over 10,000 volumes related to pre-Columbian civilizations, with a focus on Mesoamerica. The library includes rare facsimiles, codices, early prints, and the personal archive of Ferdinand Anders. It is open to both students and visiting researchers.',
+    ],
+  },
+];
+---
+
+<Layout
+  title="About Us — Center for Mesoamerican Studies"
+  description="History and overview of the Center for Mesoamerican Studies at Comenius University Bratislava — establishment, research, collections, and academic mission."
+  bodyClass="about-page"
+>
+  <div class="about-shell">
+
+    <header class="about-header">
+      <h1 class="about-page-title">About Us</h1>
+      <hr class="about-rule" />
+      <nav class="about-subnav" aria-label="About Us pages">
+        <a href="/about-us" class="about-subnav-link is-current" aria-current="page">Overview</a>
+        <span class="about-subnav-sep" aria-hidden="true"></span>
+        <a href="/abouts-us-members" class="about-subnav-link">Members</a>
+        <span class="about-subnav-sep" aria-hidden="true"></span>
+        <a href="/about-us-contacts" class="about-subnav-link">Contacts</a>
+      </nav>
+    </header>
+
+    <article class="about-content">
+
+      <div class="about-intro reveal-target">
+        <h2 class="about-center-name">Center for Mesoamerican Studies</h2>
+        <p class="about-center-meta">Faculty of Arts · Comenius University Bratislava · est. 2015</p>
+      </div>
+
+      {sections.map((section) => (
+        <section class="about-section reveal-target">
+          <h3 class="about-section-heading">
+            {section.href
+              ? <a href={section.href}>{section.heading}</a>
+              : section.heading
+            }
+          </h3>
+          <div class="about-section-body">
+            {section.body.map((para) => (
+              <p set:html={para} />
+            ))}
+          </div>
+        </section>
+      ))}
+
+    </article>
+  </div>
+</Layout>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll<HTMLElement>('.reveal-target');
+
+  if (!reduceMotion && targets.length > 0 && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+    );
+    targets.forEach((el) => {
+      el.classList.add('will-reveal');
+      observer.observe(el);
+    });
+  }
+</script>
+
+<style>
+  .about-shell {
+    width: min(100%, 74rem);
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 1.5rem) clamp(3rem, 6vw, 5rem);
+  }
+
+  /* ── Page header ── */
+  .about-header {
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .about-page-title {
+    margin: 0 0 0.6rem;
+    font-family: var(--site-font);
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: 0.02em;
+    color: var(--site-text);
+    text-wrap: balance;
+  }
+
+  .about-rule {
+    border: 0;
+    border-top: 1px solid oklch(0.76 0.08 92 / 0.42);
+    margin: 0 0 1.25rem;
+    width: min(8rem, 100%);
+  }
+
+  .about-subnav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .about-subnav-link {
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    text-decoration: none;
+    transition: color 180ms var(--site-ease-out);
+  }
+
+  .about-subnav-link:hover,
+  .about-subnav-link:focus-visible {
+    color: var(--site-gold);
+  }
+
+  .about-subnav-link.is-current {
+    color: var(--site-gold);
+  }
+
+  .about-subnav-sep {
+    display: inline-block;
+    width: 1px;
+    height: 0.7em;
+    background: var(--site-border);
+    opacity: 0.7;
+  }
+
+  /* ── Content ── */
+  .about-content {
+    display: grid;
+    gap: 0;
+  }
+
+  .about-intro {
+    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .about-center-name {
+    margin: 0 0 0.4rem;
+    font-family: var(--site-font);
+    font-size: clamp(1.35rem, 3vw, 1.95rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--site-text-strong);
+    text-wrap: balance;
+  }
+
+  .about-center-meta {
+    margin: 0;
+    color: var(--site-text-dim);
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Section ── */
+  .about-section {
+    display: grid;
+    gap: 0.85rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .about-section:last-child {
+    border-bottom: 0;
+  }
+
+  @media (min-width: 680px) {
+    .about-section {
+      grid-template-columns: 11rem 1fr;
+      gap: 0 clamp(2rem, 4vw, 3.5rem);
+      align-items: start;
+    }
+  }
+
+  .about-section-heading {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    padding-top: 0.28rem;
+  }
+
+  .about-section-heading a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 180ms var(--site-ease-out);
+  }
+
+  .about-section-heading a:hover,
+  .about-section-heading a:focus-visible {
+    color: var(--site-gold);
+  }
+
+  .about-section-body {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .about-section-body p {
+    margin: 0;
+    color: var(--site-text);
+    line-height: 1.82;
+    max-width: 68ch;
+    text-wrap: pretty;
+  }
+
+  .about-section-body em {
+    color: var(--site-text);
+  }
+
+  /* ── Scroll reveal ── */
+  .will-reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 440ms var(--site-ease-out),
+      transform 540ms var(--site-ease-out);
+    will-change: opacity, transform;
+  }
+
+  .will-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .will-reveal {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .about-section {
+      gap: 0.4rem;
+    }
+
+    .about-section-heading {
+      color: var(--site-gold);
+      font-size: 0.75rem;
+    }
+  }
+</style>
