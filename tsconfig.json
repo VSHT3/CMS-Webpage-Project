@@ -4,7 +4,7 @@
     "baseUrl": ".",
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "types": ["node"]
+
   },
   "exclude": ["dist", "public", "legacy", "node_modules"]
 }
