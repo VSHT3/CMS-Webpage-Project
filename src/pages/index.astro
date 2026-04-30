@@ -2,22 +2,20 @@
 import Layout from '../layouts/Layout.astro';
 ---
 <Layout title="Home — Center for Mesoamerican Studies">
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" is:inline></script>
-
   <section class="hero-shell">
     <div class="page-grid hero-grid">
       <div class="hero-copy">
         <p class="eyebrow">Faculty of Arts • Comenius University Bratislava</p>
-        <h1>Central Mesoamerican studies built from fieldwork, archives, and living scholarship.</h1>
+        <h1>Center for Mesoamerican Studies</h1>
         <p class="hero-lead">
-          The Center for Mesoamerican Studies unites archaeology, epigraphy, history, religion,
-          material culture, and digital methods into one research platform. It exists to study,
-          publish, teach, and preserve the worlds of ancient Mesoamerica with academic rigor.
+          Founded in 2015 at the Faculty of Arts, Comenius University in Bratislava, CMS brings together
+          research, teaching, collections, publications, and public scholarship connected with Mesoamerica.
         </p>
 
         <div class="hero-actions">
-          <a href="/about-us" class="button button-primary">About institute</a>
-          <a href="/grants-and-investigations" class="button button-secondary">Research projects</a>
+          <a href="/about-us" class="button button-primary">About CMS</a>
+          <a href="/grants-and-investigations" class="button button-secondary">Research</a>
+          <a href="/publications" class="button button-secondary">Publications</a>
         </div>
 
         <dl class="hero-facts">
@@ -36,200 +34,278 @@ import Layout from '../layouts/Layout.astro';
         </dl>
       </div>
 
-      <div class="hero-visuals">
+      <aside class="hero-visual" aria-label="Interactive artefact visual">
         <div class="hero-panel hero-panel-model">
-          <div class="panel-topline">Digital archaeology</div>
-          <model-viewer
-            src="https://raw.githubusercontent.com/VSHT3/MESOAMERICA-ASSETS/main/statue%20compressed.glb"
-            camera-controls
-            auto-rotate
-            auto-rotate-delay="0"
-            rotation-per-second="18deg"
-            interaction-prompt="none"
-            disable-zoom
-            camera-orbit="90deg 75deg"
-            alt="3D model of a Mesoamerican artefact"
-          ></model-viewer>
-          <p class="panel-note">3D documentation and object study sit alongside excavation, archives, and teaching.</p>
+          <div class="panel-topline">Collection object</div>
+          <div class="model-stage" data-model-stage>
+            <div class="model-placeholder">
+              <span>3D artefact model</span>
+              <button type="button" class="model-load-button" data-load-model>Load view</button>
+            </div>
+          </div>
         </div>
-
-        <figure class="hero-panel hero-panel-image">
-          <img
-            src="/assets/petnal0084_7cQP6ek3nJnqnU40sK0MD.jpg"
-            alt="Reconstruction view of monumental Maya architecture in a rainforest landscape"
-            loading="eager"
-            decoding="async"
-          />
-          <figcaption>Reconstruction, landscape interpretation, and site context remain central to CMS research.</figcaption>
-        </figure>
-      </div>
+        <p class="panel-note">An interactive object view used here as a visual reference for the center's collections and documentation work.</p>
+      </aside>
     </div>
   </section>
 
   <section class="page-grid intro-ribbon" aria-label="Institute summary">
-    <p>
-      Founded as a multidisciplinary scientific center, CMS brings together Slovak and international
-      specialists working on Maya and Nahua cultures, archaeology, astronomy, manuscripts,
-      iconography, religion, and historical thought.
-    </p>
-    <a href="/publications">Browse publications</a>
+    <div>
+      <p>
+        CMS focuses on the Maya and Nahua regions and supports work across archaeology, epigraphy,
+        astronomy, manuscripts, iconography, religion, historical thought, collections, and teaching.
+      </p>
+      <p>
+        The site gathers the center's institutional information, research activity, publications,
+        collections, education, conferences, and contact details.
+      </p>
+    </div>
+    <a href="/about-us">Read the history</a>
   </section>
 
   <section class="page-grid domains-section">
     <div class="section-heading">
-      <p class="eyebrow">Research domains</p>
-      <h2>Not one department. An entire knowledge field in conversation.</h2>
+      <p class="eyebrow">Use the site</p>
+      <h2>Start with the section that matches your visit.</h2>
     </div>
 
-    <div class="domains-list">
-      <article>
-        <span class="domain-index">01</span>
-        <h3>Field archaeology</h3>
-        <p>Excavation, landscape study, and ceramic research anchored by long-term work in Petén, Guatemala.</p>
-      </article>
-      <article>
-        <span class="domain-index">02</span>
-        <h3>Epigraphy and manuscripts</h3>
-        <p>Maya hieroglyphic writing, codices, Nahuatl sources, and historical records studied with linguistic and philological depth.</p>
-      </article>
-      <article>
-        <span class="domain-index">03</span>
-        <h3>Technology and documentation</h3>
-        <p>LiDAR, photogrammetry, RTI, ceramic scanning, and 3D modeling expand how evidence is captured and interpreted.</p>
-      </article>
-      <article>
-        <span class="domain-index">04</span>
-        <h3>Teaching and mentorship</h3>
-        <p>Doctoral training, thesis support, consultations, and direct participation in scientific projects shape new specialists.</p>
-      </article>
+    <div class="resource-grid">
+      <a href="/grants-and-investigations">
+        <span>Research</span>
+        <h3>Projects, grants, and investigation notes</h3>
+        <p>Research activity and project material connected with the center.</p>
+      </a>
+      <a href="/publications">
+        <span>Publications</span>
+        <h3>Reports, books, catalogues, and PDF material</h3>
+        <p>Publication records and downloadable research material gathered for visitors and researchers.</p>
+      </a>
+      <a href="/ferdinand-anders-library">
+        <span>Library</span>
+        <h3>Ferdinand Anders Library</h3>
+        <p>Library history and catalogue access for users looking for the center's library resources.</p>
+      </a>
+      <a href="/education-phd-program">
+        <span>Education</span>
+        <h3>PhD program, theses, and work in progress</h3>
+        <p>Education pages for doctoral study, published thesis work, and current research in progress.</p>
+      </a>
     </div>
   </section>
 
   <section class="page-grid feature-band">
     <div class="feature-copy">
-      <p class="eyebrow">Flagship achievement</p>
-      <h2>PARU Uaxactun gives the institute a visible field presence, not only a library presence.</h2>
+      <p class="eyebrow">PARU Uaxactun</p>
+      <h2>Fieldwork material is organized as a project archive, not a vague feature block.</h2>
       <p>
-        Since 2016, the Uaxactun Regional Archaeological Project has been a defining CMS platform for
-        excavation, coordination, funding, publication work, and international visibility. It positions
-        the center as one of the strongest European research actors in the Maya area.
+        CMS has overseen the Uaxactun Regional Archaeological Project since 2016. The PARU Uaxactun
+        section brings together the project's history, maps, papers, recent investigations,
+        archaeological artefacts, galleries, and reports.
       </p>
       <a href="/paru-uaxactun-history" class="text-link">Enter PARU Uaxactun</a>
     </div>
 
     <div class="feature-aside">
-      <div class="aside-item">
-        <span>2015</span>
-        <p>Center established as dedicated multidisciplinary hub.</p>
-      </div>
-      <div class="aside-item">
-        <span>2016</span>
-        <p>PARU Uaxactun becomes long-term flagship research platform.</p>
-      </div>
-      <div class="aside-item">
-        <span>Now</span>
-        <p>Teaching, collections, exhibitions, conferences, and publications feed one ecosystem.</p>
-      </div>
+      <a href="/paru-uaxactun-history" class="aside-item">
+        <span>History</span>
+        <p>Project background, fieldwork context, and institutional timeline.</p>
+      </a>
+      <a href="/paru-uaxactun-maps" class="aside-item">
+        <span>Maps and papers</span>
+        <p>Location material, reference papers, and field documentation.</p>
+      </a>
+      <a href="/paru-uaxactun-recent-investigations" class="aside-item">
+        <span>Investigations</span>
+        <p>Recent field reports and notes on current archaeological work.</p>
+      </a>
+      <a href="/paru-uaxactun-archeological-artefacts" class="aside-item">
+        <span>Artefacts</span>
+        <p>Archaeological artefacts and the related gallery pages.</p>
+      </a>
     </div>
   </section>
 
   <section class="page-grid institute-section">
     <div class="section-heading section-heading-wide">
-      <p class="eyebrow">Why this institute matters</p>
-      <h2>CMS was built to make Mesoamerican studies visible, serious, and institutionally durable in Central Europe.</h2>
+      <p class="eyebrow">Access the faculty</p>
+      <h2>Find the part of the center you actually need.</h2>
     </div>
 
     <div class="institute-columns">
       <div class="institute-text">
         <p>
-          Based at Štúrova 9 within the Faculty of Arts, the center operates as an independent academic
-          base with its own research identity. It was created to gather expertise that had previously been
-          dispersed across universities and projects.
-        </p>
-        <p>
-          That mission remains intact: connect scholarship, material evidence, and public knowledge. The
-          result is a center that supports advanced research while also making room for exhibitions,
-          conference activity, specialist libraries, and student formation.
+          Based at Štúrova 9 within the Faculty of Arts, the center gives visitors direct access to
+          institutional history, contacts, members, research projects, publications, collections,
+          education, and conference material.
         </p>
       </div>
 
       <div class="institute-stack">
-        <div>
-          <h3>Collections and memory</h3>
-          <p>Archaeological and ethnographical collections, the Ferdinand Anders Library, and publication archives extend research beyond the field season.</p>
-        </div>
-        <div>
-          <h3>Contemporary methods</h3>
-          <p>Ancient subjects are approached with modern tools, from landscape scanning to object digitization and visual reconstruction.</p>
-        </div>
-        <div>
-          <h3>Scholarly reach</h3>
-          <p>The site’s sections on conferences, grants, exhibitions, and publications reflect an institute with active public and academic output.</p>
-        </div>
+        <a href="/about-us" class="institute-card">
+          <h3>Collections</h3>
+          <p>Archaeological holdings, ethnographical holdings, exhibitions, and collection galleries.</p>
+        </a>
+        <a href="/grants-and-investigations" class="institute-card">
+          <h3>Research</h3>
+          <p>Projects, grants, investigations, and reports connected with center activity.</p>
+        </a>
+        <a href="/publications" class="institute-card">
+          <h3>Publications</h3>
+          <p>Books, reports, catalogues, and downloadable PDF records.</p>
+        </a>
+        <a href="/about-us-contacts" class="institute-card">
+          <h3>Contact</h3>
+          <p>Location, email, and institutional contact details for visitors and partners.</p>
+        </a>
       </div>
     </div>
   </section>
 
-  <section class="page-grid navigation-section">
-    <div class="section-heading">
-      <p class="eyebrow">Start here</p>
-      <h2>Main paths into the institute.</h2>
-    </div>
-
-    <div class="navigation-grid">
-      <a href="/about-us" class="nav-tile">
-        <span>About</span>
-        <strong>History, mission, people</strong>
-      </a>
-      <a href="/publications" class="nav-tile">
-        <span>Publications</span>
-        <strong>Research output and reports</strong>
-      </a>
-      <a href="/ferdinand-anders-library" class="nav-tile">
-        <span>Library</span>
-        <strong>Ferdinand Anders Library</strong>
-      </a>
-      <a href="/collection-archaeological-collection" class="nav-tile">
-        <span>Collections</span>
-        <strong>Archaeological and ethnographical holdings</strong>
-      </a>
-      <a href="/bratislava-maya-meetings-news" class="nav-tile">
-        <span>Conferences</span>
-        <strong>Bratislava Maya Meetings and updates</strong>
-      </a>
-      <a href="/education-phd-program" class="nav-tile">
-        <span>Education</span>
-        <strong>Doctoral pathway and student work</strong>
-      </a>
-    </div>
-  </section>
 </Layout>
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap');
+<script>
+  const stage = document.querySelector('[data-model-stage]');
+  const loadButton = document.querySelector('[data-load-model]') as HTMLButtonElement | null;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let modelRequested = false;
 
+  const appendModelViewer = () => {
+    if (!stage || modelRequested) {
+      return;
+    }
+
+    modelRequested = true;
+    loadButton?.setAttribute('disabled', '');
+    if (loadButton) {
+      loadButton.textContent = 'Loading interactive view';
+    }
+
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = '/assets/vendor/model-viewer.min.js';
+
+    script.addEventListener('load', () => {
+      const viewer = document.createElement('model-viewer');
+      viewer.setAttribute('src', '/assets/models/statue-compressed.glb');
+      viewer.setAttribute('poster', '/assets/optimized/model-poster.webp');
+      viewer.setAttribute('camera-controls', '');
+      viewer.setAttribute('interaction-prompt', 'none');
+      viewer.setAttribute('camera-orbit', '90deg 72deg 42%');
+      viewer.setAttribute('min-camera-orbit', 'auto auto 34%');
+      viewer.setAttribute('max-camera-orbit', 'auto auto 110%');
+      viewer.setAttribute('field-of-view', '17deg');
+      viewer.setAttribute('min-field-of-view', '14deg');
+      viewer.setAttribute('max-field-of-view', '30deg');
+      viewer.setAttribute('scale', '2.7 2.7 2.7');
+      viewer.setAttribute('alt', '3D model of a Mesoamerican artefact');
+
+      if (!reducedMotion.matches) {
+        viewer.setAttribute('auto-rotate', '');
+        viewer.setAttribute('auto-rotate-delay', '0');
+        viewer.setAttribute('rotation-per-second', '18deg');
+      }
+
+      stage.replaceChildren(viewer);
+    });
+
+    script.addEventListener('error', () => {
+      loadButton?.removeAttribute('disabled');
+      if (loadButton) {
+        loadButton.textContent = 'Retry interactive view';
+      }
+      modelRequested = false;
+    });
+
+    document.head.append(script);
+  };
+
+  loadButton?.addEventListener('click', appendModelViewer);
+
+  const scheduleModelLoad = () => {
+    if (!stage || modelRequested) {
+      return;
+    }
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            observer.disconnect();
+            appendModelViewer();
+          }
+        },
+        { rootMargin: '360px 0px' },
+      );
+
+      observer.observe(stage);
+      return;
+    }
+
+    globalThis.setTimeout(appendModelViewer, 800);
+  };
+
+  const startAutomaticLoad = () => {
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
+    };
+
+    if (idleWindow.requestIdleCallback) {
+      idleWindow.requestIdleCallback(scheduleModelLoad, { timeout: 1400 });
+      return;
+    }
+
+    globalThis.setTimeout(scheduleModelLoad, 450);
+  };
+
+  if (document.readyState === 'complete') {
+    startAutomaticLoad();
+  } else {
+    window.addEventListener('load', startAutomaticLoad, { once: true });
+  }
+
+  const revealSections = document.querySelectorAll<HTMLElement>(
+    '.intro-ribbon, .domains-section, .feature-band, .institute-section',
+  );
+
+  if (!reducedMotion.matches && revealSections.length > 0 && 'IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+    );
+
+    revealSections.forEach((section) => {
+      section.classList.add('home-scroll-reveal');
+      revealObserver.observe(section);
+    });
+  }
+</script>
+
+<style>
   :global(:root) {
-    --home-bg-1: oklch(0.18 0.033 206);
-    --home-bg-2: oklch(0.14 0.025 202);
-    --home-panel: color-mix(in oklab, oklch(0.22 0.028 196) 80%, black);
-    --home-panel-soft: oklch(0.25 0.03 188 / 0.46);
-    --home-text: oklch(0.9 0.02 92);
-    --home-text-dim: oklch(0.77 0.025 186);
-    --home-line: oklch(0.43 0.05 182 / 0.45);
-    --home-accent: oklch(0.72 0.108 176);
-    --home-accent-2: oklch(0.67 0.085 144);
-    --home-gold: oklch(0.8 0.09 95);
-    --home-shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+    --home-bg-1: var(--site-bg);
+    --home-bg-2: oklch(0.16 0.026 205);
+    --home-panel: var(--site-surface);
+    --home-panel-soft: color-mix(in oklab, var(--site-surface) 72%, transparent);
+    --home-text: var(--site-text);
+    --home-text-dim: var(--site-text-dim);
+    --home-line: var(--site-border);
+    --home-accent: var(--site-teal);
+    --home-accent-2: oklch(0.58 0.07 158);
+    --home-gold: var(--site-gold);
+    --home-shadow: var(--site-shadow);
   }
 
   :global(html),
   :global(body) {
-    background:
-      radial-gradient(circle at top left, rgba(41, 141, 129, 0.18), transparent 28%),
-      radial-gradient(circle at top right, rgba(28, 87, 110, 0.32), transparent 24%),
-      linear-gradient(180deg, var(--home-bg-1) 0%, var(--home-bg-2) 48%, oklch(0.12 0.018 198) 100%);
     color: var(--home-text);
-    font-family: 'Literata', Georgia, serif;
+    font-family: var(--site-font);
   }
 
   :global(main) {
@@ -237,23 +313,23 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .page-grid {
-    width: min(1280px, calc(100% - 2rem));
+    width: min(1180px, calc(100% - 2rem));
     margin: 0 auto;
   }
 
   .hero-shell {
-    padding: clamp(2rem, 5vw, 4rem) 0 2rem;
+    padding: clamp(2rem, 5vw, 4.5rem) 0 clamp(2.5rem, 6vw, 5rem);
   }
 
   .hero-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
-    gap: clamp(1.5rem, 3vw, 3rem);
-    align-items: end;
+    grid-template-columns: minmax(0, 0.94fr) minmax(20rem, 0.62fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
   }
 
   .hero-copy {
-    padding: clamp(1rem, 2vw, 2rem) 0 clamp(1rem, 1vw, 1.5rem);
+    padding: clamp(0.75rem, 2vw, 1.5rem) 0;
   }
 
   .eyebrow {
@@ -267,14 +343,14 @@ import Layout from '../layouts/Layout.astro';
   h1,
   h2,
   h3 {
-    font-family: 'Marcellus', serif;
+    font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
   }
 
   h1 {
-    max-width: 12ch;
+    max-width: 13ch;
     margin: 0;
-    font-size: clamp(3.4rem, 8vw, 7.2rem);
-    line-height: 0.94;
+    font-size: clamp(3rem, 6.6vw, 6.4rem);
+    line-height: 0.96;
     letter-spacing: 0.01em;
     text-wrap: balance;
   }
@@ -284,7 +360,7 @@ import Layout from '../layouts/Layout.astro';
   .feature-copy p,
   .institute-text p,
   .institute-stack p,
-  .domains-list p,
+  .resource-grid p,
   .aside-item p {
     max-width: 66ch;
     font-size: 1.03rem;
@@ -314,22 +390,40 @@ import Layout from '../layouts/Layout.astro';
     font-size: 0.9rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+    transition:
+      transform 180ms var(--site-ease-out),
+      border-color 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease;
   }
 
   .button:hover {
     transform: translateY(-2px);
   }
 
+  .button:active,
+  .model-load-button:active {
+    transform: translateY(0);
+  }
+
+  .button:focus-visible,
+  .model-load-button:focus-visible,
+  .resource-grid a:focus-visible,
+  .intro-ribbon a:focus-visible,
+  .text-link:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--home-gold) 76%, var(--site-text-strong));
+    outline-offset: 4px;
+  }
+
   .button-primary {
-    background: linear-gradient(135deg, color-mix(in oklab, var(--home-accent-2) 72%, black), color-mix(in oklab, var(--home-accent) 76%, black));
+    background: color-mix(in oklab, var(--home-accent-2) 76%, oklch(0.18 0.025 200));
     color: oklch(0.97 0.008 120);
-    border-color: color-mix(in oklab, var(--home-accent) 55%, black);
+    border-color: color-mix(in oklab, var(--home-accent) 55%, oklch(0.18 0.025 200));
   }
 
   .button-secondary {
     color: var(--home-text);
-    background: rgba(0, 0, 0, 0.12);
+    background: oklch(0.18 0.025 200 / 0.42);
   }
 
   .hero-facts {
@@ -359,25 +453,21 @@ import Layout from '../layouts/Layout.astro';
     line-height: 1.5;
   }
 
-  .hero-visuals {
-    display: grid;
-    gap: 1rem;
-  }
-
   .hero-panel {
     position: relative;
     overflow: hidden;
     border: 1px solid var(--home-line);
-    background:
-      linear-gradient(180deg, rgba(18, 54, 58, 0.94), rgba(8, 23, 30, 0.94)),
-      var(--home-panel);
-    box-shadow: var(--home-shadow);
+    background: color-mix(in oklab, var(--home-panel) 82%, transparent);
+  }
+
+  .hero-visual {
+    display: grid;
+    gap: 0.75rem;
   }
 
   .hero-panel-model {
-    min-height: 500px;
-    padding: 1rem;
-    clip-path: polygon(0 0, 100% 0, 100% 88%, 88% 100%, 0 100%);
+    min-height: clamp(360px, 42vw, 560px);
+    padding: clamp(0.8rem, 1.8vw, 1.25rem);
   }
 
   .panel-topline {
@@ -391,44 +481,84 @@ import Layout from '../layouts/Layout.astro';
     color: var(--home-gold);
   }
 
+  .model-stage,
   .hero-panel-model model-viewer {
     width: 100%;
-    height: 420px;
+    height: clamp(320px, 39vw, 520px);
     display: block;
+  }
+
+  .hero-panel-model model-viewer {
     --poster-color: transparent;
   }
 
-  .panel-note,
-  figcaption {
+  .model-placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 1rem;
+    padding: clamp(1rem, 4vw, 2rem);
+    background:
+      linear-gradient(135deg, oklch(0.24 0.03 190 / 0.32), oklch(0.18 0.026 202 / 0.54)),
+      url('/assets/optimized/model-poster.webp') center / min(82%, 44rem) no-repeat;
+  }
+
+  .model-placeholder span {
+    max-width: 18ch;
+    font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 1;
+    color: var(--home-text);
+  }
+
+  .model-load-button {
+    min-height: 2.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid color-mix(in oklab, var(--home-gold) 60%, transparent);
+    border-radius: 999px;
+    background: oklch(0.18 0.026 202 / 0.72);
+    color: var(--home-gold);
+    font: inherit;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      transform 180ms var(--site-ease-out),
+      border-color 180ms ease,
+      color 180ms ease,
+      opacity 180ms ease;
+  }
+
+  .model-load-button:hover,
+  .model-load-button:focus-visible {
+    color: var(--home-text);
+    border-color: var(--home-gold);
+    transform: translateY(-2px);
+  }
+
+  .panel-note {
     margin: 0;
-    max-width: 42ch;
+    max-width: 46ch;
     font-size: 0.9rem;
     line-height: 1.7;
     color: var(--home-text-dim);
   }
 
-  .hero-panel-image {
-    display: grid;
-    gap: 0.9rem;
-    margin: 0;
-    padding: 0.9rem;
-    transform: translateX(-10%);
-  }
-
-  .hero-panel-image img {
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-    display: block;
-    filter: saturate(0.85) contrast(1.04) brightness(0.78);
-  }
-
   .intro-ribbon,
   .domains-section,
   .feature-band,
-  .institute-section,
-  .navigation-section {
-    padding: clamp(3rem, 8vw, 7rem) 0;
+  .institute-section {
+    padding: clamp(2.5rem, 6vw, 5rem) 0;
+  }
+
+  .domains-section,
+  .feature-band,
+  .institute-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 620px;
   }
 
   .intro-ribbon {
@@ -440,12 +570,32 @@ import Layout from '../layouts/Layout.astro';
     border-bottom: 1px solid var(--home-line);
   }
 
+  .intro-ribbon div {
+    display: grid;
+    gap: 0.8rem;
+  }
+
   .intro-ribbon a,
   .text-link {
     color: var(--home-gold);
     font-size: 0.92rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0 1px;
+    transition:
+      background-size 220ms var(--site-ease-out),
+      color 180ms ease;
+  }
+
+  .intro-ribbon a:hover,
+  .intro-ribbon a:focus-visible,
+  .text-link:hover,
+  .text-link:focus-visible {
+    color: var(--home-text);
+    background-size: 100% 1px;
   }
 
   .section-heading {
@@ -467,62 +617,81 @@ import Layout from '../layouts/Layout.astro';
     max-width: 20ch;
   }
 
-  .domains-list {
+  .resource-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(1rem, 2vw, 1.25rem);
+    border-top: 1px solid var(--home-line);
   }
 
-  .domains-list article {
+  .resource-grid a {
     display: grid;
-    gap: 0.9rem;
-    min-height: 240px;
-    padding: 1.4rem;
-    border: 1px solid var(--home-line);
-    background:
-      linear-gradient(180deg, rgba(18, 42, 49, 0.88), rgba(8, 20, 26, 0.78)),
-      var(--home-panel-soft);
+    align-content: start;
+    gap: 0.8rem;
+    min-height: 13rem;
+    padding: clamp(1.05rem, 2vw, 1.35rem) 0;
+    border-bottom: 1px solid var(--home-line);
+    background: transparent;
+    transition:
+      color 180ms ease,
+      transform 220ms var(--site-ease-out);
   }
 
-  .domain-index {
+  .resource-grid a:hover,
+  .resource-grid a:focus-visible {
+    transform: translateY(-0.2rem);
+  }
+
+  .resource-grid span {
     color: var(--home-accent);
     font-size: 0.78rem;
     letter-spacing: 0.18em;
+    text-transform: uppercase;
   }
 
-  .domains-list h3,
+  .resource-grid h3,
   .institute-stack h3 {
     margin: 0;
-    font-size: 1.55rem;
+    font-size: clamp(1.15rem, 2vw, 1.45rem);
     line-height: 1.15;
+    transition: color 180ms ease;
   }
 
-  .domains-list p,
+  .resource-grid p,
   .institute-stack p {
     margin: 0;
   }
 
+  .resource-grid a:hover h3,
+  .resource-grid a:focus-visible h3 {
+    color: var(--home-gold);
+  }
+
   .feature-band {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.62fr);
+    grid-template-columns: minmax(0, 1.08fr) minmax(18rem, 0.68fr);
     gap: clamp(1.5rem, 4vw, 4rem);
     align-items: start;
   }
 
   .feature-aside {
     display: grid;
-    gap: 1rem;
+    gap: 0.85rem;
   }
 
   .aside-item {
-    padding: 1.1rem 1.2rem;
-    border: 1px solid var(--home-line);
-    background: rgba(4, 16, 21, 0.46);
+    display: grid;
+    gap: 0.45rem;
+    padding: 1rem 1.1rem 1rem 0;
+    border-top: 1px solid var(--home-line);
+    background: transparent;
+    transition:
+      transform 220ms var(--site-ease-out),
+      color 180ms ease;
   }
 
   .aside-item span {
     display: block;
-    margin-bottom: 0.5rem;
     color: var(--home-accent);
     font-size: 0.78rem;
     letter-spacing: 0.18em;
@@ -531,59 +700,111 @@ import Layout from '../layouts/Layout.astro';
 
   .aside-item p {
     margin: 0;
-    font-size: 0.98rem;
+    max-width: 32ch;
+    font-size: 0.96rem;
+    line-height: 1.68;
+    color: var(--home-text-dim);
+  }
+
+  .aside-item:hover,
+  .aside-item:focus-visible {
+    transform: translateX(0.25rem);
+  }
+
+  .aside-item:hover h3,
+  .aside-item:focus-visible h3,
+  .aside-item:hover p,
+  .aside-item:focus-visible p {
+    color: var(--home-gold);
   }
 
   .institute-columns {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.88fr);
+    grid-template-columns: minmax(0, 0.92fr) minmax(18rem, 1.08fr);
     gap: clamp(1.5rem, 4vw, 4rem);
   }
 
   .institute-stack {
     display: grid;
-    gap: 1rem;
+    gap: 0.85rem;
   }
 
-  .institute-stack div {
-    padding: 1.15rem 0 1.25rem;
+  .institute-card {
+    display: grid;
+    gap: 0.4rem;
+    padding: 1rem 1.1rem;
     border-top: 1px solid var(--home-line);
+    background: color-mix(in oklab, var(--home-panel) 20%, transparent);
+    transition:
+      transform 220ms var(--site-ease-out),
+      background-color 180ms ease;
   }
 
-  .navigation-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
+  .institute-card:hover,
+  .institute-card:focus-visible {
+    transform: translateX(0.25rem);
+    background: color-mix(in oklab, var(--home-panel) 34%, transparent);
   }
 
-  .nav-tile {
-    display: grid;
-    gap: 0.65rem;
-    min-height: 150px;
-    padding: 1.2rem;
-    border: 1px solid var(--home-line);
-    background: linear-gradient(180deg, rgba(14, 40, 45, 0.68), rgba(6, 14, 18, 0.86));
-    transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+  .institute-card p {
+    margin: 0;
+    max-width: 30ch;
+    line-height: 1.68;
+    color: var(--home-text-dim);
   }
 
-  .nav-tile:hover {
-    transform: translateY(-4px);
-    border-color: color-mix(in oklab, var(--home-accent) 60%, white 10%);
-  }
-
-  .nav-tile span {
-    color: var(--home-accent);
-    font-size: 0.76rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
-
-  .nav-tile strong {
+  .institute-card:hover h3,
+  .institute-card:focus-visible h3,
+  .institute-card:hover p,
+  .institute-card:focus-visible p {
     color: var(--home-text);
-    font-family: 'Marcellus', serif;
-    font-size: 1.3rem;
-    line-height: 1.2;
-    font-weight: 400;
+  }
+
+  .hero-copy > *,
+  .hero-visual {
+    animation: home-rise 520ms var(--site-ease-out) both;
+  }
+
+  .home-scroll-reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 520ms var(--site-ease-out),
+      transform 620ms var(--site-ease-out);
+    will-change: opacity, transform;
+  }
+
+  .home-scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .hero-lead {
+    animation-delay: 70ms;
+  }
+
+  .hero-actions {
+    animation-delay: 120ms;
+  }
+
+  .hero-facts {
+    animation-delay: 170ms;
+  }
+
+  .hero-visual {
+    animation-delay: 220ms;
+  }
+
+  @keyframes home-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   @media (max-width: 1080px) {
@@ -593,23 +814,27 @@ import Layout from '../layouts/Layout.astro';
       grid-template-columns: 1fr;
     }
 
-    .hero-panel-image {
-      transform: none;
+    .resource-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .feature-aside,
+    .institute-stack {
+      gap: 0.7rem;
+    }
+
+    .hero-panel-model {
+      min-height: clamp(360px, 62vw, 520px);
     }
   }
 
   @media (max-width: 760px) {
-    .page-grid {
-      width: min(100% - 1.25rem, 1280px);
-    }
-
     h1 {
       max-width: none;
-      font-size: clamp(2.7rem, 14vw, 4.3rem);
+      font-size: clamp(2.45rem, 12vw, 4rem);
     }
 
     .hero-facts,
-    .domains-list,
     .intro-ribbon {
       grid-template-columns: 1fr;
     }
@@ -620,12 +845,94 @@ import Layout from '../layouts/Layout.astro';
       font-size: clamp(1.9rem, 9vw, 3rem);
     }
 
-    .hero-panel-model {
-      min-height: auto;
+    .button {
+      width: 100%;
     }
 
-    .hero-panel-model model-viewer {
-      height: 320px;
+    .hero-actions {
+      gap: 0.65rem;
+    }
+
+    .hero-panel-model {
+      padding: 0.7rem;
+    }
+
+    .resource-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .hero-panel-model {
+      min-height: clamp(330px, 92vw, 500px);
+    }
+
+    .hero-panel-model model-viewer,
+    .model-stage {
+      height: clamp(290px, 82vw, 460px);
+    }
+  }
+
+  @media (max-width: 420px) {
+    .hero-shell {
+      padding-top: 1.5rem;
+    }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+    }
+
+    .hero-lead,
+    .intro-ribbon p,
+    .feature-copy p,
+    .institute-text p,
+    .institute-stack p,
+    .resource-grid p,
+    .aside-item p {
+      font-size: 1rem;
+      line-height: 1.72;
+    }
+
+    .hero-facts {
+      gap: 0.8rem;
+    }
+
+    .resource-grid a,
+    .aside-item,
+    .institute-card {
+      padding: 1rem 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .button,
+    .model-load-button,
+    .resource-grid a,
+    .intro-ribbon a,
+    .text-link,
+    .resource-grid h3,
+    .aside-item,
+    .institute-card,
+    .home-scroll-reveal {
+      transition: none;
+    }
+
+    .button:hover,
+    .model-load-button:hover,
+    .model-load-button:focus-visible,
+    .resource-grid a:hover,
+    .resource-grid a:focus-visible {
+      transform: none;
+    }
+
+    .hero-copy > *,
+    .hero-visual {
+      animation: none;
+    }
+
+    .home-scroll-reveal {
+      opacity: 1;
+      transform: none;
     }
   }
 </style>

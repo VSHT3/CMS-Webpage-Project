@@ -1,9 +1,144 @@
 ---
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
+
+type PdfSearchItem = {
+  title: string;
+  filename: string;
+  displayFilename: string;
+  href: string;
+  sourcePage: string;
+  sourcePath: string;
+  search: string;
+};
+
+const decodeEntities = (value = '') =>
+  value
+    .replaceAll('&amp;', '&')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&nbsp;', ' ');
+
+const stripHtml = (value = '') => decodeEntities(value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
+
+const safeDecodeURIComponent = (value: string) => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
+const normalizeForSearch = (value = '') =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[_./-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const humanizePdfName = (filename = '') =>
+  safeDecodeURIComponent(filename)
+    .replace(/\.pdf$/i, '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const getNearestHeading = (html: string, index = 0) => {
+  const beforeAnchor = html.slice(Math.max(0, index - 8000), index);
+  const headings = Array.from(beforeAnchor.matchAll(/<h[1-4]\b[^>]*>([\s\S]*?)<\/h[1-4]>/gi));
+  const heading = headings.at(-1)?.[1] ?? '';
+  return stripHtml(heading);
+};
+
+const getPdfFilename = (href: string, downloadName = '') => {
+  const candidate = downloadName || href.split(/[?#]/)[0].split('/').pop() || href;
+  return safeDecodeURIComponent(candidate.trim());
+};
+
+const getLegacyHtmlFiles = (root: string) => {
+  const files: string[] = [];
+
+  if (!existsSync(root)) {
+    return files;
+  }
+
+  const walk = (directory: string) => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const fullPath = join(directory, entry.name);
+
+      if (entry.isDirectory()) {
+        walk(fullPath);
+        continue;
+      }
+
+      if (entry.isFile() && entry.name.endsWith('.html')) {
+        files.push(fullPath);
+      }
+    }
+  };
+
+  walk(root);
+  return files;
+};
+
+const buildPdfSearchIndex = () => {
+  const legacyRoot = resolve('.', 'legacy/source-html');
+  const pdfs = new Map<string, PdfSearchItem>();
+
+  for (const filePath of getLegacyHtmlFiles(legacyRoot)) {
+    const raw = readFileSync(filePath, 'utf-8');
+    const pageTitle = stripHtml(raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? 'Site page');
+    const sourcePath = dirname(relative(legacyRoot, filePath)).replaceAll('\\', '/');
+    const sourceRoute = sourcePath === '.' ? '/' : `/${sourcePath}`;
+
+    for (const match of raw.matchAll(/<a\b([^>]*?)>([\s\S]*?)<\/a>/gi)) {
+      const attrs = match[1] ?? '';
+      const href = decodeEntities(attrs.match(/\bhref=["']([^"']*?\.pdf(?:\?[^"']*)?)["']/i)?.[1] ?? '').trim();
+
+      if (!href) {
+        continue;
+      }
+
+      const downloadName = decodeEntities(attrs.match(/\bdownload=["']([^"']+)["']/i)?.[1] ?? '').trim();
+      const filename = getPdfFilename(href, downloadName);
+      const linkText = stripHtml(match[2] ?? '');
+      const genericLinkText = /^(download|preview|preivew)\s+pdf(?:\s+\d+)?$/i.test(linkText) || !linkText;
+      const title = genericLinkText ? getNearestHeading(raw, match.index) || humanizePdfName(filename) : linkText;
+
+      const existing = pdfs.get(href);
+      if (existing) {
+        existing.search = normalizeForSearch(
+          `${existing.title} ${existing.filename} ${existing.sourcePage} ${pageTitle} ${sourceRoute}`,
+        );
+        continue;
+      }
+
+      pdfs.set(href, {
+        title,
+        filename,
+        displayFilename: humanizePdfName(filename),
+        href,
+        sourcePage: pageTitle,
+        sourcePath: sourceRoute,
+        search: normalizeForSearch(`${title} ${filename} ${pageTitle} ${sourceRoute} ${href}`),
+      });
+    }
+  }
+
+  return Array.from(pdfs.values()).sort((first, second) => first.title.localeCompare(second.title));
+};
+
+const pdfSearchItems = buildPdfSearchIndex();
+const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
 ---
 <header class="site-nav-wrapper">
   <nav class="site-nav" role="navigation" aria-label="Main navigation">
-    <a href="/" class="nav-logo" aria-label="Mesoamerica Research Institute — Home">
-      <img src="/navimg.png" alt="Mesoamerica Research Institute" class="nav-logo-img" />
+    <a href="/" class="nav-logo" aria-label="Center for Mesoamerican Studies — Home">
+      <img src="/navimg.png" alt="Center for Mesoamerican Studies" class="nav-logo-img" />
     </a>
 
     <ul class="nav-links" id="site-nav-links" role="list">
@@ -13,12 +148,14 @@
       </li>
 
       <li class="nav-item has-dropdown">
-        <a href="/about-us" class="nav-link">
-          About Us
+        <div class="nav-link-group">
+          <a href="/about-us" class="nav-link nav-parent-link">About Us</a>
+          <button class="nav-dropdown-toggle" type="button" aria-label="Toggle About Us menu" aria-haspopup="true" aria-expanded="false" data-dropdown-trigger>
           <svg class="chevron" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 6 4 4 4-4"/>
           </svg>
-        </a>
+          </button>
+        </div>
         <ul class="dropdown" role="list">
           <li><a href="/about-us">Overview</a></li>
           <li><a href="/abouts-us-members">Members</a></li>
@@ -27,25 +164,30 @@
       </li>
 
       <li class="nav-item has-dropdown">
-        <a href="/bratislava-maya-meetings-news" class="nav-link">
-          Conferences
+        <div class="nav-link-group">
+          <a href="/bratislava-maya-meetings-news" class="nav-link nav-parent-link">Conferences</a>
+          <button class="nav-dropdown-toggle" type="button" aria-label="Toggle Conferences menu" aria-haspopup="true" aria-expanded="false" data-dropdown-trigger>
           <svg class="chevron" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 6 4 4 4-4"/>
           </svg>
-        </a>
+          </button>
+        </div>
         <ul class="dropdown" role="list">
+          <li><a href="/events">History</a></li>
           <li><a href="/bratislava-maya-meetings-news">News</a></li>
           <li><a href="/bratislava-maya-meetings-gallery">Gallery</a></li>
         </ul>
       </li>
 
       <li class="nav-item has-dropdown">
-        <a href="/ferdinand-anders-library" class="nav-link">
-          Library
+        <div class="nav-link-group">
+          <a href="/ferdinand-anders-library" class="nav-link nav-parent-link">Library</a>
+          <button class="nav-dropdown-toggle" type="button" aria-label="Toggle Library menu" aria-haspopup="true" aria-expanded="false" data-dropdown-trigger>
           <svg class="chevron" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 6 4 4 4-4"/>
           </svg>
-        </a>
+          </button>
+        </div>
         <ul class="dropdown" role="list">
           <li><a href="/ferdinand-anders-library">Ferdinand Anders Library</a></li>
           <li><a href="/ferdinand-anders-library-history">History</a></li>
@@ -53,17 +195,15 @@
         </ul>
       </li>
 
-      <li class="nav-item">
-        <a href="/exhibitions" class="nav-link">Exhibitions</a>
-      </li>
-
       <li class="nav-item has-dropdown">
-        <a href="/grants-and-investigations" class="nav-link">
-          Investigations
+        <div class="nav-link-group">
+          <a href="/grants-and-investigations" class="nav-link nav-parent-link">Research</a>
+          <button class="nav-dropdown-toggle" type="button" aria-label="Toggle Research menu" aria-haspopup="true" aria-expanded="false" data-dropdown-trigger>
           <svg class="chevron" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 6 4 4 4-4"/>
           </svg>
-        </a>
+          </button>
+        </div>
         <ul class="dropdown" role="list">
           <li><a href="/grants-and-investigations">Overview</a></li>
           <li><a href="/grants-and-investigations-grants">Grants</a></li>
@@ -73,15 +213,18 @@
       </li>
 
       <li class="nav-item has-dropdown">
-        <a href="/collection-archaeological-collection" class="nav-link">
-          Collections
+        <div class="nav-link-group">
+          <a href="/collection-archaeological-collection" class="nav-link nav-parent-link">Collections</a>
+          <button class="nav-dropdown-toggle" type="button" aria-label="Toggle Collections menu" aria-haspopup="true" aria-expanded="false" data-dropdown-trigger>
           <svg class="chevron" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 6 4 4 4-4"/>
           </svg>
-        </a>
+          </button>
+        </div>
         <ul class="dropdown" role="list">
           <li><a href="/collection-archaeological-collection">Archaeological Collection</a></li>
           <li><a href="/collections-ethnographical-collection">Ethnographical Collection</a></li>
+          <li><a href="/exhibitions">Exhibitions</a></li>
           <li><a href="/collections-gallery">Gallery</a></li>
         </ul>
       </li>
@@ -91,12 +234,14 @@
       </li>
 
       <li class="nav-item has-dropdown">
-        <a href="/paru-uaxactun-history" class="nav-link">
-          PARU Uaxactun
+        <div class="nav-link-group">
+          <a href="/paru-uaxactun-history" class="nav-link nav-parent-link">PARU Uaxactun</a>
+          <button class="nav-dropdown-toggle" type="button" aria-label="Toggle PARU Uaxactun menu" aria-haspopup="true" aria-expanded="false" data-dropdown-trigger>
           <svg class="chevron" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 6 4 4 4-4"/>
           </svg>
-        </a>
+          </button>
+        </div>
         <ul class="dropdown" role="list">
           <li><a href="/paru-uaxactun-history">History</a></li>
           <li><a href="/paru-uaxactun-maps">Maps</a></li>
@@ -108,12 +253,14 @@
       </li>
 
       <li class="nav-item has-dropdown">
-        <a href="/education-phd-program" class="nav-link">
-          Education
+        <div class="nav-link-group">
+          <a href="/education-phd-program" class="nav-link nav-parent-link">Education</a>
+          <button class="nav-dropdown-toggle" type="button" aria-label="Toggle Education menu" aria-haspopup="true" aria-expanded="false" data-dropdown-trigger>
           <svg class="chevron" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 6 4 4 4-4"/>
           </svg>
-        </a>
+          </button>
+        </div>
         <ul class="dropdown" role="list">
           <li><a href="/education-phd-program">PhD Program</a></li>
           <li><a href="/education-published-thesis">Published Thesis</a></li>
@@ -124,6 +271,48 @@
 
     </ul>
 
+    <div class="pdf-search" data-pdf-search>
+      <button
+        class="pdf-search-trigger"
+        type="button"
+        aria-label="Search PDF files"
+        aria-controls="pdf-search-panel"
+        aria-expanded="false"
+        data-pdf-search-trigger
+      >
+        <svg class="pdf-search-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path d="m21 21-4.35-4.35" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path>
+          <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+        </svg>
+        <span>PDF Search</span>
+      </button>
+
+      <section
+        class="pdf-search-panel"
+        id="pdf-search-panel"
+        aria-label="Search PDF files"
+        aria-hidden="true"
+        inert
+      >
+        <form class="pdf-search-form" role="search" data-pdf-search-form>
+          <label class="pdf-search-label" for="pdf-search-input">Search PDF files</label>
+          <input
+            id="pdf-search-input"
+            class="pdf-search-input"
+            type="search"
+            autocomplete="off"
+            placeholder="Type a report, catalogue, author, or year"
+            data-pdf-search-input
+          />
+        </form>
+        <p class="pdf-search-status" aria-live="polite" data-pdf-search-status>
+          {pdfSearchItems.length} PDF files indexed.
+        </p>
+        <ul class="pdf-search-results" id="pdf-search-results" role="list" data-pdf-search-results></ul>
+        <p class="pdf-search-empty" hidden data-pdf-search-empty>No matching PDF files.</p>
+      </section>
+    </div>
+
     <button
       class="nav-mobile-toggle"
       type="button"
@@ -131,48 +320,49 @@
       aria-controls="site-nav-links"
       aria-expanded="false"
     >
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
     </button>
   </nav>
 </header>
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap');
+<script type="application/json" id="pdf-search-data" set:html={pdfSearchJson} is:inline></script>
 
+<style>
   :root {
-    --nav-bg: #31555a;
-    --nav-bg-dark: #274449;
-    --nav-text: #f4ecde;
-    --nav-text-dim: #d8ccb6;
-    --nav-gold: #e0bb70;
-    --nav-gold-light: #f0cf8c;
-    --nav-border: #52747a;
-    --nav-logo-h: 108px;
-    --nav-font: 'Cinzel', 'Palatino Linotype', Georgia, serif;
+    --nav-bg: oklch(0.36 0.04 190);
+    --nav-bg-dark: oklch(0.28 0.035 194);
+    --nav-text: oklch(0.93 0.016 88);
+    --nav-text-dim: oklch(0.82 0.025 88);
+    --nav-gold: var(--site-gold);
+    --nav-gold-light: oklch(0.84 0.075 88);
+    --nav-border: oklch(0.52 0.04 190 / 0.72);
+    --nav-logo-h: 92px;
+    --nav-font: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    --nav-ease: var(--site-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
   }
 
   .site-nav-wrapper {
     position: sticky;
     top: 0;
-    z-index: 9999;
-    background: linear-gradient(180deg, #3d666c 0%, var(--nav-bg) 100%);
+    z-index: var(--site-z-nav, 40);
+    background: var(--nav-bg);
     border-bottom: 1px solid var(--nav-border);
-    box-shadow: 0 10px 28px rgba(7, 24, 27, 0.24);
+    box-shadow: var(--site-shadow);
     color: var(--nav-text);
+    isolation: isolate;
   }
 
   .site-nav {
     display: flex;
     align-items: stretch;
     height: var(--nav-logo-h);
-    padding: 0 max(0.9rem, env(safe-area-inset-right));
+    width: 100%;
+    padding: 0 max(0.75rem, env(safe-area-inset-right)) 0 0;
     margin: 0;
     overflow: visible;
-    gap: 1rem;
+    gap: clamp(0.45rem, 1vw, 1rem);
   }
 
   /* ── Logo ───────────────────────────── */
@@ -182,7 +372,8 @@
     flex-shrink: 0;
     text-decoration: none !important;
     line-height: 0;
-    padding-right: 0.25rem;
+    height: var(--nav-logo-h);
+    padding: 0;
   }
 
   .nav-logo-img {
@@ -190,6 +381,7 @@
     height: var(--nav-logo-h);
     width: auto;
     object-fit: contain;
+    object-position: left center;
   }
 
   /* ── Nav links row ──────────────────── */
@@ -199,12 +391,12 @@
     justify-content: space-between;
     list-style: none;
     margin: 0;
-    padding: 0 1rem;
+    padding: 0;
     flex: 1;
     min-width: 0;
     overflow: visible;
     scrollbar-width: none;
-    gap: 0.15rem;
+    gap: 0;
   }
 
   .nav-links::-webkit-scrollbar {
@@ -216,19 +408,20 @@
     position: relative;
     display: flex;
     align-items: stretch;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     justify-content: center;
   }
 
-  .nav-link {
+  .nav-link,
+  .nav-dropdown-toggle {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 5px;
     width: 100%;
-    padding: 0 clamp(0.95rem, 1.4vw, 1.5rem);
+    padding: 0 clamp(0.42rem, 0.75vw, 0.9rem);
     font-family: var(--nav-font);
-    font-size: 14.5px;
+    font-size: clamp(0.64rem, 0.74vw, 0.83rem);
     font-weight: 600;
     letter-spacing: 0.045em;
     line-height: 1.15;
@@ -236,21 +429,48 @@
     color: var(--nav-text) !important;
     text-decoration: none !important;
     white-space: nowrap;
-    transition: color 0.2s ease;
+    transition: color 0.2s var(--nav-ease), border-color 0.2s var(--nav-ease);
     border-bottom: 2px solid transparent;
     cursor: pointer;
   }
 
+  .nav-link-group {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+  }
+
+  .nav-parent-link {
+    padding-right: 0.25rem;
+  }
+
+  .nav-dropdown-toggle {
+    width: 1.45rem;
+    padding: 0;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    appearance: none;
+  }
+
   .nav-link:hover,
-  .nav-item:focus-within > .nav-link {
+  .nav-item:focus-within .nav-link,
+  .nav-item:hover .nav-link {
     color: var(--nav-gold) !important;
     border-bottom-color: var(--nav-gold);
+  }
+
+  .nav-dropdown-toggle:hover,
+  .nav-item:focus-within .nav-dropdown-toggle,
+  .nav-item:hover .nav-dropdown-toggle {
+    color: var(--nav-gold) !important;
+    border-bottom-color: transparent;
   }
 
   .chevron {
     flex-shrink: 0;
     opacity: 0.65;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.2s var(--nav-ease), opacity 0.2s var(--nav-ease);
   }
 
   .nav-item:hover .chevron,
@@ -261,27 +481,55 @@
 
   /* ── Dropdown panel ─────────────────── */
   .dropdown {
-    display: none;
+    display: block;
     position: absolute;
     top: 100%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(0.35rem);
     min-width: max-content;
     width: max-content;
     max-width: min(24rem, calc(100vw - 2rem));
     background: var(--nav-bg-dark);
     border: 1px solid var(--nav-border);
     border-top: 2px solid var(--nav-gold);
-    box-shadow: 0 16px 32px rgba(7, 24, 27, 0.24);
+    box-shadow: var(--site-shadow);
     list-style: none;
     margin: 0;
     padding: 6px 0;
-    z-index: 10000;
+    z-index: var(--site-z-dropdown, 50);
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition:
+      opacity 180ms ease,
+      transform 220ms var(--nav-ease),
+      visibility 0s linear 220ms;
+  }
+
+  .nav-item:last-child .dropdown,
+  .nav-item:nth-last-child(2) .dropdown {
+    left: auto;
+    right: 0;
+    transform: translateY(0.35rem);
   }
 
   .has-dropdown:hover > .dropdown,
   .has-dropdown:focus-within > .dropdown {
-    display: block;
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    transition:
+      opacity 180ms ease,
+      transform 220ms var(--nav-ease),
+      visibility 0s linear;
+  }
+
+  .nav-item:last-child:hover > .dropdown,
+  .nav-item:last-child:focus-within > .dropdown,
+  .nav-item:nth-last-child(2):hover > .dropdown,
+  .nav-item:nth-last-child(2):focus-within > .dropdown {
+    transform: translateY(0);
   }
 
   .dropdown li {
@@ -293,18 +541,21 @@
     display: block;
     padding: 11px 18px;
     font-family: var(--nav-font);
-    font-size: 12.5px;
+    font-size: 0.79rem;
     font-weight: 400;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--nav-text-dim) !important;
     text-decoration: none !important;
-    transition: color 0.15s ease, background 0.15s ease, padding-inline 0.15s ease;
+    transition:
+      color 0.15s var(--nav-ease),
+      background 0.15s var(--nav-ease),
+      padding-inline 0.15s var(--nav-ease);
   }
 
   .dropdown a:hover {
     color: var(--nav-gold-light) !important;
-    background: rgba(240, 207, 140, 0.12);
+    background: oklch(0.84 0.075 88 / 0.12);
     padding-inline: 22px 14px;
   }
 
@@ -313,38 +564,225 @@
     display: none;
   }
 
-  @media (max-width: 900px) {
+  .pdf-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+  }
+
+  .pdf-search-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0 0.8rem;
+    border: 1px solid color-mix(in oklab, var(--nav-border) 72%, transparent);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--nav-text);
+    font-family: var(--nav-font);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.045em;
+    line-height: 1;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      color 180ms var(--nav-ease),
+      border-color 180ms var(--nav-ease),
+      background-color 180ms var(--nav-ease),
+      transform 180ms var(--nav-ease);
+  }
+
+  .pdf-search-trigger:hover,
+  .pdf-search-trigger:focus-visible,
+  .pdf-search.is-open .pdf-search-trigger {
+    color: var(--nav-gold);
+    border-color: color-mix(in oklab, var(--nav-gold) 64%, transparent);
+    background: oklch(0.84 0.075 88 / 0.1);
+  }
+
+  .pdf-search-trigger:active {
+    transform: translateY(1px);
+  }
+
+  .pdf-search-panel {
+    position: absolute;
+    top: calc(100% + 0.65rem);
+    right: 0;
+    z-index: var(--site-z-dropdown, 50);
+    width: min(30rem, calc(100vw - 1.5rem));
+    padding: 1rem;
+    border: 1px solid var(--nav-border);
+    border-top: 2px solid var(--nav-gold);
+    background: var(--nav-bg-dark);
+    box-shadow: var(--site-shadow);
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transform: translateY(0.35rem);
+    transition:
+      opacity 180ms ease,
+      transform 220ms var(--nav-ease),
+      visibility 0s linear 220ms;
+  }
+
+  .pdf-search.is-open .pdf-search-panel {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    transform: translateY(0);
+    transition:
+      opacity 180ms ease,
+      transform 220ms var(--nav-ease),
+      visibility 0s linear;
+  }
+
+  .pdf-search-form {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0;
+  }
+
+  .pdf-search-label {
+    color: var(--nav-gold);
+    font-family: var(--nav-font);
+    font-size: 0.76rem;
+    letter-spacing: 0.12em;
+    line-height: 1.25;
+    text-transform: uppercase;
+  }
+
+  .pdf-search-input {
+    width: 100%;
+    min-height: 2.8rem;
+    padding: 0.78rem 0.85rem;
+    border: 1px solid color-mix(in oklab, var(--nav-border) 86%, transparent);
+    border-radius: 0.4rem;
+    background: oklch(0.18 0.026 202 / 0.78);
+    color: var(--nav-text);
+    font: inherit;
+    font-size: 1rem;
+    line-height: 1.3;
+    outline: none;
+    transition:
+      border-color 180ms var(--nav-ease),
+      background-color 180ms var(--nav-ease);
+  }
+
+  .pdf-search-input::placeholder {
+    color: color-mix(in oklab, var(--nav-text-dim) 72%, transparent);
+  }
+
+  .pdf-search-input:focus {
+    border-color: var(--nav-gold);
+    background: oklch(0.16 0.024 202 / 0.92);
+  }
+
+  .pdf-search-status,
+  .pdf-search-empty {
+    margin: 0.8rem 0 0;
+    color: var(--nav-text-dim);
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .pdf-search-results {
+    display: grid;
+    max-height: min(44dvh, 21rem);
+    margin: 0.75rem 0 0;
+    padding: 0;
+    overflow: auto;
+    list-style: none;
+    border-top: 1px solid color-mix(in oklab, var(--nav-border) 72%, transparent);
+  }
+
+  .pdf-search-results:empty {
+    display: none;
+  }
+
+  .pdf-search-result a {
+    display: grid;
+    gap: 0.34rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--nav-border) 48%, transparent);
+    color: var(--nav-text) !important;
+    text-decoration: none !important;
+    transition:
+      color 180ms var(--nav-ease),
+      padding-inline 180ms var(--nav-ease);
+  }
+
+  .pdf-search-result a:hover,
+  .pdf-search-result a:focus-visible {
+    color: var(--nav-gold) !important;
+    padding-inline: 0.2rem 0;
+  }
+
+  .pdf-search-result strong {
+    color: inherit;
+    font-family: var(--nav-font);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.28;
+    margin-bottom: 0.18rem;
+    overflow-wrap: break-word;
+  }
+
+  .pdf-search-result-source,
+  .pdf-search-result-file {
+    color: var(--nav-text-dim);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    overflow-wrap: break-word;
+  }
+
+  .pdf-search-result-source {
+    padding-top: 0.2rem;
+    border-top: 1px solid color-mix(in oklab, var(--nav-border) 28%, transparent);
+  }
+
+  .pdf-search-result-file {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.38rem;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.22rem 0.42rem;
+    border: 1px solid color-mix(in oklab, var(--nav-border) 48%, transparent);
+    border-radius: 0.35rem;
+    background: oklch(0.18 0.025 200 / 0.42);
+    color: color-mix(in oklab, var(--nav-text-dim) 88%, var(--nav-gold));
+  }
+
+  .pdf-search-result-file::before {
+    content: 'File';
+    flex: 0 0 auto;
+    color: var(--nav-gold);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .hamburger-line {
+    display: block;
+    width: 24px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transform-origin: center;
+    transition: transform 220ms var(--nav-ease), opacity 160ms var(--nav-ease);
+  }
+
+  @media (max-width: 1380px) {
     :global(body.nav-open) {
       overflow: hidden;
     }
 
     .nav-links {
-      display: none;
-    }
-
-    .site-nav {
-      justify-content: space-between;
-      min-height: 88px;
-      height: auto;
-      padding-left: max(0.75rem, env(safe-area-inset-left));
-      padding-right: max(0.75rem, env(safe-area-inset-right));
-    }
-
-    .nav-mobile-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 48px;
-      min-height: 48px;
-      padding: 0;
-      background: none;
-      border: none;
-      color: var(--nav-text);
-      cursor: pointer;
-      font-size: 22px;
-    }
-
-    .nav-links.open {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -352,12 +790,105 @@
       top: var(--nav-logo-h);
       left: 0;
       right: 0;
-      bottom: 0;
+      bottom: auto;
+      height: calc(100dvh - var(--nav-logo-h));
+      z-index: var(--site-z-nav-panel, 39);
+      padding: 12px 0 max(24px, env(safe-area-inset-bottom));
       background: var(--nav-bg-dark);
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 12px 0;
-      z-index: 9998;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      transform: translateY(-14px);
+      transition:
+        opacity 220ms ease,
+        transform 260ms var(--nav-ease),
+        visibility 0s linear 260ms;
+    }
+
+    .site-nav {
+      justify-content: space-between;
+      height: var(--nav-logo-h);
+      padding-left: 0;
+      padding-right: max(0.75rem, env(safe-area-inset-right));
+    }
+
+    .nav-mobile-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      color: var(--nav-text);
+      cursor: pointer;
+      transition: color 180ms ease, opacity 180ms ease;
+    }
+
+    .pdf-search {
+      margin-left: auto;
+    }
+
+    .pdf-search-trigger {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      border-color: transparent;
+      background: transparent;
+    }
+
+    .pdf-search-trigger span {
+      display: none;
+    }
+
+    .pdf-search-panel {
+      position: fixed;
+      top: var(--nav-logo-h);
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-height: calc(100dvh - var(--nav-logo-h));
+      padding: 1rem clamp(1rem, 4vw, 1.4rem) max(1.35rem, env(safe-area-inset-bottom));
+      overflow: auto;
+      border-right: 0;
+      border-left: 0;
+      transform: translateY(-0.55rem);
+    }
+
+    .nav-mobile-toggle:hover,
+    .nav-mobile-toggle:focus-visible {
+      color: var(--nav-gold);
+      opacity: 0.92;
+    }
+
+    .nav-mobile-toggle[aria-expanded='true'] .hamburger-line:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-mobile-toggle[aria-expanded='true'] .hamburger-line:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0.2);
+    }
+
+    .nav-mobile-toggle[aria-expanded='true'] .hamburger-line:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .nav-links.open {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+      transform: translateY(0);
+      transition:
+        opacity 220ms ease,
+        transform 260ms var(--nav-ease),
+        visibility 0s linear;
     }
 
     .nav-links.open .nav-item {
@@ -367,13 +898,28 @@
       align-items: flex-start;
     }
 
-    .nav-links.open .nav-link {
+    .nav-links.open .nav-link-group {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 3.5rem;
       width: 100%;
-      padding: 16px 24px;
+      min-height: 52px;
+    }
+
+    .nav-links.open .nav-link,
+    .nav-links.open .nav-dropdown-toggle {
+      width: 100%;
+      min-height: 50px;
+      padding: 15px clamp(1.1rem, 5vw, 2rem);
       font-size: 14px;
       border-bottom: 1px solid var(--nav-border);
       justify-content: flex-start;
       white-space: normal;
+    }
+
+    .nav-links.open .nav-dropdown-toggle {
+      justify-content: center;
+      padding: 0;
+      border-left: 1px solid var(--nav-border);
     }
 
     .nav-links.open .dropdown {
@@ -383,29 +929,83 @@
       border: none;
       border-top: none;
       box-shadow: none;
-      background: rgba(0, 0, 0, 0.2);
+      background: oklch(0.2 0.03 198 / 0.72);
       width: 100%;
+      padding: 0;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        grid-template-rows 260ms var(--nav-ease),
+        max-height 260ms var(--nav-ease),
+        opacity 180ms ease,
+        visibility 0s linear 260ms;
+    }
+
+    .nav-links.open .nav-item:hover .chevron,
+    .nav-links.open .nav-item:focus-within .chevron {
+      transform: none;
+      opacity: 0.65;
+    }
+
+    .nav-links.open .has-dropdown.is-expanded > .dropdown {
+      max-height: none;
+      opacity: 1;
+      visibility: visible;
+      transition:
+        opacity 180ms ease,
+        visibility 0s linear;
+    }
+
+    .nav-links.open .has-dropdown.is-expanded > .nav-link-group .chevron {
+      transform: rotate(180deg);
+      opacity: 1;
+    }
+
+    .nav-links.open .dropdown li:first-child {
+      padding-top: 6px;
+    }
+
+    .nav-links.open .dropdown li:last-child {
+      padding-bottom: 6px;
     }
 
     .nav-links.open .dropdown a {
-      padding: 12px 40px;
-      font-size: 11px;
+      min-height: 44px;
+      padding: 12px clamp(2rem, 9vw, 3.25rem);
+      font-size: 0.875rem;
+      line-height: 1.35;
       white-space: normal;
     }
   }
 
   @media (max-width: 560px) {
     :root {
-      --nav-logo-h: 82px;
+      --nav-logo-h: 72px;
     }
 
     .nav-logo-img {
-      max-width: min(68vw, 16rem);
+      width: auto;
+      max-width: none;
       object-position: left center;
     }
 
     .nav-links.open {
       top: var(--nav-logo-h);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-links,
+    .dropdown,
+    .pdf-search-panel,
+    .pdf-search-trigger,
+    .pdf-search-result a,
+    .hamburger-line,
+    .nav-mobile-toggle,
+    .nav-dropdown-toggle {
+      transition: none;
     }
   }
 </style>
@@ -414,33 +1014,214 @@
   const toggle = document.querySelector('.nav-mobile-toggle') as HTMLButtonElement | null;
   const links = document.querySelector('#site-nav-links') as HTMLElement | null;
   const docBody = document.body;
+  const pdfSearch = document.querySelector<HTMLElement>('[data-pdf-search]');
+  const pdfSearchTrigger = document.querySelector<HTMLButtonElement>('[data-pdf-search-trigger]');
+  const pdfSearchPanel = document.querySelector<HTMLElement>('#pdf-search-panel');
+  const pdfSearchInput = document.querySelector<HTMLInputElement>('[data-pdf-search-input]');
+  const pdfSearchForm = document.querySelector<HTMLFormElement>('[data-pdf-search-form]');
+  const pdfSearchStatus = document.querySelector<HTMLElement>('[data-pdf-search-status]');
+  const pdfSearchResults = document.querySelector<HTMLElement>('[data-pdf-search-results]');
+  const pdfSearchEmpty = document.querySelector<HTMLElement>('[data-pdf-search-empty]');
+  const pdfSearchData = document.querySelector<HTMLScriptElement>('#pdf-search-data');
+
+  type PdfSearchItem = {
+    title: string;
+    filename: string;
+    displayFilename: string;
+    href: string;
+    sourcePage: string;
+    sourcePath: string;
+    search: string;
+  };
+
+  const pdfItems: PdfSearchItem[] = JSON.parse(pdfSearchData?.textContent || '[]');
 
   const setMenuState = (open: boolean) => {
     links?.classList.toggle('open', open);
     toggle?.setAttribute('aria-expanded', String(open));
     docBody.classList.toggle('nav-open', open);
+
+    document.querySelectorAll<HTMLElement>('.has-dropdown.is-expanded').forEach((item) => {
+      item.classList.remove('is-expanded');
+    });
+    document
+      .querySelectorAll<HTMLButtonElement>('.nav-dropdown-toggle[aria-expanded="true"]')
+      .forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
+  };
+
+  const normalizePdfQuery = (value = '') =>
+    value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[_./-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const renderPdfResults = () => {
+    if (!pdfSearchInput || !pdfSearchResults || !pdfSearchStatus || !pdfSearchEmpty) {
+      return;
+    }
+
+    const query = normalizePdfQuery(pdfSearchInput.value);
+    pdfSearchResults.replaceChildren();
+
+    if (!query) {
+      pdfSearchStatus.textContent = `${pdfItems.length} PDF files indexed. Type a title, report, catalogue, author, or year.`;
+      pdfSearchEmpty.hidden = true;
+      return;
+    }
+
+    const terms = query.split(' ').filter(Boolean);
+    const matches = pdfItems
+      .map((item) => {
+        if (!terms.every((term) => item.search.includes(term))) {
+          return null;
+        }
+
+        let score = 0;
+        const title = normalizePdfQuery(item.title);
+        const filename = normalizePdfQuery(item.filename);
+        const source = normalizePdfQuery(item.sourcePage);
+
+        terms.forEach((term) => {
+          if (title.startsWith(term)) score += 18;
+          if (filename.startsWith(term)) score += 14;
+          if (title.includes(term)) score += 8;
+          if (filename.includes(term)) score += 6;
+          if (source.includes(term)) score += 3;
+        });
+
+        return { item, score };
+      })
+      .filter((match): match is { item: PdfSearchItem; score: number } => Boolean(match))
+      .sort((first, second) => second.score - first.score || first.item.title.localeCompare(second.item.title));
+
+    const visibleMatches = matches.slice(0, 8);
+    const fragment = document.createDocumentFragment();
+
+    visibleMatches.forEach(({ item }) => {
+      const result = document.createElement('li');
+      result.className = 'pdf-search-result';
+
+      const link = document.createElement('a');
+      link.href = item.href;
+      link.target = '_blank';
+      link.rel = 'noopener';
+
+      const title = document.createElement('strong');
+      title.textContent = item.title;
+
+      const source = document.createElement('span');
+      source.className = 'pdf-search-result-source';
+      source.textContent = `Located in ${item.sourcePage}${item.sourcePath ? ` (${item.sourcePath})` : ''}`;
+
+      const filename = document.createElement('small');
+      filename.className = 'pdf-search-result-file';
+      filename.textContent = item.displayFilename || item.filename;
+
+      link.append(title, source, filename);
+      result.append(link);
+      fragment.append(result);
+    });
+
+    pdfSearchResults.append(fragment);
+    pdfSearchEmpty.hidden = matches.length > 0;
+    pdfSearchStatus.textContent =
+      matches.length === 1
+        ? '1 matching PDF file.'
+        : `${matches.length} matching PDF files${matches.length > visibleMatches.length ? `, showing first ${visibleMatches.length}` : ''}.`;
+  };
+
+  const setSearchState = (open: boolean) => {
+    pdfSearch?.classList.toggle('is-open', open);
+    pdfSearchTrigger?.setAttribute('aria-expanded', String(open));
+    pdfSearchPanel?.setAttribute('aria-hidden', String(!open));
+    pdfSearchPanel?.toggleAttribute('inert', !open);
+
+    if (open) {
+      setMenuState(false);
+      renderPdfResults();
+      window.requestAnimationFrame(() => pdfSearchInput?.focus());
+    }
   };
 
   toggle?.addEventListener('click', () => {
+    setSearchState(false);
     setMenuState(!(links?.classList.contains('open') ?? false));
+  });
+
+  pdfSearchTrigger?.addEventListener('click', () => {
+    setSearchState(!(pdfSearch?.classList.contains('is-open') ?? false));
+  });
+
+  pdfSearchInput?.addEventListener('input', renderPdfResults);
+
+  pdfSearchForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    pdfSearchResults?.querySelector<HTMLAnchorElement>('a')?.click();
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as Node | null;
+    if (target && pdfSearch?.classList.contains('is-open') && !pdfSearch.contains(target)) {
+      setSearchState(false);
+    }
   });
 
   links?.addEventListener('click', (event) => {
     const target = event.target as HTMLElement | null;
-    if (window.innerWidth <= 900 && target?.closest('a')) {
+    const mobileMenu = window.matchMedia('(max-width: 1380px)').matches;
+    const dropdownTrigger = target?.closest<HTMLButtonElement>('[data-dropdown-trigger]');
+
+    if (mobileMenu && dropdownTrigger) {
+      event.preventDefault();
+      const item = dropdownTrigger.closest<HTMLElement>('.has-dropdown');
+      const expanded = !(item?.classList.contains('is-expanded') ?? false);
+
+      item?.classList.toggle('is-expanded', expanded);
+      dropdownTrigger.setAttribute('aria-expanded', String(expanded));
+      return;
+    }
+
+    if (mobileMenu && target?.closest('a')) {
       setMenuState(false);
     }
   });
 
   window.addEventListener('resize', () => {
-    if (window.innerWidth > 900) {
+    if (!window.matchMedia('(max-width: 1380px)').matches) {
       setMenuState(false);
     }
   });
 
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+      setSearchState(false);
       setMenuState(false);
+      document
+        .querySelectorAll<HTMLButtonElement>('.nav-dropdown-toggle[aria-expanded="true"]')
+        .forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
     }
+  });
+
+  document.querySelectorAll<HTMLElement>('.has-dropdown').forEach((item) => {
+    const trigger = item.querySelector<HTMLButtonElement>(':scope .nav-dropdown-toggle[aria-haspopup="true"]');
+
+    const setExpanded = (expanded: boolean) => {
+      if (window.matchMedia('(max-width: 1380px)').matches) {
+        return;
+      }
+      trigger?.setAttribute('aria-expanded', String(expanded));
+    };
+
+    item.addEventListener('pointerenter', () => setExpanded(true));
+    item.addEventListener('pointerleave', () => setExpanded(false));
+    item.addEventListener('focusin', () => setExpanded(true));
+    item.addEventListener('focusout', (event) => {
+      if (!item.contains(event.relatedTarget as Node | null)) {
+        setExpanded(false);
+      }
+    });
   });
 </script>

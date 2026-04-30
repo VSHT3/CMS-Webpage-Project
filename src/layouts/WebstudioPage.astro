@@ -1,11 +1,11 @@
 ---
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse, renderSync } from 'ultrahtml';
 import Layout from './Layout.astro';
 
 const { source } = Astro.props;
-const raw = readFileSync(resolve('.', source), 'utf-8');
+const raw = readFileSync(resolve('.', source), 'utf-8').replaceAll('Uxactun', 'Uaxactun');
 
 const title =
   raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.replace(/\s+/g, ' ').trim() ??
@@ -15,10 +15,8 @@ const description =
   raw.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["'][^>]*>/i)?.[1] ??
   'Center for Mesoamerican Studies, Comenius University Bratislava';
 
-const preloadLinks = [...raw.matchAll(/<link[^>]+rel=["']preload["'][^>]*>/gi)]
-  .map((match) => match[0])
-  .filter((link) => /as=["']image["']/i.test(link))
-  .join('\n');
+const preloadLinks = '';
+const pageSlug = source.match(/legacy\/source-html\/([^/]+)\//)?.[1] ?? 'legacy-page';
 
 type LegacyNode = {
   type: number;
@@ -27,6 +25,8 @@ type LegacyNode = {
   attributes?: Record<string, string>;
   children?: LegacyNode[];
 };
+type LegacyElement = LegacyNode & { type: 1; name: string; attributes?: Record<string, string>; children?: LegacyNode[] };
+type LegacyText = LegacyNode & { type: 2; value?: string };
 
 const VOID_TAGS = new Set(['br', 'hr', 'img']);
 const BLOCKED_TAGS = new Set([
@@ -69,7 +69,7 @@ const CONTENT_TAGS = new Set([
 ]);
 const ATTR_WHITELIST: Record<string, Set<string>> = {
   a: new Set(['href', 'target', 'download', 'rel']),
-  img: new Set(['src', 'alt', 'loading', 'decoding']),
+  img: new Set(['src', 'alt', 'loading', 'decoding', 'width', 'height']),
   iframe: new Set(['src', 'title', 'allow', 'allowfullscreen', 'loading', 'referrerpolicy']),
 };
 
@@ -105,8 +105,9 @@ const decodeEntities = (value: string) => {
   return output;
 };
 
-const isElement = (node?: LegacyNode | null): node is LegacyNode => Boolean(node && node.type === 1);
-const isText = (node?: LegacyNode | null): node is LegacyNode => Boolean(node && node.type === 2);
+const isElement = (node?: LegacyNode | null): node is LegacyElement =>
+  Boolean(node && node.type === 1 && node.name);
+const isText = (node?: LegacyNode | null): node is LegacyText => Boolean(node && node.type === 2);
 
 const getClassName = (node: LegacyNode) => node.attributes?.class ?? '';
 const serializeNode = (node: LegacyNode) => renderSync(node as never);
@@ -146,8 +147,8 @@ const isScaffoldNode = (node: LegacyNode) => {
   return false;
 };
 
-const topLevelNodes = (bodyTree.children ?? []).filter(
-  (node) => isElement(node) || (isText(node) && node.value?.trim()),
+const topLevelNodes = ((bodyTree.children ?? []) as LegacyNode[]).filter(
+  (node: LegacyNode) => isElement(node) || (isText(node) && node.value?.trim()),
 );
 
 const contentNodes: LegacyNode[] = [];
@@ -221,6 +222,100 @@ const renderAttrs = (tag: string, attrs: Record<string, string> = {}) => {
   return rendered.length ? ` ${rendered.join(' ')}` : '';
 };
 
+const getAssetName = (src = '') => {
+  const normalized = decodeEntities(src).trim();
+  if (!normalized.startsWith('/assets/')) {
+    return '';
+  }
+
+  return normalized.split('/').pop() ?? '';
+};
+
+const getOptimizedBase = (src = '') => {
+  const assetName = getAssetName(src);
+  if (!assetName) {
+    return '';
+  }
+
+  return assetName.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]+/g, '-');
+};
+
+const getOptimizedImageSrcset = (src = '') => {
+  const base = getOptimizedBase(src);
+  if (!base) {
+    return '';
+  }
+
+  const candidates = [720, 1200, 1800].map((width) => ({
+    width,
+    url: `/assets/optimized/${base}-${width}.webp`,
+  }));
+
+  const hasAllCandidates = candidates.every((candidate) => existsSync(resolve('.', `public${candidate.url}`)));
+  if (!hasAllCandidates) {
+    return '';
+  }
+
+  return candidates.map((candidate) => `${candidate.url} ${candidate.width}w`).join(', ');
+};
+
+const getMediaAlt = (src = '') => {
+  const assetName = getAssetName(src);
+
+  if (/logo|cms_cu|header_logo/i.test(assetName)) {
+    return 'Center for Mesoamerican Studies mark';
+  }
+
+  if (/petnal|uaxactun|maya|artefact|artifact|emc|moja_cesta|20211115|image/i.test(assetName)) {
+    return `${title} visual material`;
+  }
+
+  return `${title} image`;
+};
+
+const renderImageAttrs = (attrs: Record<string, string> = {}) => {
+  const imgAttrs = { ...attrs };
+
+  if (!decodeEntities(imgAttrs.alt ?? '').trim()) {
+    imgAttrs.alt = getMediaAlt(imgAttrs.src);
+  }
+
+  imgAttrs.loading ??= 'lazy';
+  imgAttrs.decoding ??= 'async';
+
+  return renderAttrs('img', imgAttrs);
+};
+
+const renderExternalEmbed = (attrs: Record<string, string> = {}) => {
+  const iframeAttrs = { ...attrs };
+  const src = decodeEntities(iframeAttrs.src ?? '').trim();
+  if (!src) {
+    return '';
+  }
+
+  const isMapEmbed = /(?:google\.com\/maps|maps\.google)/i.test(src);
+
+  if (!decodeEntities(iframeAttrs.title ?? '').trim()) {
+    iframeAttrs.title = isMapEmbed ? `${title} map` : `${title} embedded content`;
+  }
+
+  iframeAttrs.loading ??= 'lazy';
+  iframeAttrs.referrerpolicy ??= 'strict-origin-when-cross-origin';
+  iframeAttrs.src = src;
+
+  if (isMapEmbed) {
+    return `<iframe${renderAttrs('iframe', iframeAttrs)}></iframe>`;
+  }
+
+  return `<div class="legacy-embed" data-embed-src="${escapeAttribute(src)}" data-embed-title="${escapeAttribute(iframeAttrs.title)}" data-embed-allow="${escapeAttribute(iframeAttrs.allow ?? '')}" data-embed-allowfullscreen="${iframeAttrs.allowfullscreen != null ? 'true' : ''}">
+    <div>
+      <strong>${escapeHtml(iframeAttrs.title)}</strong>
+      <p>External interactive content is available on request.</p>
+    </div>
+    <button type="button" class="legacy-embed-button">Load embedded content</button>
+  </div>`;
+};
+
 const renderChildren = (node: LegacyNode) =>
   (node.children ?? [])
     .map((child) => renderCleanNode(child))
@@ -243,6 +338,8 @@ const renderWrapper = (html: string) => {
 
   return `<section>${trimmed}</section>`;
 };
+
+let renderedPrimaryHeading = false;
 
 const renderCleanNode = (node: LegacyNode): string => {
   if (node.type === 3 || node.type === 4) {
@@ -282,13 +379,26 @@ const renderCleanNode = (node: LegacyNode): string => {
   }
 
   if (tag === 'img') {
-    const attrs = renderAttrs('img', node.attributes);
-    return node.attributes?.src ? `<img${attrs}>` : '';
+    const src = node.attributes?.src;
+    if (!src) {
+      return '';
+    }
+
+    const srcset = getOptimizedImageSrcset(src);
+    const imageAttrs = { ...node.attributes };
+
+    if (srcset) {
+      imageAttrs.src = `/assets/optimized/${getOptimizedBase(src)}-1200.webp`;
+      const attrs = renderImageAttrs(imageAttrs);
+      return `<picture><source type="image/webp" srcset="${escapeAttribute(srcset)}" sizes="(max-width: 760px) calc(100vw - 2rem), min(100vw, 74rem)"><img${attrs}></picture>`;
+    }
+
+    const attrs = renderImageAttrs(imageAttrs);
+    return `<img${attrs}>`;
   }
 
   if (tag === 'iframe') {
-    const attrs = renderAttrs('iframe', node.attributes);
-    return node.attributes?.src ? `<iframe${attrs}></iframe>` : '';
+    return renderExternalEmbed(node.attributes);
   }
 
   if (tag === 'a') {
@@ -307,6 +417,15 @@ const renderCleanNode = (node: LegacyNode): string => {
     if (!children && !VOID_TAGS.has(tag)) {
       return '';
     }
+
+    if (tag === 'h1') {
+      if (renderedPrimaryHeading) {
+        return `<h2>${children}</h2>`;
+      }
+
+      renderedPrimaryHeading = true;
+    }
+
     return `<${tag}>${children}</${tag}>`;
   }
 
@@ -325,8 +444,14 @@ const cleanedBody = contentNodes
   .replace(/<section>\s*<\/section>/gi, '')
   .replace(/<p>\s*<\/p>/gi, '')
   .replace(/\s*<section>\s*(<h1[\s\S]*?<\/h1>|<hr>)\s*<\/section>\s*/gi, '\n$1\n')
+  .replace(/\s*<section>\s*(<h2[\s\S]*?<\/h2>|<hr>)\s*<\/section>\s*/gi, '\n$1\n')
   .replace(/(<\/(h1|h2|h3|h4|h5|h6|p|ul|ol|li|section|figure|blockquote)>)(?=<)/gi, '$1\n')
   .replace(/(<hr>)(?=<)/gi, '$1\n')
+  .replace(/(<p>[^<]*?)(<a[^>]+\bdownload="[^"]+"[^>]*>\s*Download PDF\s*<\/a>)\s*<\/p>/gi, '$1</p>\n$2')
+  .replace(
+    /(<h3>CATALOGUE OF CERAMICS OF REGIONAL PROJECT UAXACTUN 2009-2019<\/h3>\s*<p>Compiled by Jakub Špoták<\/p>)\s*<hr>\s*(<a[^>]+Spotak_Catalog_ceramics_2023_online\.pdf[^>]*>\s*Download PDF\s*<\/a>)/i,
+    '$1\n$2\n<hr>',
+  )
   .replace(/\n{3,}/g, '\n\n')
   .trim();
 ---
@@ -334,17 +459,69 @@ const cleanedBody = contentNodes
   <Fragment slot="head" set:html={preloadLinks} />
 
   <section class="legacy-page-shell">
-    <article class="legacy-page-content">
+    <article class="legacy-page-content" data-page-slug={pageSlug}>
       <Fragment set:html={cleanedBody} />
     </article>
   </section>
 </Layout>
 
+<script>
+  document.querySelectorAll<HTMLElement>('.legacy-embed').forEach((embed) => {
+    const button = embed.querySelector<HTMLButtonElement>('.legacy-embed-button');
+
+    button?.addEventListener('click', () => {
+      const src = embed.dataset.embedSrc;
+      if (!src) {
+        return;
+      }
+
+      const iframe = document.createElement('iframe');
+      iframe.src = src;
+      iframe.title = embed.dataset.embedTitle || 'Embedded content';
+      iframe.loading = 'lazy';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+
+      const allow = embed.dataset.embedAllow;
+      if (allow) {
+        iframe.setAttribute('allow', allow);
+      }
+
+      if (embed.dataset.embedAllowfullscreen === 'true') {
+        iframe.setAttribute('allowfullscreen', '');
+      }
+
+      embed.replaceChildren(iframe);
+    });
+  });
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const revealTargets = document.querySelectorAll<HTMLElement>(
+    '.legacy-page-content > section:not(:first-child), .legacy-page-content > h2, .legacy-page-content > h3',
+  );
+
+  if (!reduceMotion && revealTargets.length > 0 && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.12 },
+    );
+
+    revealTargets.forEach((target) => {
+      target.classList.add('legacy-scroll-reveal');
+      observer.observe(target);
+    });
+  }
+</script>
+
 <style is:global>
   body.legacy-page {
-    background:
-      radial-gradient(circle at top, rgb(40 169 165 / 0.16), transparent 38%),
-      linear-gradient(180deg, #052a36 0%, #053342 24%, #042632 100%);
+    background: linear-gradient(180deg, var(--site-bg) 0%, var(--site-bg-alt) 42%, var(--site-bg-deep) 100%);
   }
 
   .legacy-page-shell {
@@ -355,7 +532,7 @@ const cleanedBody = contentNodes
     width: min(100%, 74rem);
     margin: 0 auto;
     display: grid;
-    gap: clamp(1rem, 2vw, 1.65rem);
+    gap: clamp(1.2rem, 2.4vw, 2rem);
     color: var(--site-text);
   }
 
@@ -372,8 +549,10 @@ const cleanedBody = contentNodes
 
   .legacy-page-content > :first-child h1 {
     margin: 0;
-    font-size: clamp(2.2rem, 6vw, 4rem);
-    letter-spacing: 0.06em;
+    max-width: 18ch;
+    font-size: clamp(2.35rem, 6vw, 4.35rem);
+    line-height: 1.02;
+    letter-spacing: 0.02em;
     text-wrap: balance;
   }
 
@@ -382,11 +561,8 @@ const cleanedBody = contentNodes
   }
 
   .legacy-page-content > *:not(:first-child) {
-    background: rgb(6 31 39 / 0.72);
-    border: 1px solid rgb(201 165 90 / 0.22);
-    border-radius: 1.5rem;
-    box-shadow: 0 18px 36px rgb(1 13 17 / 0.22);
-    padding: clamp(1.1rem, 2.4vw, 1.8rem);
+    border-top: 1px solid var(--site-border);
+    padding-top: clamp(1.1rem, 2.4vw, 1.8rem);
   }
 
   .legacy-page-content h1,
@@ -394,7 +570,7 @@ const cleanedBody = contentNodes
   .legacy-page-content h3,
   .legacy-page-content h4 {
     margin: 0;
-    font-family: 'Cinzel', 'Palatino Linotype', Georgia, serif;
+    font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
     color: var(--site-text);
     text-wrap: balance;
   }
@@ -411,7 +587,7 @@ const cleanedBody = contentNodes
 
   .legacy-page-content p,
   .legacy-page-content li {
-    color: #d4cabc;
+    color: var(--site-text-dim);
     line-height: 1.82;
     text-wrap: pretty;
   }
@@ -428,27 +604,174 @@ const cleanedBody = contentNodes
     gap: 0.95rem;
   }
 
+  .legacy-page-content section:has(> picture + picture),
+  .legacy-page-content section:has(> img + img) {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    align-items: start;
+  }
+
+  .legacy-page-content[data-page-slug='events'] {
+    width: min(100%, 68rem);
+    gap: clamp(1rem, 2vw, 1.6rem);
+  }
+
+  .legacy-page-content[data-page-slug='events'] > :first-child h1 {
+    max-width: 12ch;
+  }
+
+  .legacy-page-content[data-page-slug='events'] > section:not(:first-child) h1 {
+    max-width: 24ch;
+    font-size: clamp(1.65rem, 3.6vw, 2.7rem);
+    line-height: 1.08;
+    letter-spacing: 0.015em;
+  }
+
+  .legacy-page-content[data-page-slug='events'] section {
+    gap: 0.7rem;
+  }
+
+  .legacy-page-content[data-page-slug='events'] > section:not(:first-child) > section {
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .legacy-page-content[data-page-slug='events'] > section:not(:first-child) > section > h2:first-child {
+    max-width: 28ch;
+    margin-bottom: 0.25rem;
+    font-size: clamp(1.65rem, 3.4vw, 2.6rem);
+    line-height: 1.08;
+    letter-spacing: 0.015em;
+    color: var(--site-text);
+  }
+
+  .legacy-page-content[data-page-slug='events'] > section:not(:first-child) > section > section:has(> h2) {
+    gap: 0.5rem;
+    padding-top: clamp(0.95rem, 2vw, 1.35rem);
+    border-top: 1px solid color-mix(in oklab, var(--site-border) 76%, transparent);
+  }
+
+  .legacy-page-content[data-page-slug='events'] > section:not(:first-child) > section > section > h2 {
+    max-width: 42ch;
+    font-size: clamp(1.08rem, 1.6vw, 1.28rem);
+    line-height: 1.22;
+    letter-spacing: 0.025em;
+    color: var(--site-text-strong);
+  }
+
+  .legacy-page-content[data-page-slug='events'] p {
+    max-width: 74ch;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.62;
+  }
+
+  .legacy-page-content[data-page-slug='events'] p strong {
+    display: inline-block;
+    min-width: 10.5rem;
+    margin-right: 0.35rem;
+    color: var(--site-gold);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
   .legacy-page-content > section > section + section {
     margin-top: 1.2rem;
     padding-top: 1.2rem;
-    border-top: 1px solid rgb(201 165 90 / 0.18);
+    border-top: 1px solid oklch(0.76 0.08 92 / 0.18);
   }
 
   .legacy-page-content a {
-    color: var(--site-teal);
+    color: inherit;
     text-decoration: none;
     text-underline-offset: 0.18em;
     overflow-wrap: anywhere;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0 1px;
+    transition:
+      color 180ms var(--site-ease-out),
+      background-size 220ms var(--site-ease-out),
+      border-color 180ms ease,
+      transform 180ms var(--site-ease-out);
   }
 
-  .legacy-page-content section > a,
+  .legacy-page-content h2 > a,
+  .legacy-page-content h3 > a,
+  .legacy-page-content h4 > a {
+    color: inherit;
+    background-size: 0 2px;
+  }
+
+  .legacy-page-content h2 > a:hover,
+  .legacy-page-content h2 > a:focus-visible,
+  .legacy-page-content h3 > a:hover,
+  .legacy-page-content h3 > a:focus-visible,
+  .legacy-page-content h4 > a:hover,
+  .legacy-page-content h4 > a:focus-visible {
+    color: var(--site-gold);
+    background-size: 100% 2px;
+  }
+
+  .legacy-page-content a:hover > h1,
+  .legacy-page-content a:focus-visible > h1,
+  .legacy-page-content a:hover > h2,
+  .legacy-page-content a:focus-visible > h2,
+  .legacy-page-content a:hover > h3,
+  .legacy-page-content a:focus-visible > h3,
+  .legacy-page-content a:hover > h4,
+  .legacy-page-content a:focus-visible > h4 {
+    color: var(--site-gold);
+  }
+
   .legacy-page-content p > a {
+    color: inherit;
+    font-weight: inherit;
+  }
+
+  .legacy-page-content a[download] {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.55rem;
+    margin-block: 0.1rem 0.55rem;
+    padding: 0.68rem 0.95rem;
+    border: 1px solid color-mix(in oklab, var(--site-border) 82%, var(--site-gold));
+    border-radius: 999px;
+    background-image: none;
+    color: var(--site-gold);
+    font-size: 0.8rem;
     font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .legacy-page-content a[download] + h2,
+  .legacy-page-content a[download] + h3,
+  .legacy-page-content a[download] + h4,
+  .legacy-page-content a[download] + section {
+    margin-top: 0.7rem;
   }
 
   .legacy-page-content a:hover,
   .legacy-page-content a:focus-visible {
-    color: var(--site-gold);
+    color: var(--site-text-strong);
+    background-size: 100% 1px;
+  }
+
+  .legacy-page-content a[download]:hover,
+  .legacy-page-content a[download]:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-text);
+    transform: translateY(-1px);
+  }
+
+  .legacy-page-content a:focus-visible,
+  .legacy-embed-button:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--site-gold) 76%, var(--site-text-strong));
+    outline-offset: 3px;
   }
 
   .legacy-inline-sep {
@@ -458,16 +781,21 @@ const cleanedBody = contentNodes
 
   .legacy-page-content hr {
     border: 0;
-    border-top: 1px solid rgb(201 165 90 / 0.42);
+    border-top: 1px solid oklch(0.76 0.08 92 / 0.42);
     width: 100%;
   }
 
+  .legacy-page-content picture,
   .legacy-page-content img {
     display: block;
+  }
+
+  .legacy-page-content img {
     width: 100%;
     max-width: 100%;
     height: auto;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
+    background: var(--site-surface);
   }
 
   .legacy-page-content iframe {
@@ -477,7 +805,75 @@ const cleanedBody = contentNodes
     min-height: min(70vw, 32rem);
     border: 0;
     border-radius: 1rem;
-    background: rgb(4 20 25 / 0.7);
+    background: oklch(0.16 0.024 202 / 0.7);
+  }
+
+  .legacy-embed {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
+    min-height: 12rem;
+    padding: clamp(1rem, 2.4vw, 1.5rem);
+    border: 1px solid var(--site-border);
+    border-radius: 0.5rem;
+    background: color-mix(in oklab, var(--site-surface) 72%, transparent);
+  }
+
+  .legacy-embed strong {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+  }
+
+  .legacy-embed p {
+    margin: 0;
+  }
+
+  .legacy-embed-button {
+    min-height: 2.75rem;
+    padding: 0.72rem 1rem;
+    border: 1px solid var(--site-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--site-gold);
+    font: inherit;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      color 180ms var(--site-ease-out),
+      border-color 180ms var(--site-ease-out),
+      transform 180ms var(--site-ease-out);
+  }
+
+  .legacy-embed-button:hover,
+  .legacy-embed-button:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-text);
+    transform: translateY(-1px);
+  }
+
+  .legacy-embed-button:active,
+  .legacy-page-content a[download]:active {
+    transform: translateY(0);
+  }
+
+  .legacy-scroll-reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 420ms var(--site-ease-out),
+      transform 520ms var(--site-ease-out);
+    will-change: opacity, transform;
+  }
+
+  .legacy-scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .legacy-page-content ul,
@@ -487,12 +883,12 @@ const cleanedBody = contentNodes
 
   .legacy-page-content strong,
   .legacy-page-content b {
-    color: #f0e8d8;
+    color: var(--site-text-strong);
   }
 
   .legacy-page-content em,
   .legacy-page-content i {
-    color: #e8ddd0;
+    color: var(--site-text);
   }
 
   @media (max-width: 900px) {
@@ -501,8 +897,7 @@ const cleanedBody = contentNodes
     }
 
     .legacy-page-content > *:not(:first-child) {
-      border-radius: 1.15rem;
-      padding: 1rem;
+      padding-top: 1rem;
     }
 
     .legacy-page-content > section > section + section {
@@ -513,6 +908,11 @@ const cleanedBody = contentNodes
     .legacy-page-content iframe {
       min-height: 18rem;
     }
+
+    .legacy-embed {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
   }
 
   @media (max-width: 640px) {
@@ -521,7 +921,7 @@ const cleanedBody = contentNodes
     }
 
     .legacy-page-content > *:not(:first-child) {
-      padding: 0.95rem;
+      padding-top: 0.95rem;
     }
 
     .legacy-page-content > section > section + section {
@@ -535,6 +935,32 @@ const cleanedBody = contentNodes
 
     .legacy-page-content iframe {
       min-height: 14rem;
+    }
+
+    .legacy-page-content[data-page-slug='events'] p strong {
+      display: block;
+      min-width: 0;
+      margin: 0 0 0.12rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .legacy-page-content a,
+    .legacy-embed-button,
+    .legacy-scroll-reveal {
+      transition: none;
+    }
+
+    .legacy-page-content a[download]:hover,
+    .legacy-page-content a[download]:focus-visible,
+    .legacy-embed-button:hover,
+    .legacy-embed-button:focus-visible {
+      transform: none;
+    }
+
+    .legacy-scroll-reveal {
+      opacity: 1;
+      transform: none;
     }
   }
 </style>
