@@ -1,0 +1,293 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Contacts — Center for Mesoamerican Studies"
+  description="Contact information for the Center for Mesoamerican Studies at Comenius University Bratislava — address, phone, and map."
+  bodyClass="contacts-page"
+>
+  <div class="contacts-shell">
+
+    <header class="contacts-header">
+      <h1 class="contacts-page-title">About Us</h1>
+      <hr class="contacts-rule" />
+      <nav class="contacts-subnav" aria-label="About Us pages">
+        <a href="/about-us" class="contacts-subnav-link">Overview</a>
+        <span class="contacts-subnav-sep" aria-hidden="true"></span>
+        <a href="/abouts-us-members" class="contacts-subnav-link">Members</a>
+        <span class="contacts-subnav-sep" aria-hidden="true"></span>
+        <a href="/about-us-contacts" class="contacts-subnav-link is-current" aria-current="page">Contacts</a>
+      </nav>
+    </header>
+
+    <article class="contacts-content">
+
+      <div class="contacts-intro reveal-target">
+        <h2 class="contacts-section-title">Contacts</h2>
+      </div>
+
+      <div class="contacts-grid">
+
+        <section class="contacts-block reveal-target">
+          <h3 class="contacts-label">Address</h3>
+          <address class="contacts-address">
+            Štúrova 9<br />
+            811 02 Bratislava<br />
+            Slovakia
+          </address>
+        </section>
+
+        <section class="contacts-block reveal-target">
+          <h3 class="contacts-label">Phone</h3>
+          <ul class="contacts-phones">
+            <li><a href="tel:+421911623174">T: (+421) 911 623 174</a></li>
+            <li><a href="tel:+420723928022">T: (+420) 723 928 022</a></li>
+          </ul>
+        </section>
+
+        <section class="contacts-block reveal-target">
+          <h3 class="contacts-label">Email</h3>
+          <a href="mailto:jakub.spotak@uniba.sk" class="contacts-email">jakub.spotak@uniba.sk</a>
+        </section>
+
+      </div>
+
+      <div class="contacts-map reveal-target" aria-label="Location map">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d5324.721393266933!2d17.110756!3d48.141851!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476c89417ff82023%3A0xa847e9437ca633a4!2zxaB0w7pyb3ZhIDIyLzksIDgxMSAwMiBTdGFyw6kgTWVzdG8sIFNsb3Zha2lh!5e0!3m2!1sen!2sus!4v1763308996382!5m2!1sen!2sus"
+          width="100%"
+          height="420"
+          style="border:0;"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="CMS location — Štúrova 9, Bratislava"
+        ></iframe>
+      </div>
+
+    </article>
+  </div>
+</Layout>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll<HTMLElement>('.reveal-target');
+
+  if (!reduceMotion && targets.length > 0 && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+    );
+    targets.forEach((el) => {
+      el.classList.add('will-reveal');
+      observer.observe(el);
+    });
+  }
+</script>
+
+<style>
+  .contacts-shell {
+    width: min(100%, 74rem);
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 1.5rem) clamp(3rem, 6vw, 5rem);
+  }
+
+  .contacts-header {
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .contacts-page-title {
+    margin: 0 0 0.6rem;
+    font-family: var(--site-font);
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: 0.02em;
+    color: var(--site-text);
+    text-wrap: balance;
+  }
+
+  .contacts-rule {
+    border: 0;
+    border-top: 1px solid oklch(0.76 0.08 92 / 0.42);
+    margin: 0 0 1.25rem;
+    width: min(8rem, 100%);
+  }
+
+  .contacts-subnav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .contacts-subnav-link {
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    text-decoration: none;
+    transition: color 180ms var(--site-ease-out);
+  }
+
+  .contacts-subnav-link:hover,
+  .contacts-subnav-link:focus-visible {
+    color: var(--site-gold);
+  }
+
+  .contacts-subnav-link.is-current {
+    color: var(--site-gold);
+  }
+
+  .contacts-subnav-sep {
+    display: inline-block;
+    width: 1px;
+    height: 0.7em;
+    background: var(--site-border);
+    opacity: 0.7;
+  }
+
+  .contacts-content {
+    display: grid;
+    gap: 0;
+  }
+
+  .contacts-intro {
+    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .contacts-section-title {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(1.35rem, 3vw, 1.95rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--site-text-strong);
+  }
+
+  .contacts-grid {
+    display: grid;
+    gap: 0;
+  }
+
+  .contacts-block {
+    display: grid;
+    gap: 0.85rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  @media (min-width: 680px) {
+    .contacts-block {
+      grid-template-columns: 11rem 1fr;
+      gap: 0 clamp(2rem, 4vw, 3.5rem);
+      align-items: start;
+    }
+  }
+
+  .contacts-label {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    padding-top: 0.28rem;
+  }
+
+  .contacts-address {
+    font-style: normal;
+    color: var(--site-text);
+    line-height: 1.82;
+    margin: 0;
+  }
+
+  .contacts-phones {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .contacts-phones a {
+    color: var(--site-text);
+    text-decoration: none;
+    transition: color 180ms var(--site-ease-out);
+  }
+
+  .contacts-phones a:hover,
+  .contacts-phones a:focus-visible {
+    color: var(--site-gold);
+  }
+
+  .contacts-email {
+    color: var(--site-teal);
+    text-decoration: none;
+    transition: color 180ms var(--site-ease-out);
+  }
+
+  .contacts-email:hover,
+  .contacts-email:focus-visible {
+    color: var(--site-gold);
+  }
+
+  .contacts-map {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    overflow: hidden;
+    border-radius: 3px;
+    border: 1px solid var(--site-border);
+  }
+
+  .contacts-map iframe {
+    display: block;
+    width: 100%;
+  }
+
+  /* Scroll reveal */
+  .will-reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 440ms var(--site-ease-out),
+      transform 540ms var(--site-ease-out);
+    will-change: opacity, transform;
+  }
+
+  .will-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .will-reveal {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .contacts-block {
+      gap: 0.4rem;
+    }
+
+    .contacts-label {
+      color: var(--site-gold);
+      font-size: 0.75rem;
+    }
+  }
+</style>

@@ -1,0 +1,268 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const members = [
+  // {
+  //   name: 'Jakub Špoták',
+  //   role: 'Director',
+  //   email: 'jakub.spotak@uniba.sk',
+  //   bio: '',
+  // },
+];
+---
+
+<Layout
+  title="Members — Center for Mesoamerican Studies"
+  description="Members of the Center for Mesoamerican Studies at Comenius University Bratislava."
+  bodyClass="members-page"
+>
+  <div class="members-shell">
+
+    <header class="members-header">
+      <h1 class="members-page-title">About Us</h1>
+      <hr class="members-rule" />
+      <nav class="members-subnav" aria-label="About Us pages">
+        <a href="/about-us" class="members-subnav-link">Overview</a>
+        <span class="members-subnav-sep" aria-hidden="true"></span>
+        <a href="/abouts-us-members" class="members-subnav-link is-current" aria-current="page">Members</a>
+        <span class="members-subnav-sep" aria-hidden="true"></span>
+        <a href="/about-us-contacts" class="members-subnav-link">Contacts</a>
+      </nav>
+    </header>
+
+    <article class="members-content">
+
+      <div class="members-intro reveal-target">
+        <h2 class="members-section-title">Members</h2>
+      </div>
+
+      {members.length === 0 ? (
+        <p class="members-empty reveal-target">Member profiles coming soon.</p>
+      ) : (
+        <ul class="members-list">
+          {members.map((member) => (
+            <li class="members-item reveal-target">
+              <div class="members-item-name">{member.name}</div>
+              <div class="members-item-role">{member.role}</div>
+              {member.bio && <p class="members-item-bio">{member.bio}</p>}
+              {member.email && (
+                <a href={`mailto:${member.email}`} class="members-item-email">{member.email}</a>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+    </article>
+  </div>
+</Layout>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll<HTMLElement>('.reveal-target');
+
+  if (!reduceMotion && targets.length > 0 && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+    );
+    targets.forEach((el) => {
+      el.classList.add('will-reveal');
+      observer.observe(el);
+    });
+  }
+</script>
+
+<style>
+  .members-shell {
+    width: min(100%, 74rem);
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 1.5rem) clamp(3rem, 6vw, 5rem);
+  }
+
+  .members-header {
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .members-page-title {
+    margin: 0 0 0.6rem;
+    font-family: var(--site-font);
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: 0.02em;
+    color: var(--site-text);
+    text-wrap: balance;
+  }
+
+  .members-rule {
+    border: 0;
+    border-top: 1px solid oklch(0.76 0.08 92 / 0.42);
+    margin: 0 0 1.25rem;
+    width: min(8rem, 100%);
+  }
+
+  .members-subnav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .members-subnav-link {
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    text-decoration: none;
+    transition: color 180ms var(--site-ease-out);
+  }
+
+  .members-subnav-link:hover,
+  .members-subnav-link:focus-visible {
+    color: var(--site-gold);
+  }
+
+  .members-subnav-link.is-current {
+    color: var(--site-gold);
+  }
+
+  .members-subnav-sep {
+    display: inline-block;
+    width: 1px;
+    height: 0.7em;
+    background: var(--site-border);
+    opacity: 0.7;
+  }
+
+  .members-content {
+    display: grid;
+    gap: 0;
+  }
+
+  .members-intro {
+    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .members-section-title {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(1.35rem, 3vw, 1.95rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--site-text-strong);
+  }
+
+  .members-empty {
+    color: var(--site-text-dim);
+    font-size: 0.95rem;
+    margin: 0;
+    padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+  }
+
+  .members-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .members-item {
+    display: grid;
+    gap: 0.85rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .members-item:last-child {
+    border-bottom: 0;
+  }
+
+  @media (min-width: 680px) {
+    .members-item {
+      grid-template-columns: 11rem 1fr;
+      gap: 0 clamp(2rem, 4vw, 3.5rem);
+      align-items: start;
+    }
+  }
+
+  .members-item-name {
+    font-family: var(--site-font);
+    font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    padding-top: 0.28rem;
+  }
+
+  .members-item-role {
+    font-size: 0.88rem;
+    color: var(--site-text-dim);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+  }
+
+  .members-item-bio {
+    margin: 0 0 0.5rem;
+    color: var(--site-text);
+    line-height: 1.82;
+    max-width: 68ch;
+  }
+
+  .members-item-email {
+    font-size: 0.88rem;
+    color: var(--site-teal);
+    text-decoration: none;
+    transition: color 180ms var(--site-ease-out);
+  }
+
+  .members-item-email:hover,
+  .members-item-email:focus-visible {
+    color: var(--site-gold);
+  }
+
+  /* Scroll reveal */
+  .will-reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 440ms var(--site-ease-out),
+      transform 540ms var(--site-ease-out);
+    will-change: opacity, transform;
+  }
+
+  .will-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .will-reveal {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .members-item {
+      gap: 0.4rem;
+    }
+
+    .members-item-name {
+      color: var(--site-gold);
+      font-size: 0.75rem;
+    }
+  }
+</style>
