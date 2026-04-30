@@ -189,14 +189,14 @@ import Layout from '../layouts/Layout.astro';
       viewer.setAttribute('src', '/assets/models/statue-compressed.glb');
       viewer.setAttribute('poster', '/assets/optimized/model-poster.webp');
       viewer.setAttribute('camera-controls', '');
+      viewer.setAttribute('disable-zoom', '');
       viewer.setAttribute('interaction-prompt', 'none');
-      viewer.setAttribute('camera-orbit', '90deg 72deg 42%');
-      viewer.setAttribute('min-camera-orbit', 'auto auto 34%');
-      viewer.setAttribute('max-camera-orbit', 'auto auto 110%');
-      viewer.setAttribute('field-of-view', '17deg');
-      viewer.setAttribute('min-field-of-view', '14deg');
-      viewer.setAttribute('max-field-of-view', '30deg');
-      viewer.setAttribute('scale', '2.7 2.7 2.7');
+      viewer.setAttribute('camera-orbit', '90deg 72deg 105%');
+      viewer.setAttribute('min-camera-orbit', 'auto auto 60%');
+      viewer.setAttribute('max-camera-orbit', 'auto auto 200%');
+      viewer.setAttribute('field-of-view', '45deg');
+      viewer.setAttribute('min-field-of-view', '20deg');
+      viewer.setAttribute('max-field-of-view', '75deg');
       viewer.setAttribute('alt', '3D model of a Mesoamerican artefact');
 
       if (!reducedMotion.matches) {
@@ -338,6 +338,7 @@ import Layout from '../layouts/Layout.astro';
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--home-accent);
+    white-space: nowrap;
   }
 
   h1,
@@ -347,11 +348,13 @@ import Layout from '../layouts/Layout.astro';
   }
 
   h1 {
-    max-width: 13ch;
+    max-width: 14ch;
     margin: 0;
-    font-size: clamp(3rem, 6.6vw, 6.4rem);
-    line-height: 0.96;
-    letter-spacing: 0.01em;
+    font-size: clamp(2.6rem, 5.8vw, 5.8rem);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -0.01em;
+    color: var(--site-text-strong);
     text-wrap: balance;
   }
 
@@ -373,9 +376,9 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .hero-actions {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.9rem;
-    flex-wrap: wrap;
     margin-top: 2rem;
   }
 
@@ -386,7 +389,7 @@ import Layout from '../layouts/Layout.astro';
     min-height: 3rem;
     padding: 0.85rem 1.25rem;
     border: 1px solid var(--home-line);
-    border-radius: 999px;
+    border-radius: 0;
     font-size: 0.9rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -429,7 +432,7 @@ import Layout from '../layouts/Layout.astro';
   .hero-facts {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
+    gap: 0;
     margin: 2.5rem 0 0;
     padding-top: 1.5rem;
     border-top: 1px solid var(--home-line);
@@ -438,6 +441,14 @@ import Layout from '../layouts/Layout.astro';
   .hero-facts div {
     display: grid;
     gap: 0.35rem;
+    justify-items: center;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    border-right: 1px solid var(--home-line);
+  }
+
+  .hero-facts div:last-child {
+    border-right: none;
   }
 
   .hero-facts dt {
@@ -466,7 +477,8 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .hero-panel-model {
-    min-height: clamp(360px, 42vw, 560px);
+    --model-h: clamp(360px, 42vw, 560px);
+    position: relative;
     padding: clamp(0.8rem, 1.8vw, 1.25rem);
   }
 
@@ -481,20 +493,25 @@ import Layout from '../layouts/Layout.astro';
     color: var(--home-gold);
   }
 
-  .model-stage,
-  .hero-panel-model model-viewer {
+  .model-stage {
     width: 100%;
-    height: clamp(320px, 39vw, 520px);
+    height: var(--model-h);
+    padding-top: 2.5rem;
+    box-sizing: border-box;
     display: block;
   }
 
-  .hero-panel-model model-viewer {
+  :global(.hero-panel-model model-viewer) {
     --poster-color: transparent;
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 
   .model-placeholder {
     width: 100%;
     height: 100%;
+    min-height: 280px;
     display: grid;
     align-content: center;
     justify-items: start;
@@ -517,7 +534,7 @@ import Layout from '../layouts/Layout.astro';
     min-height: 2.75rem;
     padding: 0.75rem 1rem;
     border: 1px solid color-mix(in oklab, var(--home-gold) 60%, transparent);
-    border-radius: 999px;
+    border-radius: 0;
     background: oklch(0.18 0.026 202 / 0.72);
     color: var(--home-gold);
     font: inherit;
@@ -824,7 +841,7 @@ import Layout from '../layouts/Layout.astro';
     }
 
     .hero-panel-model {
-      min-height: clamp(360px, 62vw, 520px);
+      --model-h: clamp(360px, 62vw, 520px);
     }
   }
 
@@ -845,8 +862,8 @@ import Layout from '../layouts/Layout.astro';
       font-size: clamp(1.9rem, 9vw, 3rem);
     }
 
-    .button {
-      width: 100%;
+    .hero-actions {
+      grid-template-columns: 1fr;
     }
 
     .hero-actions {
@@ -855,20 +872,12 @@ import Layout from '../layouts/Layout.astro';
 
     .hero-panel-model {
       padding: 0.7rem;
+      --model-h: clamp(330px, 92vw, 500px);
     }
 
     .resource-grid {
       grid-template-columns: 1fr;
       gap: 0.75rem;
-    }
-
-    .hero-panel-model {
-      min-height: clamp(330px, 92vw, 500px);
-    }
-
-    .hero-panel-model model-viewer,
-    .model-stage {
-      height: clamp(290px, 82vw, 460px);
     }
   }
 

@@ -284,7 +284,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           <path d="m21 21-4.35-4.35" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path>
           <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
         </svg>
-        <span>PDF Search</span>
+        <span>Search Publications</span>
       </button>
 
       <section
@@ -580,7 +580,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     min-height: 2.75rem;
     padding: 0 0.8rem;
     border: 1px solid color-mix(in oklab, var(--nav-border) 72%, transparent);
-    border-radius: 999px;
+    border-radius: 0;
     background: transparent;
     color: var(--nav-text);
     font-family: var(--nav-font);
@@ -661,7 +661,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     min-height: 2.8rem;
     padding: 0.78rem 0.85rem;
     border: 1px solid color-mix(in oklab, var(--nav-border) 86%, transparent);
-    border-radius: 0.4rem;
+    border-radius: 0;
     background: oklch(0.18 0.026 202 / 0.78);
     color: var(--nav-text);
     font: inherit;
@@ -753,7 +753,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     max-width: 100%;
     padding: 0.22rem 0.42rem;
     border: 1px solid color-mix(in oklab, var(--nav-border) 48%, transparent);
-    border-radius: 0.35rem;
+    border-radius: 0;
     background: oklch(0.18 0.025 200 / 0.42);
     color: color-mix(in oklab, var(--nav-text-dim) 88%, var(--nav-gold));
   }
@@ -771,7 +771,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     display: block;
     width: 24px;
     height: 2px;
-    border-radius: 999px;
+    border-radius: 0;
     background: currentColor;
     transform-origin: center;
     transition: transform 220ms var(--nav-ease), opacity 160ms var(--nav-ease);
@@ -1067,7 +1067,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     pdfSearchResults.replaceChildren();
 
     if (!query) {
-      pdfSearchStatus.textContent = `${pdfItems.length} PDF files indexed. Type a title, report, catalogue, author, or year.`;
+      pdfSearchStatus.textContent = `${pdfItems.length} publications indexed. Type a title, report, catalogue, author, or year.`;
       pdfSearchEmpty.hidden = true;
       return;
     }
