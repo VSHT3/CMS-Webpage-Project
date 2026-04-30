@@ -1,4 +1,5 @@
 ---
+import ClientRouter from 'astro/components/ClientRouter.astro';
 import Nav from '../components/Nav.astro';
 
 interface Props {
@@ -24,9 +25,10 @@ const {
     <link rel="icon" href="/assets/LogoTest_ULR2LENFW1uu6krJGVj2C.png" />
     <title>{title}</title>
     <slot name="head" />
+    <ClientRouter />
   </head>
   <body class={bodyClass}>
-    <Nav />
+    <Nav transition:persist />
     <main class="site-main">
       <slot />
     </main>
