@@ -1,6 +1,7 @@
 ---
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
+import { rewriteLegacyAssetUrl } from '../lib/legacy-pdf-map';
 
 type PdfSearchItem = {
   title: string;
@@ -97,7 +98,7 @@ const buildPdfSearchIndex = () => {
 
     for (const match of raw.matchAll(/<a\b([^>]*?)>([\s\S]*?)<\/a>/gi)) {
       const attrs = match[1] ?? '';
-      const href = decodeEntities(attrs.match(/\bhref=["']([^"']*?\.pdf(?:\?[^"']*)?)["']/i)?.[1] ?? '').trim();
+      const href = rewriteLegacyAssetUrl(decodeEntities(attrs.match(/\bhref=["']([^"']*?\.pdf(?:\?[^"']*)?)["']/i)?.[1] ?? '').trim());
 
       if (!href) {
         continue;
@@ -275,7 +276,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       <button
         class="pdf-search-trigger"
         type="button"
-        aria-label="Search PDF files"
+        aria-label="Search publications"
         aria-controls="pdf-search-panel"
         aria-expanded="false"
         data-pdf-search-trigger
@@ -290,26 +291,26 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       <section
         class="pdf-search-panel"
         id="pdf-search-panel"
-        aria-label="Search PDF files"
+        aria-label="Search publications"
         aria-hidden="true"
         inert
       >
         <form class="pdf-search-form" role="search" data-pdf-search-form>
-          <label class="pdf-search-label" for="pdf-search-input">Search PDF files</label>
+          <label class="pdf-search-label" for="pdf-search-input">Search publications</label>
           <input
             id="pdf-search-input"
             class="pdf-search-input"
             type="search"
             autocomplete="off"
-            placeholder="Type a report, catalogue, author, or year"
+            placeholder="Type a title, report, catalogue, author, or year"
             data-pdf-search-input
           />
         </form>
         <p class="pdf-search-status" aria-live="polite" data-pdf-search-status>
-          {pdfSearchItems.length} PDF files indexed.
+          {pdfSearchItems.length} publications indexed.
         </p>
         <ul class="pdf-search-results" id="pdf-search-results" role="list" data-pdf-search-results></ul>
-        <p class="pdf-search-empty" hidden data-pdf-search-empty>No matching PDF files.</p>
+        <p class="pdf-search-empty" hidden data-pdf-search-empty>No matching publications.</p>
       </section>
     </div>
 
@@ -704,67 +705,81 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     display: none;
   }
 
-  .pdf-search-result a {
-    display: grid;
-    gap: 0.34rem;
-    padding: 0.9rem 0;
+  :global(.pdf-search-result) {
+    padding: 0.75rem 0;
     border-bottom: 1px solid color-mix(in oklab, var(--nav-border) 48%, transparent);
-    color: var(--nav-text) !important;
-    text-decoration: none !important;
-    transition:
-      color 180ms var(--nav-ease),
-      padding-inline 180ms var(--nav-ease);
   }
 
-  .pdf-search-result a:hover,
-  .pdf-search-result a:focus-visible {
-    color: var(--nav-gold) !important;
-    padding-inline: 0.2rem 0;
+  :global(.pdf-search-result-card) {
+    display: grid;
+    gap: 0.55rem;
   }
 
-  .pdf-search-result strong {
-    color: inherit;
+  :global(.pdf-search-result-info) {
+    display: grid;
+    gap: 0.28rem;
+  }
+
+  :global(.pdf-search-result strong) {
+    color: var(--nav-text);
     font-family: var(--nav-font);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     line-height: 1.28;
-    margin-bottom: 0.18rem;
     overflow-wrap: break-word;
   }
 
-  .pdf-search-result-source,
-  .pdf-search-result-file {
+  :global(.pdf-search-result-source) {
     color: var(--nav-text-dim);
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     line-height: 1.4;
     overflow-wrap: break-word;
   }
 
-  .pdf-search-result-source {
-    padding-top: 0.2rem;
-    border-top: 1px solid color-mix(in oklab, var(--nav-border) 28%, transparent);
+  :global(.pdf-search-result-actions) {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
   }
 
-  .pdf-search-result-file {
+  :global(.pdf-search-result-btn) {
     display: inline-flex;
-    align-items: baseline;
-    gap: 0.38rem;
-    width: fit-content;
-    max-width: 100%;
-    padding: 0.22rem 0.42rem;
-    border: 1px solid color-mix(in oklab, var(--nav-border) 48%, transparent);
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.36rem 0.8rem;
+    border: 1px solid color-mix(in oklab, var(--nav-border) 72%, transparent);
     border-radius: 0;
-    background: oklch(0.18 0.025 200 / 0.42);
-    color: color-mix(in oklab, var(--nav-text-dim) 88%, var(--nav-gold));
+    background: transparent;
+    color: var(--nav-text-dim) !important;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    line-height: 1;
+    text-decoration: none !important;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition:
+      color 150ms var(--nav-ease),
+      border-color 150ms var(--nav-ease),
+      background-color 150ms var(--nav-ease);
   }
 
-  .pdf-search-result-file::before {
-    content: 'File';
-    flex: 0 0 auto;
-    color: var(--nav-gold);
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+  :global(.pdf-search-result-btn:hover),
+  :global(.pdf-search-result-btn:focus-visible) {
+    color: var(--nav-gold) !important;
+    border-color: color-mix(in oklab, var(--nav-gold) 56%, transparent);
+    background: oklch(0.84 0.075 88 / 0.08);
+  }
+
+  :global(.pdf-search-result-btn--open) {
+    color: var(--nav-gold) !important;
+    border-color: color-mix(in oklab, var(--nav-gold) 40%, transparent);
+  }
+
+  :global(.pdf-search-result-btn--open:hover),
+  :global(.pdf-search-result-btn--open:focus-visible) {
+    background: oklch(0.84 0.075 88 / 0.12);
+    border-color: var(--nav-gold);
   }
 
   .hamburger-line {
@@ -1001,10 +1016,13 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     .dropdown,
     .pdf-search-panel,
     .pdf-search-trigger,
-    .pdf-search-result a,
     .hamburger-line,
     .nav-mobile-toggle,
     .nav-dropdown-toggle {
+      transition: none;
+    }
+
+    :global(.pdf-search-result-btn) {
       transition: none;
     }
   }
@@ -1058,6 +1076,14 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       .replace(/\s+/g, ' ')
       .trim();
 
+  const slugifyHeading = (text: string) =>
+    text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
   const renderPdfResults = () => {
     if (!pdfSearchInput || !pdfSearchResults || !pdfSearchStatus || !pdfSearchEmpty) {
       return;
@@ -1097,40 +1123,53 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       .filter((match): match is { item: PdfSearchItem; score: number } => Boolean(match))
       .sort((first, second) => second.score - first.score || first.item.title.localeCompare(second.item.title));
 
-    const visibleMatches = matches.slice(0, 8);
     const fragment = document.createDocumentFragment();
 
-    visibleMatches.forEach(({ item }) => {
+    matches.forEach(({ item }) => {
       const result = document.createElement('li');
       result.className = 'pdf-search-result';
 
-      const link = document.createElement('a');
-      link.href = item.href;
-      link.target = '_blank';
-      link.rel = 'noopener';
+      const card = document.createElement('div');
+      card.className = 'pdf-search-result-card';
 
-      const title = document.createElement('strong');
-      title.textContent = item.title;
+      const info = document.createElement('div');
+      info.className = 'pdf-search-result-info';
 
-      const source = document.createElement('span');
-      source.className = 'pdf-search-result-source';
-      source.textContent = `Located in ${item.sourcePage}${item.sourcePath ? ` (${item.sourcePath})` : ''}`;
+      const titleEl = document.createElement('strong');
+      titleEl.textContent = item.title;
 
-      const filename = document.createElement('small');
-      filename.className = 'pdf-search-result-file';
-      filename.textContent = item.displayFilename || item.filename;
+      const sourceEl = document.createElement('span');
+      sourceEl.className = 'pdf-search-result-source';
+      sourceEl.textContent = item.sourcePage;
 
-      link.append(title, source, filename);
-      result.append(link);
+      info.append(titleEl, sourceEl);
+
+      const actions = document.createElement('div');
+      actions.className = 'pdf-search-result-actions';
+
+      const pageBtn = document.createElement('a');
+      const headingSlug = slugifyHeading(item.title);
+      pageBtn.href = `${item.sourcePath || '/'}${headingSlug ? '#' + headingSlug : ''}`;
+      pageBtn.className = 'pdf-search-result-btn pdf-search-result-btn--page';
+      pageBtn.textContent = 'View on page';
+
+      const openBtn = document.createElement('a');
+      openBtn.href = item.href;
+      openBtn.target = '_blank';
+      openBtn.rel = 'noopener noreferrer';
+      openBtn.className = 'pdf-search-result-btn pdf-search-result-btn--open';
+      openBtn.textContent = 'Open document';
+
+      actions.append(pageBtn, openBtn);
+      card.append(info, actions);
+      result.append(card);
       fragment.append(result);
     });
 
     pdfSearchResults.append(fragment);
     pdfSearchEmpty.hidden = matches.length > 0;
     pdfSearchStatus.textContent =
-      matches.length === 1
-        ? '1 matching PDF file.'
-        : `${matches.length} matching PDF files${matches.length > visibleMatches.length ? `, showing first ${visibleMatches.length}` : ''}.`;
+      matches.length === 1 ? '1 publication found.' : `${matches.length} publications found.`;
   };
 
   const setSearchState = (open: boolean) => {
@@ -1159,7 +1198,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
 
   pdfSearchForm?.addEventListener('submit', (event) => {
     event.preventDefault();
-    pdfSearchResults?.querySelector<HTMLAnchorElement>('a')?.click();
+    pdfSearchResults?.querySelector<HTMLAnchorElement>('.pdf-search-result-btn--open')?.click();
   });
 
   document.addEventListener('click', (event) => {

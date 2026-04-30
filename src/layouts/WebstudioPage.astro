@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse, renderSync } from 'ultrahtml';
 import Layout from './Layout.astro';
+import { rewriteLegacyAssetUrl } from '../lib/legacy-pdf-map';
 
 const { source } = Astro.props;
 const raw = readFileSync(resolve('.', source), 'utf-8').replaceAll('Uxactun', 'Uaxactun');
@@ -193,10 +194,12 @@ const renderAttrs = (tag: string, attrs: Record<string, string> = {}) => {
       continue;
     }
 
-    const value = decodeEntities(rawValue).trim();
-    if (!value) {
+    const decoded = decodeEntities(rawValue).trim();
+    if (!decoded) {
       continue;
     }
+
+    const value = (attr === 'href' || attr === 'src') ? rewriteLegacyAssetUrl(decoded) : decoded;
 
     if (
       tag === 'iframe' &&
@@ -340,6 +343,23 @@ const renderWrapper = (html: string) => {
 };
 
 let renderedPrimaryHeading = false;
+const usedHeadingIds = new Set<string>();
+
+const makeHeadingId = (html: string) => {
+  const base = html
+    .replace(/<[^>]+>/g, '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  if (!base) return '';
+  let id = base;
+  let n = 2;
+  while (usedHeadingIds.has(id)) id = `${base}-${n++}`;
+  usedHeadingIds.add(id);
+  return id;
+};
 
 const renderCleanNode = (node: LegacyNode): string => {
   if (node.type === 3 || node.type === 4) {
@@ -420,10 +440,16 @@ const renderCleanNode = (node: LegacyNode): string => {
 
     if (tag === 'h1') {
       if (renderedPrimaryHeading) {
-        return `<h2>${children}</h2>`;
+        const id = makeHeadingId(children);
+        return `<h2${id ? ` id="${escapeAttribute(id)}"` : ''}>${children}</h2>`;
       }
-
       renderedPrimaryHeading = true;
+      return `<h1>${children}</h1>`;
+    }
+
+    if (/^h[2-6]$/.test(tag)) {
+      const id = makeHeadingId(children);
+      return `<${tag}${id ? ` id="${escapeAttribute(id)}"` : ''}>${children}</${tag}>`;
     }
 
     return `<${tag}>${children}</${tag}>`;
