@@ -465,7 +465,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
   .nav-item:focus-within .nav-dropdown-toggle,
   .nav-item:hover .nav-dropdown-toggle {
     color: var(--nav-gold) !important;
-    border-bottom-color: transparent;
+    border-bottom-color: var(--nav-gold);
   }
 
   .chevron {
@@ -507,13 +507,6 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       visibility 0s linear 220ms;
   }
 
-  .nav-item:last-child .dropdown,
-  .nav-item:nth-last-child(2) .dropdown {
-    left: auto;
-    right: 0;
-    transform: translateY(0.35rem);
-  }
-
   .has-dropdown:hover > .dropdown,
   .has-dropdown:focus-within > .dropdown {
     opacity: 1;
@@ -524,13 +517,6 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       opacity 180ms ease,
       transform 220ms var(--nav-ease),
       visibility 0s linear;
-  }
-
-  .nav-item:last-child:hover > .dropdown,
-  .nav-item:last-child:focus-within > .dropdown,
-  .nav-item:nth-last-child(2):hover > .dropdown,
-  .nav-item:nth-last-child(2):focus-within > .dropdown {
-    transform: translateY(0);
   }
 
   .dropdown li {
