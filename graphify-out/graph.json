@@ -1,0 +1,2010 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "he_uaxactun_research_cluster",
+        "label": "Uaxact\u00fan Multi-Project Research Cluster",
+        "description": "CMS, Prof. Milan Kov\u00e1\u010d, and the three research projects (APVV-0864-12, VEGA 1/0011/13, VEGA 1/0858/17) jointly constitute a long-term coordinated Slovak research programme at Uaxact\u00fan, Guatemala, producing complementary outputs: observatory verification, hieroglyphic corpus, and Preclassic synthesis.",
+        "nodes": [
+          "cms_center_for_mesoamerican_studies",
+          "cms_milan_kovac",
+          "paru_uaxactun_location",
+          "project_apvv_0864_12",
+          "project_vega_1001113",
+          "project_vega_1085817"
+        ],
+        "provenance": "INFERRED",
+        "confidence_score": 0.85
+      },
+      {
+        "id": "he_cms_events_community",
+        "label": "CMS Academic Events Community",
+        "description": "CMS, the Bratislava Maya Meeting, and the European Maya Conference together form the primary academic events infrastructure through which CMS disseminates research and trains scholars in Maya hieroglyphic studies.",
+        "nodes": [
+          "cms_center_for_mesoamerican_studies",
+          "events_bratislava_maya_meeting",
+          "events_european_maya_conference"
+        ],
+        "provenance": "INFERRED",
+        "confidence_score": 0.8
+      },
+      {
+        "id": "he_cms_knowledge_infrastructure",
+        "label": "CMS Knowledge Infrastructure",
+        "description": "The Ferdinand Anders Library, the mesoamerica.eu website, and the PARU project collectively form the institutional knowledge infrastructure of CMS, supporting research, public dissemination, and archival preservation.",
+        "nodes": [
+          "ferdinand_anders_library",
+          "cms_mesoamerica_website",
+          "paru_uaxactun_project"
+        ],
+        "provenance": "INFERRED",
+        "confidence_score": 0.72
+      },
+      {
+        "id": "hyperedge_paru_publication_project",
+        "label": "PARU Uaxactun Research Output",
+        "description": "The PARU Uaxactun Project, person Jakub \u0160pot\u00e1k, and the Nuevas excavaciones en Uaxactun series all participate together in an ongoing field-research-to-publication pipeline that is the core scholarly output of the CMS.",
+        "nodes": [
+          "paru_uaxactun_project",
+          "person_jakub_spotak",
+          "pub_nuevas_excavaciones_uaxactun",
+          "publications_page"
+        ],
+        "provenance": "INFERRED",
+        "confidence_score": 0.85
+      },
+      {
+        "id": "hyperedge_collections_trio",
+        "label": "Collections Sub-pages",
+        "description": "The archaeological collection, ethnographical collection, and collections gallery pages together constitute the Collections section's content sub-pages.",
+        "nodes": [
+          "collection_archaeological_collection_page",
+          "collections_ethnographical_collection_page",
+          "collections_gallery_page",
+          "section_collections"
+        ],
+        "provenance": "EXTRACTED",
+        "confidence_score": 1.0
+      },
+      {
+        "id": "hyperedge_library_subpages",
+        "label": "Ferdinand Anders Library Content",
+        "description": "The Ferdinand Anders Library concept, its gallery page, and its catalogue page together define the Library section of the site.",
+        "nodes": [
+          "ferdinand_anders_library_concept",
+          "ferdinand_anders_library_page",
+          "ferdinand_anders_library_catalogue_page",
+          "section_library"
+        ],
+        "provenance": "EXTRACTED",
+        "confidence_score": 1.0
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "content.config.ts",
+      "file_type": "code",
+      "source_file": "content.config.ts",
+      "source_location": "L1",
+      "id": "content_config_ts",
+      "community": 12,
+      "norm_label": "content.config.ts"
+    },
+    {
+      "label": "legacy-pdf-map.ts",
+      "file_type": "code",
+      "source_file": "lib/legacy-pdf-map.ts",
+      "source_location": "L1",
+      "id": "lib_legacy_pdf_map_ts",
+      "community": 10,
+      "norm_label": "legacy-pdf-map.ts"
+    },
+    {
+      "label": "rewriteLegacyAssetUrl()",
+      "file_type": "code",
+      "source_file": "lib/legacy-pdf-map.ts",
+      "source_location": "L42",
+      "id": "lib_legacy_pdf_map_rewritelegacyasseturl",
+      "community": 10,
+      "norm_label": "rewritelegacyasseturl()"
+    },
+    {
+      "label": "Center for Mesoamerican Studies",
+      "type": "organization",
+      "attributes": {
+        "source_file": "legacy/source-html/about-us/index.html",
+        "description": "Multidisciplinary scientific hub founded in 2015 at the Faculty of Arts, Comenius University in Bratislava. Focuses on Maya, Nahua, and broader Mesoamerican cultures. Located at \u0160t\u00farova 9, within the Department of Comparative Religious Studies. Reports directly to the dean of the Faculty of Arts."
+      },
+      "id": "cms_center_for_mesoamerican_studies",
+      "community": 1,
+      "norm_label": "center for mesoamerican studies"
+    },
+    {
+      "label": "Comenius University Bratislava",
+      "type": "organization",
+      "attributes": {
+        "source_file": "legacy/source-html/about-us/index.html",
+        "description": "Host institution of the Center for Mesoamerican Studies, Faculty of Arts, Bratislava, Slovakia."
+      },
+      "id": "cms_comenius_university",
+      "community": 1,
+      "norm_label": "comenius university bratislava"
+    },
+    {
+      "label": "Milan Kov\u00e1\u010d",
+      "type": "person",
+      "attributes": {
+        "source_file": "legacy/source-html/more-info/project-vega-1001113/index.html",
+        "description": "Prof. Milan Kov\u00e1\u010d PhD. from Comenius University. Lead researcher of long-term multidisciplinary projects at Uaxact\u00fan, Guatemala. PI on VEGA 1/0011/13 (Maya hieroglyphic inscriptions) and VEGA 1/0858/17 (Maya Preclassic period synthesis)."
+      },
+      "id": "cms_milan_kovac",
+      "community": 0,
+      "norm_label": "milan kovac"
+    },
+    {
+      "label": "Jakub \u0160pot\u00e1k",
+      "type": "person",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations/index.html",
+        "description": "Mgr. Jakub \u0160pot\u00e1k, PhD. Researcher on Project 09I03-03-V04-00243: Function of Tzolk'in Calendar Structures in the Postclassic Maya Codices. Contact email: jakub.spotak@uniba.sk."
+      },
+      "id": "cms_jakub_spotak",
+      "community": 0,
+      "norm_label": "jakub spotak"
+    },
+    {
+      "label": "F\u00e1tima del Rosario Tec Pool",
+      "type": "person",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations-grants/index.html",
+        "description": "Researcher on CU grant 2025: Documentation of rock art motifs from the Kaua Cave in Yucat\u00e1n, Mexico, using LiDAR. Also authored the Preliminary catalog of rock art in the Kaua Cave (2025)."
+      },
+      "id": "cms_fatima_tec_pool",
+      "community": 5,
+      "norm_label": "fatima del rosario tec pool"
+    },
+    {
+      "label": "PARU \u2013 Uaxact\u00fan Regional Archaeological Project",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/about-us/index.html",
+        "description": "Uaxactun Regional Archaeological Project overseen by CMS since 2016. One of the most significant European research initiatives in the Maya area. CMS provides funding, technical support, research coordination, and publication work."
+      },
+      "id": "paru_uaxactun_project",
+      "community": 2,
+      "norm_label": "paru \u2013 uaxactun regional archaeological project"
+    },
+    {
+      "label": "Uaxact\u00fan",
+      "type": "location",
+      "attributes": {
+        "source_file": "legacy/source-html/more-info/project-vega-1001113/index.html",
+        "description": "Archaeological site in Guatemala, considered a cradle of Mayan civilization. Site of Slovak long-term multidisciplinary research led by Prof. Milan Kov\u00e1\u010d. Contains pre-Classic and Classic Maya monuments including stelae first recorded by S. G. Morley in 1916."
+      },
+      "id": "paru_uaxactun_location",
+      "community": 0,
+      "norm_label": "uaxactun"
+    },
+    {
+      "label": "PARU Uaxact\u00fan Papers",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/paru-uaxactun-papers/index.html",
+        "description": "Legacy web page for papers associated with the PARU Uaxact\u00fan project. Page title: Papers."
+      },
+      "id": "paru_uaxactun_papers_page",
+      "community": 2,
+      "norm_label": "paru uaxactun papers"
+    },
+    {
+      "label": "PARU Uaxact\u00fan Recent Investigations",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/paru-uaxactun-recent-investigations/index.html",
+        "description": "Legacy web page listing recent investigations under the PARU Uaxact\u00fan project."
+      },
+      "id": "paru_uaxactun_recent_investigations_page",
+      "community": 2,
+      "norm_label": "paru uaxactun recent investigations"
+    },
+    {
+      "label": "PARU Uaxact\u00fan Archeological Artefacts",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/paru-uaxactun-archeological-artefacts/index.html",
+        "description": "Legacy web page for archaeological artefacts from the PARU Uaxact\u00fan project."
+      },
+      "id": "paru_uaxactun_artefacts_page",
+      "community": 2,
+      "norm_label": "paru uaxactun archeological artefacts"
+    },
+    {
+      "label": "Research \u2013 Archaeological Reports",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/research/index.html",
+        "description": "Legacy web page listing archaeological project reports. Subtitle: Archaeological Projects: Uaxactun, Guatemala. Focus on Maya civilization conservation and presentation of Slovak discoveries."
+      },
+      "id": "research_page",
+      "community": 2,
+      "norm_label": "research \u2013 archaeological reports"
+    },
+    {
+      "label": "Project APVV-0864-12",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/more-info/project-apvv-0864-12/index.html",
+        "description": "Maya Ritual and Astronomical Complex project. Goal: verify, explain, and preserve a new ritual and astronomical observatory discovered by Slovak research in Uaxact\u00fan, Guatemala (100 BC \u2013 150 AD). Includes creating a 3D model, exhibition in Slovakia, collaboration with the Hlohovec observatory, nanotechnology preservation of stucco mask, and physical replica construction."
+      },
+      "id": "project_apvv_0864_12",
+      "community": 0,
+      "norm_label": "project apvv-0864-12"
+    },
+    {
+      "label": "Project VEGA 1/0011/13",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/more-info/project-vega-1001113/index.html",
+        "description": "Project focused on new reading of Maya hieroglyphic inscriptions from Uaxact\u00fan, Guatemala. Goals: digital documentation of stelae using modern technology (frottage, night photography, RTI, 3D photogrammetry), updated interpretation by international team, publication of new corpus of hieroglyphic inscriptions. Led by Prof. Milan Kov\u00e1\u010d. Previous documentation by Graham (1986) contained ~30% errors."
+      },
+      "id": "project_vega_1001113",
+      "community": 0,
+      "norm_label": "project vega 1/0011/13"
+    },
+    {
+      "label": "Project VEGA 1/0858/17",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/more-info/project-vega-1085817/index.html",
+        "description": "Project aimed at revising the state of knowledge on the Maya Preclassic period. Motto: 'back to the origin of Maya history'. Duration 2016\u20132020. Led by Prof. Milan Kov\u00e1\u010d's team. Integrates data from five international projects: El Mirador, Ceibal, San Bartolo, Holmul/Cival, and Uaxact\u00fan. Goals include data completion, chronology calibration, architectural/urban typology, writing system database, visual forms database, and synthesis."
+      },
+      "id": "project_vega_1085817",
+      "community": 0,
+      "norm_label": "project vega 1/0858/17"
+    },
+    {
+      "label": "Project 09I03-03-V04-00234 \u2013 Potbelly Sculptures",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations/index.html",
+        "description": "Preclassic Maya Potbelly Sculptures in Peten, Guatemala and Their Connection to Ancestor Cult. Researcher: prof. Milan Kov\u00e1\u010d, PhD. Includes a preliminary database (A1-Database - POTBELLY.pdf)."
+      },
+      "id": "project_09i03_potbelly",
+      "community": 0,
+      "norm_label": "project 09i03-03-v04-00234 \u2013 potbelly sculptures"
+    },
+    {
+      "label": "Project 09I03-03-V04-00243 \u2013 Tzolk'in Calendar",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations/index.html",
+        "description": "Function of Tzolk'in Calendar Structures in the Postclassic Maya Codices. Researcher: Mgr. Jakub \u0160pot\u00e1k, PhD."
+      },
+      "id": "project_09i03_tzolkin",
+      "community": 0,
+      "norm_label": "project 09i03-03-v04-00243 \u2013 tzolk'in calendar"
+    },
+    {
+      "label": "CU Grant 2025 \u2013 Kaua Cave Rock Art",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations-grants/index.html",
+        "description": "Documentation of rock art motifs from the Kaua Cave in Yucat\u00e1n, Mexico, using LiDAR. Researcher: F\u00e1tima del Rosario Tec Pool. Includes final report PDF and preliminary catalogue."
+      },
+      "id": "grant_kaua_cave_2025",
+      "community": 5,
+      "norm_label": "cu grant 2025 \u2013 kaua cave rock art"
+    },
+    {
+      "label": "Grants and Investigations \u2013 Grants",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations-grants/index.html",
+        "description": "Legacy web page listing CMS grants and investigation reports."
+      },
+      "id": "grants_investigations_grants_page",
+      "community": 5,
+      "norm_label": "grants and investigations \u2013 grants"
+    },
+    {
+      "label": "Grants and Investigations \u2013 Project Reports",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations/index.html",
+        "description": "Legacy web page listing CMS project reports for archaeological projects at Uaxactun, Guatemala."
+      },
+      "id": "grants_investigations_page",
+      "community": 0,
+      "norm_label": "grants and investigations \u2013 project reports"
+    },
+    {
+      "label": "Bratislava Maya Meeting (BMM)",
+      "type": "event",
+      "attributes": {
+        "source_file": "legacy/source-html/events/index.html",
+        "description": "Annual conference organized by CMS since 2009 (formerly Autumn Academy of Maya Hieroglyphic Writing). Combines workshops in Maya hieroglyphic decipherment with a scholarly conference. Editions include: 9th BMM (2019, topic: Mesoamerican Worldviews), 8th BMM (2018, topic: Lights and Shadows of Xibalba), 7th BMM (2016, topic: Imago Mundi), 6th BMM (2015, topic: Maya Ritualism), and earlier Academy editions from 2010\u20132014."
+      },
+      "id": "events_bratislava_maya_meeting",
+      "community": 7,
+      "norm_label": "bratislava maya meeting (bmm)"
+    },
+    {
+      "label": "European Maya Conference",
+      "type": "event",
+      "attributes": {
+        "source_file": "legacy/source-html/about-us/index.html",
+        "description": "The leading Maya-focused academic gathering in Europe. CMS has been co-organizer since 2014 and formally represented the event in 2020 and 2025. 19th edition held in 2014 in Bratislava with topic: Maya Cosmology: Terrestrial and Celestial Landscapes."
+      },
+      "id": "events_european_maya_conference",
+      "community": 1,
+      "norm_label": "european maya conference"
+    },
+    {
+      "label": "Search for Indigenous America Conference",
+      "type": "event",
+      "attributes": {
+        "source_file": "legacy/source-html/about-us/index.html",
+        "description": "Recurring conference cycle held in both the Czech Republic and Slovakia, where CMS researchers regularly present."
+      },
+      "id": "events_search_indigenous_america",
+      "community": 1,
+      "norm_label": "search for indigenous america conference"
+    },
+    {
+      "label": "Events / Bratislava Maya Meetings History",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/events/index.html",
+        "description": "Legacy web page documenting the history of the Bratislava Maya Meeting and Academy of Maya Hieroglyphic Writing events."
+      },
+      "id": "events_page",
+      "community": 7,
+      "norm_label": "events / bratislava maya meetings history"
+    },
+    {
+      "label": "Bratislava Maya Meetings \u2013 News",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/bratislava-maya-meetings-news/index.html",
+        "description": "Legacy web page for news related to the Bratislava Maya Meeting."
+      },
+      "id": "bmm_news_page",
+      "community": 7,
+      "norm_label": "bratislava maya meetings \u2013 news"
+    },
+    {
+      "label": "Ferdinand Anders Library",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/about-us/index.html",
+        "description": "Specialized library overseen by CMS, holding over 10,000 volumes related to pre-Columbian civilizations with focus on Mesoamerica. Includes rare facsimiles, codices, early prints, and the personal archive of Ferdinand Anders. Open to students and visiting researchers."
+      },
+      "id": "ferdinand_anders_library",
+      "community": 1,
+      "norm_label": "ferdinand anders library"
+    },
+    {
+      "label": "Ferdinand Anders Library \u2013 History",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/ferdinand-anders-library-history/index.html",
+        "description": "Legacy web page covering the history of the Ferdinand Anders Library."
+      },
+      "id": "ferdinand_anders_library_history_page",
+      "community": 1,
+      "norm_label": "ferdinand anders library \u2013 history"
+    },
+    {
+      "label": "Ferdinand Anders",
+      "type": "person",
+      "attributes": {
+        "source_file": "legacy/source-html/ferdinand-anders-library-history/index.html",
+        "description": "Person whose personal archive and collection forms the basis of the Ferdinand Anders Library at CMS."
+      },
+      "id": "ferdinand_anders",
+      "community": 1,
+      "norm_label": "ferdinand anders"
+    },
+    {
+      "label": "About Us",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/about-us/index.html",
+        "description": "Legacy overview page for the Center for Mesoamerican Studies. Covers establishment (2015), headquarters (\u0160t\u00farova 9, Bratislava), education, research, conferences, collections, and the Ferdinand Anders Library."
+      },
+      "id": "about_us_page",
+      "community": 1,
+      "norm_label": "about us"
+    },
+    {
+      "label": "About Us \u2013 Contacts",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/about-us-contacts/index.html",
+        "description": "Legacy web page listing contacts for the Center for Mesoamerican Studies."
+      },
+      "id": "about_us_contacts_page",
+      "community": 1,
+      "norm_label": "about us \u2013 contacts"
+    },
+    {
+      "label": "Education \u2013 PhD Program",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/education-phd-program/index.html",
+        "description": "Legacy web page covering the PhD program in Mesoamerican studies at CMS/Comenius University."
+      },
+      "id": "education_phd_program_page",
+      "community": 1,
+      "norm_label": "education \u2013 phd program"
+    },
+    {
+      "label": "Education \u2013 Work in Progress",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/education-work-in-progress/index.html",
+        "description": "Legacy web page listing work-in-progress student projects and theses in Mesoamerican studies."
+      },
+      "id": "education_work_in_progress_page",
+      "community": 13,
+      "norm_label": "education \u2013 work in progress"
+    },
+    {
+      "label": "Collections \u2013 History",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/gallery/index.html",
+        "description": "Legacy web page for the collections history. Internal page title: Collections - History."
+      },
+      "id": "gallery_collections_page",
+      "community": 1,
+      "norm_label": "collections \u2013 history"
+    },
+    {
+      "label": "mesoamerica.eu Website",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/test/index.html",
+        "description": "Public website of the Center for Mesoamerican Studies. Webstudio-built legacy site being migrated to Astro 6."
+      },
+      "id": "cms_mesoamerica_website",
+      "community": 1,
+      "norm_label": "mesoamerica.eu website"
+    },
+    {
+      "label": "Uaxact\u00fan Ritual and Astronomical Observatory",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/more-info/project-apvv-0864-12/index.html",
+        "description": "New ritual and astronomical observatory discovered by Slovak research in Uaxact\u00fan, Guatemala. Dates to 100 BC \u2013 150 AD. Features a jaguar god mask on the observatory fa\u00e7ade. Described as potentially the oldest and most significant Mayan observatory."
+      },
+      "id": "cms_uaxactun_observatory",
+      "community": 0,
+      "norm_label": "uaxactun ritual and astronomical observatory"
+    },
+    {
+      "label": "Maya Hieroglyphic Inscriptions of Uaxact\u00fan",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/more-info/project-vega-1001113/index.html",
+        "description": "Stelae inscriptions at Uaxact\u00fan, among the oldest discovered, first recorded by S. G. Morley in 1916. Previous documentation by Graham (1986) contained ~30% errors. Target of VEGA 1/0011/13 redocumentation project."
+      },
+      "id": "cms_maya_hieroglyphic_inscriptions",
+      "community": 0,
+      "norm_label": "maya hieroglyphic inscriptions of uaxactun"
+    },
+    {
+      "label": "Maya Preclassic Period",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/more-info/project-vega-1085817/index.html",
+        "description": "Earliest epoch of Maya civilization. Knowledge remains fragmentary compared to Classic and Postclassic periods. Primary focus of VEGA 1/0858/17. International collaborating projects include El Mirador, Ceibal, San Bartolo, Holmul/Cival, and Uaxact\u00fan."
+      },
+      "id": "cms_maya_preclassic_period",
+      "community": 0,
+      "norm_label": "maya preclassic period"
+    },
+    {
+      "label": "Kaua Cave",
+      "type": "location",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations-grants/index.html",
+        "description": "Cave in Yucat\u00e1n, Mexico. Site of rock art documentation project using LiDAR by researcher F\u00e1tima del Rosario Tec Pool (CU grant 2025)."
+      },
+      "id": "cms_kaua_cave",
+      "community": 5,
+      "norm_label": "kaua cave"
+    },
+    {
+      "label": "Hlohovec Observatory",
+      "type": "organization",
+      "attributes": {
+        "source_file": "legacy/source-html/more-info/project-apvv-0864-12/index.html",
+        "description": "Observatory in Hlohovec, Slovakia. Collaborating institution for verifying calculation accuracy and creating graphic models of the Uaxact\u00fan astronomical observatory in project APVV-0864-12."
+      },
+      "id": "cms_hlohovec_observatory",
+      "community": 0,
+      "norm_label": "hlohovec observatory"
+    },
+    {
+      "label": "Test Page",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/test/index.html",
+        "description": "Legacy Webstudio test page (noindex, nofollow). Contains the Webstudio navigation bar prototype with dropdowns for all main site sections."
+      },
+      "id": "test_page",
+      "community": 14,
+      "norm_label": "test page"
+    },
+    {
+      "label": "Exhibitions",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/exhibitions/index.html",
+        "description": "Main exhibitions page for the CMS mesoamerica.eu site. Route: /exhibitions. Webstudio page with h1 heading 'Exhibitions'.",
+        "url": "/exhibitions",
+        "page_title": "Exhibitions - Main"
+      },
+      "id": "exhibitions_page",
+      "community": 4,
+      "norm_label": "exhibitions"
+    },
+    {
+      "label": "Grants and Investigations - Investigation Notes",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations-investigation-notes/index.html",
+        "description": "Subpage of Grants and Investigations section listing investigation notes. Route: /grants-and-investigations-investigation-notes.",
+        "url": "/grants-and-investigations-investigation-notes",
+        "page_title": "Grants and Investigations - Investigation notes"
+      },
+      "id": "grants_investigation_notes_page",
+      "community": 4,
+      "norm_label": "grants and investigations - investigation notes"
+    },
+    {
+      "label": "About Us - Members",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/abouts-us-members/index.html",
+        "description": "Members listing page under About Us section. Route: /abouts-us-members.",
+        "url": "/abouts-us-members",
+        "page_title": "About Us - Members"
+      },
+      "id": "abouts_us_members_page",
+      "community": 11,
+      "norm_label": "about us - members"
+    },
+    {
+      "label": "Education - Published Thesis",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/education-published-thesis/index.html",
+        "description": "Lists published theses under Education section. Route: /education-published-thesis.",
+        "url": "/education-published-thesis",
+        "page_title": "Education - Published Thesis"
+      },
+      "id": "education_published_thesis_page",
+      "community": 8,
+      "norm_label": "education - published thesis"
+    },
+    {
+      "label": "Collections - Ethnographical Collection",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/collections-ethnographical-collection/index.html",
+        "description": "Presents the ethnographical collection. Route: /collections-ethnographical-collection.",
+        "url": "/collections-ethnographical-collection",
+        "page_title": "Collections - Ethnographical collection"
+      },
+      "id": "collections_ethnographical_collection_page",
+      "community": 4,
+      "norm_label": "collections - ethnographical collection"
+    },
+    {
+      "label": "Bratislava Maya Meetings - Gallery",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/bratislava-maya-meetings-gallery/index.html",
+        "description": "Photo gallery for the Bratislava Maya Meetings conference. Route: /bratislava-maya-meetings-gallery.",
+        "url": "/bratislava-maya-meetings-gallery",
+        "page_title": "Bratislava Maya Meetings - Gallery"
+      },
+      "id": "bratislava_maya_meetings_gallery_page",
+      "community": 9,
+      "norm_label": "bratislava maya meetings - gallery"
+    },
+    {
+      "label": "PARU Uaxactun - Gallery",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/paru-uaxactun-gallery/index.html",
+        "description": "Photo gallery for the PARU Uaxactun archaeological project. Route: /paru-uaxactun-gallery.",
+        "url": "/paru-uaxactun-gallery",
+        "page_title": "PARU Uxactun - Gallery"
+      },
+      "id": "paru_uaxactun_gallery_page",
+      "community": 2,
+      "norm_label": "paru uaxactun - gallery"
+    },
+    {
+      "label": "Collections - Gallery",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/collections-gallery/index.html",
+        "description": "Gallery page for the Collections section. Route: /collections-gallery.",
+        "url": "/collections-gallery",
+        "page_title": "Collections - Gallery"
+      },
+      "id": "collections_gallery_page",
+      "community": 4,
+      "norm_label": "collections - gallery"
+    },
+    {
+      "label": "Collections - Exhibitions",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/collections-exhibitions/index.html",
+        "description": "Exhibitions page within the Collections section. Route: /collections-exhibitions.",
+        "url": "/collections-exhibitions",
+        "page_title": "Collections - Exhibitions"
+      },
+      "id": "collections_exhibitions_page",
+      "community": 4,
+      "norm_label": "collections - exhibitions"
+    },
+    {
+      "label": "Grants and Investigations - Gallery",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations-gallery/index.html",
+        "description": "Photo gallery for the Grants and Investigations section. Route: /grants-and-investigations-gallery.",
+        "url": "/grants-and-investigations-gallery",
+        "page_title": "Grants and Investigations - Gallery"
+      },
+      "id": "grants_investigations_gallery_page",
+      "community": 4,
+      "norm_label": "grants and investigations - gallery"
+    },
+    {
+      "label": "Education - Gallery",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/education-gallery/index.html",
+        "description": "Photo gallery for the Education section. Route: /education-gallery.",
+        "url": "/education-gallery",
+        "page_title": "Education - Gallery"
+      },
+      "id": "education_gallery_page",
+      "community": 8,
+      "norm_label": "education - gallery"
+    },
+    {
+      "label": "PARU Uaxactun - Maps",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/paru-uaxactun-maps/index.html",
+        "description": "Maps subpage for the PARU Uaxactun archaeological project. Route: /paru-uaxactun-maps.",
+        "url": "/paru-uaxactun-maps",
+        "page_title": "PARU Uaxactun - Maps"
+      },
+      "id": "paru_uaxactun_maps_page",
+      "community": 2,
+      "norm_label": "paru uaxactun - maps"
+    },
+    {
+      "label": "PARU Uaxactun - History",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/paru-uaxactun-history/index.html",
+        "description": "History subpage for the PARU Uaxactun project. Route: /paru-uaxactun-history.",
+        "url": "/paru-uaxactun-history",
+        "page_title": "PARU Uaxactun - History"
+      },
+      "id": "paru_uaxactun_history_page",
+      "community": 2,
+      "norm_label": "paru uaxactun - history"
+    },
+    {
+      "label": "Ferdinand Anders Library - Catalogue",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/ferdinand-anders-library-catalogue/index.html",
+        "description": "Catalogue subpage for the Ferdinand Anders Library. Route: /ferdinand-anders-library-catalogue.",
+        "url": "/ferdinand-anders-library-catalogue",
+        "page_title": "Ferdinand Anders Library - Catalogue"
+      },
+      "id": "ferdinand_anders_library_catalogue_page",
+      "community": 6,
+      "norm_label": "ferdinand anders library - catalogue"
+    },
+    {
+      "label": "Ferdinand Anders Library",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/ferdinand-anders-library/index.html",
+        "description": "Gallery/main page for the Ferdinand Anders Library. Route: /ferdinand-anders-library.",
+        "url": "/ferdinand-anders-library",
+        "page_title": "Ferdinand Anders Library - Gallery"
+      },
+      "id": "ferdinand_anders_library_page",
+      "community": 6,
+      "norm_label": "ferdinand anders library"
+    },
+    {
+      "label": "Publications",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Main publications page listing books, archaeological reports, studies, catalogues, and archives. Contains downloadable PDFs. Route: /publications.",
+        "url": "/publications",
+        "page_title": "Publications - Main",
+        "sections": "Books, Archaeological Reports, Studies, Catalogues, Archives"
+      },
+      "id": "publications_page",
+      "community": 3,
+      "norm_label": "publications"
+    },
+    {
+      "label": "Collections - Archaeological Collection",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/collection-archaeological-collection/index.html",
+        "description": "Presents the archaeological collection. Route: /collection-archaeological-collection.",
+        "url": "/collection-archaeological-collection",
+        "page_title": "Collections - Archaeological collection"
+      },
+      "id": "collection_archaeological_collection_page",
+      "community": 4,
+      "norm_label": "collections - archaeological collection"
+    },
+    {
+      "label": "About Us",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/abouts-us-members/index.html",
+        "description": "Top-level navigation section covering centre overview, members, and contacts."
+      },
+      "id": "section_about_us",
+      "community": 11,
+      "norm_label": "about us"
+    },
+    {
+      "label": "Exhibitions Section",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/exhibitions/index.html",
+        "description": "Top-level navigation section for CMS exhibitions content."
+      },
+      "id": "section_exhibitions",
+      "community": 4,
+      "norm_label": "exhibitions section"
+    },
+    {
+      "label": "Collections Section",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/collections-gallery/index.html",
+        "description": "Top-level navigation section containing archaeological and ethnographical collections, gallery, and exhibitions sub-pages."
+      },
+      "id": "section_collections",
+      "community": 4,
+      "norm_label": "collections section"
+    },
+    {
+      "label": "Grants and Investigations Section",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/grants-and-investigations-investigation-notes/index.html",
+        "description": "Top-level navigation section for research grants and field investigations."
+      },
+      "id": "section_grants_investigations",
+      "community": 4,
+      "norm_label": "grants and investigations section"
+    },
+    {
+      "label": "PARU Uaxactun Section",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/paru-uaxactun-history/index.html",
+        "description": "Top-level navigation section dedicated to the PARU Uaxactun archaeological project in Guatemala. Includes history, maps, and gallery sub-pages."
+      },
+      "id": "section_paru_uaxactun",
+      "community": 2,
+      "norm_label": "paru uaxactun section"
+    },
+    {
+      "label": "Education Section",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/education-gallery/index.html",
+        "description": "Top-level navigation section for educational content including published theses and gallery."
+      },
+      "id": "section_education",
+      "community": 8,
+      "norm_label": "education section"
+    },
+    {
+      "label": "Conferences Section",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/bratislava-maya-meetings-gallery/index.html",
+        "description": "Top-level navigation section for conferences, including Bratislava Maya Meetings."
+      },
+      "id": "section_conferences",
+      "community": 9,
+      "norm_label": "conferences section"
+    },
+    {
+      "label": "Library Section",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/ferdinand-anders-library/index.html",
+        "description": "Top-level navigation section for the Ferdinand Anders Library, including gallery and catalogue sub-pages."
+      },
+      "id": "section_library",
+      "community": 6,
+      "norm_label": "library section"
+    },
+    {
+      "label": "Uaxactun",
+      "type": "location",
+      "attributes": {
+        "source_file": "legacy/source-html/paru-uaxactun-history/index.html",
+        "description": "Maya archaeological site in the Pet\u00e9n region of Guatemala; subject of the CMS PARU excavation project."
+      },
+      "id": "uaxactun_site",
+      "community": 2,
+      "norm_label": "uaxactun"
+    },
+    {
+      "label": "Ferdinand Anders Library",
+      "type": "concept",
+      "attributes": {
+        "source_file": "legacy/source-html/ferdinand-anders-library/index.html",
+        "description": "Specialised Mesoamerican studies library associated with the CMS. Named after Ferdinand Anders. Has a catalogue and gallery sub-pages."
+      },
+      "id": "ferdinand_anders_library_concept",
+      "community": 6,
+      "norm_label": "ferdinand anders library"
+    },
+    {
+      "label": "Bratislava Maya Meetings",
+      "type": "event",
+      "attributes": {
+        "source_file": "legacy/source-html/bratislava-maya-meetings-gallery/index.html",
+        "description": "Recurring academic conference on Maya studies held in Bratislava. Organized under the Conferences navigation section."
+      },
+      "id": "bratislava_maya_meetings",
+      "community": 9,
+      "norm_label": "bratislava maya meetings"
+    },
+    {
+      "label": "Milan Kov\u00e1\u010d",
+      "type": "person",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Editor and researcher at CMS. Co-edited 'In the Shadow of Xibalba' and 'In the Realm of Maize God'."
+      },
+      "id": "person_milan_kovac",
+      "community": 3,
+      "norm_label": "milan kovac"
+    },
+    {
+      "label": "Jakub \u0160pot\u00e1k",
+      "type": "person",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Researcher and author at CMS. Compiled 'Postclassic Mesoamerican Codices: A Selected Bibliography' (2023). Email: jakub.spotak@uniba.sk. Co-edited 'In the Realm of Maize God'."
+      },
+      "id": "person_jakub_spotak",
+      "community": 3,
+      "norm_label": "jakub spotak"
+    },
+    {
+      "label": "F\u00e1tima Tec Pool",
+      "type": "person",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Co-editor of 'In the Shadow of Xibalba: Maya Caves and Underground Landscapes'."
+      },
+      "id": "person_fatima_tec_pool",
+      "community": 3,
+      "norm_label": "fatima tec pool"
+    },
+    {
+      "label": "In the Shadow of Xibalba",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Book: 'Maya Caves and Underground Landscapes', edited by Milan Kov\u00e1\u010d & F\u00e1tima Tec Pool. Available as PDF.",
+        "pdf_url": "https://mesoamerica.eu/pdfs/In-the-Shadow-of-Xibalba.-Maya-caves-and-underground-landscapes-2.pdf"
+      },
+      "id": "pub_in_shadow_of_xibalba",
+      "community": 3,
+      "norm_label": "in the shadow of xibalba"
+    },
+    {
+      "label": "In the Realm of Maize God",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Book: 'The World of Ancient Mayan and Mesoamerican Farmers', edited by Milan Kov\u00e1\u010d & Jakub \u0160pot\u00e1k. Available as PDF.",
+        "pdf_url": "https://mesoamerica.eu/pdfs/In_the_realm_Maize_god_final.pdf"
+      },
+      "id": "pub_realm_of_maize_god",
+      "community": 3,
+      "norm_label": "in the realm of maize god"
+    },
+    {
+      "label": "Postclassic Mesoamerican Codices: A Selected Bibliography",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Bibliography compiled by Jakub \u0160pot\u00e1k (2023). Available as PDF.",
+        "pdf_url": "https://mesoamerica.eu/pdfs/Spotak_meso_codices_2023.pdf"
+      },
+      "id": "pub_postclassic_mesoamerican_codices",
+      "community": 3,
+      "norm_label": "postclassic mesoamerican codices: a selected bibliography"
+    },
+    {
+      "label": "Nuevas excavaciones en Uaxactun Series",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Multi-volume annual archaeological report series for the PARU Uaxactun project (volumes I\u2013XI+, 2009\u2013present). All available as PDFs.",
+        "pdf_base": "https://mesoamerica.eu/pdfs/nuevas_excavaciones_en_uaxactun_"
+      },
+      "id": "pub_nuevas_excavaciones_uaxactun",
+      "community": 2,
+      "norm_label": "nuevas excavaciones en uaxactun series"
+    },
+    {
+      "label": "Excavaciones en el Pet\u00e9n Noreste Series",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Multi-volume archaeological report series for northeastern Pet\u00e9n excavations (volumes I\u2013VI+). All available as PDFs.",
+        "pdf_base": "https://mesoamerica.eu/pdfs/excavaciones_en_el_peten_noreste_"
+      },
+      "id": "pub_excavaciones_peten_noreste",
+      "community": 2,
+      "norm_label": "excavaciones en el peten noreste series"
+    },
+    {
+      "label": "Slnko s t\u0155\u0148mi",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Publication available as PDF on mesoamerica.eu.",
+        "pdf_url": "https://mesoamerica.eu/pdfs/Slnko_s_trnmi.pdf"
+      },
+      "id": "pub_slnko_s_trnmi",
+      "community": 3,
+      "norm_label": "slnko s trnmi"
+    },
+    {
+      "label": "Spotak Catalog industria 2023",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Catalogue by Jakub \u0160pot\u00e1k (2023). Available as PDF.",
+        "pdf_url": "https://mesoamerica.eu/pdfs/Spotak_Catalog_industria_2023.pdf"
+      },
+      "id": "pub_spotak_catalog_industry_2023",
+      "community": 3,
+      "norm_label": "spotak catalog industria 2023"
+    },
+    {
+      "label": "Spotak Catalog ceramics 2023",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Ceramics catalogue by Jakub \u0160pot\u00e1k (2023). Available as PDF.",
+        "pdf_url": "https://mesoamerica.eu/pdfs/Spotak_Catalog_ceramics_2023_online.pdf"
+      },
+      "id": "pub_spotak_catalog_ceramics_2023",
+      "community": 3,
+      "norm_label": "spotak catalog ceramics 2023"
+    },
+    {
+      "label": "jakub.spotak@uniba.sk",
+      "type": "entity",
+      "attributes": {
+        "source_file": "legacy/source-html/exhibitions/index.html",
+        "description": "Contact email for Jakub \u0160pot\u00e1k at Comenius University (uniba.sk). Appears in footer of all legacy pages."
+      },
+      "id": "contact_email_spotak",
+      "community": 3,
+      "norm_label": "jakub.spotak@uniba.sk"
+    },
+    {
+      "label": "Webstudio Project (a4779858)",
+      "type": "technology",
+      "attributes": {
+        "source_file": "legacy/source-html/exhibitions/index.html",
+        "description": "The Webstudio CMS project ID a4779858-d31a-4821-9099-10875266fcf5, last published 2026-04-18. All legacy pages share this project ID.",
+        "project_id": "a4779858-d31a-4821-9099-10875266fcf5",
+        "last_published": "2026-04-18T18:13:56.233Z"
+      },
+      "id": "webstudio_project",
+      "community": 4,
+      "norm_label": "webstudio project (a4779858)"
+    },
+    {
+      "label": "Publications Archives (Google Drive)",
+      "type": "document",
+      "attributes": {
+        "source_file": "legacy/source-html/publications/index.html",
+        "description": "Google Drive folder for older publication archives.",
+        "url": "https://drive.google.com/drive/folders/1La4VhMMrKLhA9mnwJz98koKcTXG0rJNO"
+      },
+      "id": "pub_archives_drive",
+      "community": 3,
+      "norm_label": "publications archives (google drive)"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/legacy-pdf-map.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "_src": "lib_legacy_pdf_map_ts",
+      "_tgt": "lib_legacy_pdf_map_rewritelegacyasseturl",
+      "source": "lib_legacy_pdf_map_ts",
+      "target": "lib_legacy_pdf_map_rewritelegacyasseturl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "founded_at",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_center_for_mesoamerican_studies",
+      "_tgt": "cms_comenius_university",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "cms_comenius_university"
+    },
+    {
+      "relation": "oversees",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_center_for_mesoamerican_studies",
+      "_tgt": "paru_uaxactun_project",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "paru_uaxactun_project"
+    },
+    {
+      "relation": "organizes",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_center_for_mesoamerican_studies",
+      "_tgt": "events_bratislava_maya_meeting",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "events_bratislava_maya_meeting"
+    },
+    {
+      "relation": "co_organizes",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_center_for_mesoamerican_studies",
+      "_tgt": "events_european_maya_conference",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "events_european_maya_conference"
+    },
+    {
+      "relation": "participates_in",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_center_for_mesoamerican_studies",
+      "_tgt": "events_search_indigenous_america",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "events_search_indigenous_america"
+    },
+    {
+      "relation": "oversees",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_center_for_mesoamerican_studies",
+      "_tgt": "ferdinand_anders_library",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "ferdinand_anders_library"
+    },
+    {
+      "relation": "describes",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "about_us_page",
+      "_tgt": "cms_center_for_mesoamerican_studies",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "about_us_page"
+    },
+    {
+      "relation": "has_contact_page",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_center_for_mesoamerican_studies",
+      "_tgt": "about_us_contacts_page",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "about_us_contacts_page"
+    },
+    {
+      "relation": "offers",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_center_for_mesoamerican_studies",
+      "_tgt": "education_phd_program_page",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "education_phd_program_page"
+    },
+    {
+      "relation": "manages",
+      "provenance": "INFERRED",
+      "confidence_score": 0.85,
+      "_src": "cms_center_for_mesoamerican_studies",
+      "_tgt": "gallery_collections_page",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "gallery_collections_page"
+    },
+    {
+      "relation": "funded_by_or_affiliated_with",
+      "provenance": "INFERRED",
+      "confidence_score": 0.85,
+      "_src": "project_apvv_0864_12",
+      "_tgt": "cms_center_for_mesoamerican_studies",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "project_apvv_0864_12"
+    },
+    {
+      "relation": "funded_by_or_affiliated_with",
+      "provenance": "INFERRED",
+      "confidence_score": 0.85,
+      "_src": "project_vega_1001113",
+      "_tgt": "cms_center_for_mesoamerican_studies",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "project_vega_1001113"
+    },
+    {
+      "relation": "funded_by_or_affiliated_with",
+      "provenance": "INFERRED",
+      "confidence_score": 0.85,
+      "_src": "project_vega_1085817",
+      "_tgt": "cms_center_for_mesoamerican_studies",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "project_vega_1085817"
+    },
+    {
+      "relation": "web_presence_of",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_mesoamerica_website",
+      "_tgt": "cms_center_for_mesoamerican_studies",
+      "source": "cms_center_for_mesoamerican_studies",
+      "target": "cms_mesoamerica_website"
+    },
+    {
+      "relation": "affiliated_with",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_milan_kovac",
+      "_tgt": "cms_comenius_university",
+      "source": "cms_comenius_university",
+      "target": "cms_milan_kovac"
+    },
+    {
+      "relation": "hosted_at",
+      "provenance": "INFERRED",
+      "confidence_score": 0.9,
+      "_src": "education_phd_program_page",
+      "_tgt": "cms_comenius_university",
+      "source": "cms_comenius_university",
+      "target": "education_phd_program_page"
+    },
+    {
+      "relation": "leads",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_milan_kovac",
+      "_tgt": "project_vega_1001113",
+      "source": "cms_milan_kovac",
+      "target": "project_vega_1001113"
+    },
+    {
+      "relation": "leads",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_milan_kovac",
+      "_tgt": "project_vega_1085817",
+      "source": "cms_milan_kovac",
+      "target": "project_vega_1085817"
+    },
+    {
+      "relation": "researcher_on",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_milan_kovac",
+      "_tgt": "project_09i03_potbelly",
+      "source": "cms_milan_kovac",
+      "target": "project_09i03_potbelly"
+    },
+    {
+      "relation": "researcher_on",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_jakub_spotak",
+      "_tgt": "project_09i03_tzolkin",
+      "source": "cms_jakub_spotak",
+      "target": "project_09i03_tzolkin"
+    },
+    {
+      "relation": "researcher_on",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_fatima_tec_pool",
+      "_tgt": "grant_kaua_cave_2025",
+      "source": "cms_fatima_tec_pool",
+      "target": "grant_kaua_cave_2025"
+    },
+    {
+      "relation": "conducted_research_at",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_fatima_tec_pool",
+      "_tgt": "cms_kaua_cave",
+      "source": "cms_fatima_tec_pool",
+      "target": "cms_kaua_cave"
+    },
+    {
+      "relation": "located_at",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "paru_uaxactun_project",
+      "_tgt": "paru_uaxactun_location",
+      "source": "paru_uaxactun_project",
+      "target": "paru_uaxactun_location"
+    },
+    {
+      "relation": "mentions",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "about_us_page",
+      "_tgt": "paru_uaxactun_project",
+      "source": "paru_uaxactun_project",
+      "target": "about_us_page"
+    },
+    {
+      "relation": "belongs_to",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "paru_uaxactun_papers_page",
+      "_tgt": "paru_uaxactun_project",
+      "source": "paru_uaxactun_project",
+      "target": "paru_uaxactun_papers_page"
+    },
+    {
+      "relation": "belongs_to",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "paru_uaxactun_recent_investigations_page",
+      "_tgt": "paru_uaxactun_project",
+      "source": "paru_uaxactun_project",
+      "target": "paru_uaxactun_recent_investigations_page"
+    },
+    {
+      "relation": "belongs_to",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "paru_uaxactun_artefacts_page",
+      "_tgt": "paru_uaxactun_project",
+      "source": "paru_uaxactun_project",
+      "target": "paru_uaxactun_artefacts_page"
+    },
+    {
+      "relation": "documents",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "research_page",
+      "_tgt": "paru_uaxactun_project",
+      "source": "paru_uaxactun_project",
+      "target": "research_page"
+    },
+    {
+      "relation": "documents",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "paru_uaxactun_history_page",
+      "_tgt": "paru_uaxactun_project",
+      "source": "paru_uaxactun_project",
+      "target": "paru_uaxactun_history_page"
+    },
+    {
+      "relation": "excavates_at",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "paru_uaxactun_project",
+      "_tgt": "uaxactun_site",
+      "source": "paru_uaxactun_project",
+      "target": "uaxactun_site"
+    },
+    {
+      "relation": "reports_on",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "pub_nuevas_excavaciones_uaxactun",
+      "_tgt": "paru_uaxactun_project",
+      "source": "paru_uaxactun_project",
+      "target": "pub_nuevas_excavaciones_uaxactun"
+    },
+    {
+      "relation": "reports_on",
+      "provenance": "INFERRED",
+      "confidence_score": 0.85,
+      "_src": "pub_excavaciones_peten_noreste",
+      "_tgt": "paru_uaxactun_project",
+      "source": "paru_uaxactun_project",
+      "target": "pub_excavaciones_peten_noreste"
+    },
+    {
+      "relation": "research_site",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "project_apvv_0864_12",
+      "_tgt": "paru_uaxactun_location",
+      "source": "paru_uaxactun_location",
+      "target": "project_apvv_0864_12"
+    },
+    {
+      "relation": "research_site",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "project_vega_1001113",
+      "_tgt": "paru_uaxactun_location",
+      "source": "paru_uaxactun_location",
+      "target": "project_vega_1001113"
+    },
+    {
+      "relation": "research_site",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "project_vega_1085817",
+      "_tgt": "paru_uaxactun_location",
+      "source": "paru_uaxactun_location",
+      "target": "project_vega_1085817"
+    },
+    {
+      "relation": "located_at",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_uaxactun_observatory",
+      "_tgt": "paru_uaxactun_location",
+      "source": "paru_uaxactun_location",
+      "target": "cms_uaxactun_observatory"
+    },
+    {
+      "relation": "found_at",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "cms_maya_hieroglyphic_inscriptions",
+      "_tgt": "paru_uaxactun_location",
+      "source": "paru_uaxactun_location",
+      "target": "cms_maya_hieroglyphic_inscriptions"
+    },
+    {
+      "relation": "evidenced_at",
+      "provenance": "INFERRED",
+      "confidence_score": 0.8,
+      "_src": "cms_maya_preclassic_period",
+      "_tgt": "paru_uaxactun_location",
+      "source": "paru_uaxactun_location",
+      "target": "cms_maya_preclassic_period"
+    },
+    {
+      "relation": "investigates",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "project_apvv_0864_12",
+      "_tgt": "cms_uaxactun_observatory",
+      "source": "project_apvv_0864_12",
+      "target": "cms_uaxactun_observatory"
+    },
+    {
+      "relation": "collaborates_with",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "project_apvv_0864_12",
+      "_tgt": "cms_hlohovec_observatory",
+      "source": "project_apvv_0864_12",
+      "target": "cms_hlohovec_observatory"
+    },
+    {
+      "relation": "investigates",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "project_vega_1001113",
+      "_tgt": "cms_maya_hieroglyphic_inscriptions",
+      "source": "project_vega_1001113",
+      "target": "cms_maya_hieroglyphic_inscriptions"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "provenance": "INFERRED",
+      "confidence_score": 0.7,
+      "_src": "project_vega_1085817",
+      "_tgt": "project_vega_1001113",
+      "source": "project_vega_1001113",
+      "target": "project_vega_1085817"
+    },
+    {
+      "relation": "investigates",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "project_vega_1085817",
+      "_tgt": "cms_maya_preclassic_period",
+      "source": "project_vega_1085817",
+      "target": "cms_maya_preclassic_period"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "grants_investigations_page",
+      "_tgt": "project_09i03_potbelly",
+      "source": "project_09i03_potbelly",
+      "target": "grants_investigations_page"
+    },
+    {
+      "relation": "studies",
+      "provenance": "INFERRED",
+      "confidence_score": 0.8,
+      "_src": "project_09i03_potbelly",
+      "_tgt": "cms_maya_preclassic_period",
+      "source": "project_09i03_potbelly",
+      "target": "cms_maya_preclassic_period"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "grants_investigations_page",
+      "_tgt": "project_09i03_tzolkin",
+      "source": "project_09i03_tzolkin",
+      "target": "grants_investigations_page"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "grants_investigations_grants_page",
+      "_tgt": "grant_kaua_cave_2025",
+      "source": "grant_kaua_cave_2025",
+      "target": "grants_investigations_grants_page"
+    },
+    {
+      "relation": "documents",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "events_page",
+      "_tgt": "events_bratislava_maya_meeting",
+      "source": "events_bratislava_maya_meeting",
+      "target": "events_page"
+    },
+    {
+      "relation": "reports_news_for",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "bmm_news_page",
+      "_tgt": "events_bratislava_maya_meeting",
+      "source": "events_bratislava_maya_meeting",
+      "target": "bmm_news_page"
+    },
+    {
+      "relation": "focuses_on",
+      "provenance": "INFERRED",
+      "confidence_score": 0.75,
+      "_src": "events_bratislava_maya_meeting",
+      "_tgt": "cms_maya_hieroglyphic_inscriptions",
+      "source": "events_bratislava_maya_meeting",
+      "target": "cms_maya_hieroglyphic_inscriptions"
+    },
+    {
+      "relation": "namesake_and_archive_donor",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "ferdinand_anders",
+      "_tgt": "ferdinand_anders_library",
+      "source": "ferdinand_anders_library",
+      "target": "ferdinand_anders"
+    },
+    {
+      "relation": "links_to",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "about_us_page",
+      "_tgt": "ferdinand_anders_library",
+      "source": "ferdinand_anders_library",
+      "target": "about_us_page"
+    },
+    {
+      "relation": "describes",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "ferdinand_anders_library_history_page",
+      "_tgt": "ferdinand_anders_library",
+      "source": "ferdinand_anders_library",
+      "target": "ferdinand_anders_library_history_page"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "exhibitions_page",
+      "_tgt": "section_exhibitions",
+      "source": "exhibitions_page",
+      "target": "section_exhibitions"
+    },
+    {
+      "relation": "generated_by",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "exhibitions_page",
+      "_tgt": "webstudio_project",
+      "source": "exhibitions_page",
+      "target": "webstudio_project"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "grants_investigation_notes_page",
+      "_tgt": "section_grants_investigations",
+      "source": "grants_investigation_notes_page",
+      "target": "section_grants_investigations"
+    },
+    {
+      "relation": "generated_by",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "grants_investigation_notes_page",
+      "_tgt": "webstudio_project",
+      "source": "grants_investigation_notes_page",
+      "target": "webstudio_project"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "abouts_us_members_page",
+      "_tgt": "section_about_us",
+      "source": "abouts_us_members_page",
+      "target": "section_about_us"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "education_published_thesis_page",
+      "_tgt": "section_education",
+      "source": "education_published_thesis_page",
+      "target": "section_education"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "collections_ethnographical_collection_page",
+      "_tgt": "section_collections",
+      "source": "collections_ethnographical_collection_page",
+      "target": "section_collections"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "provenance": "INFERRED",
+      "confidence_score": 0.8,
+      "_src": "collections_ethnographical_collection_page",
+      "_tgt": "collection_archaeological_collection_page",
+      "source": "collections_ethnographical_collection_page",
+      "target": "collection_archaeological_collection_page"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "bratislava_maya_meetings_gallery_page",
+      "_tgt": "section_conferences",
+      "source": "bratislava_maya_meetings_gallery_page",
+      "target": "section_conferences"
+    },
+    {
+      "relation": "documents",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "bratislava_maya_meetings_gallery_page",
+      "_tgt": "bratislava_maya_meetings",
+      "source": "bratislava_maya_meetings_gallery_page",
+      "target": "bratislava_maya_meetings"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "paru_uaxactun_gallery_page",
+      "_tgt": "section_paru_uaxactun",
+      "source": "paru_uaxactun_gallery_page",
+      "target": "section_paru_uaxactun"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "collections_gallery_page",
+      "_tgt": "section_collections",
+      "source": "collections_gallery_page",
+      "target": "section_collections"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "collections_exhibitions_page",
+      "_tgt": "section_collections",
+      "source": "collections_exhibitions_page",
+      "target": "section_collections"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "provenance": "INFERRED",
+      "confidence_score": 0.7,
+      "_src": "collections_exhibitions_page",
+      "_tgt": "section_exhibitions",
+      "source": "collections_exhibitions_page",
+      "target": "section_exhibitions"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "grants_investigations_gallery_page",
+      "_tgt": "section_grants_investigations",
+      "source": "grants_investigations_gallery_page",
+      "target": "section_grants_investigations"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "education_gallery_page",
+      "_tgt": "section_education",
+      "source": "education_gallery_page",
+      "target": "section_education"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "paru_uaxactun_maps_page",
+      "_tgt": "section_paru_uaxactun",
+      "source": "paru_uaxactun_maps_page",
+      "target": "section_paru_uaxactun"
+    },
+    {
+      "relation": "maps",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "paru_uaxactun_maps_page",
+      "_tgt": "uaxactun_site",
+      "source": "paru_uaxactun_maps_page",
+      "target": "uaxactun_site"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "paru_uaxactun_history_page",
+      "_tgt": "section_paru_uaxactun",
+      "source": "paru_uaxactun_history_page",
+      "target": "section_paru_uaxactun"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "ferdinand_anders_library_catalogue_page",
+      "_tgt": "section_library",
+      "source": "ferdinand_anders_library_catalogue_page",
+      "target": "section_library"
+    },
+    {
+      "relation": "catalogues",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "ferdinand_anders_library_catalogue_page",
+      "_tgt": "ferdinand_anders_library_concept",
+      "source": "ferdinand_anders_library_catalogue_page",
+      "target": "ferdinand_anders_library_concept"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "ferdinand_anders_library_page",
+      "_tgt": "section_library",
+      "source": "ferdinand_anders_library_page",
+      "target": "section_library"
+    },
+    {
+      "relation": "represents",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "ferdinand_anders_library_page",
+      "_tgt": "ferdinand_anders_library_concept",
+      "source": "ferdinand_anders_library_page",
+      "target": "ferdinand_anders_library_concept"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "publications_page",
+      "_tgt": "pub_in_shadow_of_xibalba",
+      "source": "publications_page",
+      "target": "pub_in_shadow_of_xibalba"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "publications_page",
+      "_tgt": "pub_realm_of_maize_god",
+      "source": "publications_page",
+      "target": "pub_realm_of_maize_god"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "publications_page",
+      "_tgt": "pub_postclassic_mesoamerican_codices",
+      "source": "publications_page",
+      "target": "pub_postclassic_mesoamerican_codices"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "publications_page",
+      "_tgt": "pub_nuevas_excavaciones_uaxactun",
+      "source": "publications_page",
+      "target": "pub_nuevas_excavaciones_uaxactun"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "publications_page",
+      "_tgt": "pub_excavaciones_peten_noreste",
+      "source": "publications_page",
+      "target": "pub_excavaciones_peten_noreste"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "publications_page",
+      "_tgt": "pub_slnko_s_trnmi",
+      "source": "publications_page",
+      "target": "pub_slnko_s_trnmi"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "publications_page",
+      "_tgt": "pub_spotak_catalog_industry_2023",
+      "source": "publications_page",
+      "target": "pub_spotak_catalog_industry_2023"
+    },
+    {
+      "relation": "lists",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "publications_page",
+      "_tgt": "pub_spotak_catalog_ceramics_2023",
+      "source": "publications_page",
+      "target": "pub_spotak_catalog_ceramics_2023"
+    },
+    {
+      "relation": "links_to",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "publications_page",
+      "_tgt": "pub_archives_drive",
+      "source": "publications_page",
+      "target": "pub_archives_drive"
+    },
+    {
+      "relation": "generated_by",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "publications_page",
+      "_tgt": "webstudio_project",
+      "source": "publications_page",
+      "target": "webstudio_project"
+    },
+    {
+      "relation": "belongs_to_section",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "collection_archaeological_collection_page",
+      "_tgt": "section_collections",
+      "source": "collection_archaeological_collection_page",
+      "target": "section_collections"
+    },
+    {
+      "relation": "edited",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "person_milan_kovac",
+      "_tgt": "pub_in_shadow_of_xibalba",
+      "source": "person_milan_kovac",
+      "target": "pub_in_shadow_of_xibalba"
+    },
+    {
+      "relation": "edited",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "person_milan_kovac",
+      "_tgt": "pub_realm_of_maize_god",
+      "source": "person_milan_kovac",
+      "target": "pub_realm_of_maize_god"
+    },
+    {
+      "relation": "edited",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "person_jakub_spotak",
+      "_tgt": "pub_realm_of_maize_god",
+      "source": "person_jakub_spotak",
+      "target": "pub_realm_of_maize_god"
+    },
+    {
+      "relation": "authored",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "person_jakub_spotak",
+      "_tgt": "pub_postclassic_mesoamerican_codices",
+      "source": "person_jakub_spotak",
+      "target": "pub_postclassic_mesoamerican_codices"
+    },
+    {
+      "relation": "authored",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "person_jakub_spotak",
+      "_tgt": "pub_spotak_catalog_industry_2023",
+      "source": "person_jakub_spotak",
+      "target": "pub_spotak_catalog_industry_2023"
+    },
+    {
+      "relation": "authored",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "person_jakub_spotak",
+      "_tgt": "pub_spotak_catalog_ceramics_2023",
+      "source": "person_jakub_spotak",
+      "target": "pub_spotak_catalog_ceramics_2023"
+    },
+    {
+      "relation": "has_contact",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "person_jakub_spotak",
+      "_tgt": "contact_email_spotak",
+      "source": "person_jakub_spotak",
+      "target": "contact_email_spotak"
+    },
+    {
+      "relation": "edited",
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0,
+      "_src": "person_fatima_tec_pool",
+      "_tgt": "pub_in_shadow_of_xibalba",
+      "source": "person_fatima_tec_pool",
+      "target": "pub_in_shadow_of_xibalba"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "provenance": "INFERRED",
+      "confidence_score": 0.85,
+      "_src": "pub_nuevas_excavaciones_uaxactun",
+      "_tgt": "pub_excavaciones_peten_noreste",
+      "source": "pub_nuevas_excavaciones_uaxactun",
+      "target": "pub_excavaciones_peten_noreste"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "he_uaxactun_research_cluster",
+      "label": "Uaxact\u00fan Multi-Project Research Cluster",
+      "description": "CMS, Prof. Milan Kov\u00e1\u010d, and the three research projects (APVV-0864-12, VEGA 1/0011/13, VEGA 1/0858/17) jointly constitute a long-term coordinated Slovak research programme at Uaxact\u00fan, Guatemala, producing complementary outputs: observatory verification, hieroglyphic corpus, and Preclassic synthesis.",
+      "nodes": [
+        "cms_center_for_mesoamerican_studies",
+        "cms_milan_kovac",
+        "paru_uaxactun_location",
+        "project_apvv_0864_12",
+        "project_vega_1001113",
+        "project_vega_1085817"
+      ],
+      "provenance": "INFERRED",
+      "confidence_score": 0.85
+    },
+    {
+      "id": "he_cms_events_community",
+      "label": "CMS Academic Events Community",
+      "description": "CMS, the Bratislava Maya Meeting, and the European Maya Conference together form the primary academic events infrastructure through which CMS disseminates research and trains scholars in Maya hieroglyphic studies.",
+      "nodes": [
+        "cms_center_for_mesoamerican_studies",
+        "events_bratislava_maya_meeting",
+        "events_european_maya_conference"
+      ],
+      "provenance": "INFERRED",
+      "confidence_score": 0.8
+    },
+    {
+      "id": "he_cms_knowledge_infrastructure",
+      "label": "CMS Knowledge Infrastructure",
+      "description": "The Ferdinand Anders Library, the mesoamerica.eu website, and the PARU project collectively form the institutional knowledge infrastructure of CMS, supporting research, public dissemination, and archival preservation.",
+      "nodes": [
+        "ferdinand_anders_library",
+        "cms_mesoamerica_website",
+        "paru_uaxactun_project"
+      ],
+      "provenance": "INFERRED",
+      "confidence_score": 0.72
+    },
+    {
+      "id": "hyperedge_paru_publication_project",
+      "label": "PARU Uaxactun Research Output",
+      "description": "The PARU Uaxactun Project, person Jakub \u0160pot\u00e1k, and the Nuevas excavaciones en Uaxactun series all participate together in an ongoing field-research-to-publication pipeline that is the core scholarly output of the CMS.",
+      "nodes": [
+        "paru_uaxactun_project",
+        "person_jakub_spotak",
+        "pub_nuevas_excavaciones_uaxactun",
+        "publications_page"
+      ],
+      "provenance": "INFERRED",
+      "confidence_score": 0.85
+    },
+    {
+      "id": "hyperedge_collections_trio",
+      "label": "Collections Sub-pages",
+      "description": "The archaeological collection, ethnographical collection, and collections gallery pages together constitute the Collections section's content sub-pages.",
+      "nodes": [
+        "collection_archaeological_collection_page",
+        "collections_ethnographical_collection_page",
+        "collections_gallery_page",
+        "section_collections"
+      ],
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "id": "hyperedge_library_subpages",
+      "label": "Ferdinand Anders Library Content",
+      "description": "The Ferdinand Anders Library concept, its gallery page, and its catalogue page together define the Library section of the site.",
+      "nodes": [
+        "ferdinand_anders_library_concept",
+        "ferdinand_anders_library_page",
+        "ferdinand_anders_library_catalogue_page",
+        "section_library"
+      ],
+      "provenance": "EXTRACTED",
+      "confidence_score": 1.0
+    }
+  ]
+}

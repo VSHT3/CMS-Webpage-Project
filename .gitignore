@@ -10,3 +10,10 @@ assets_old/
 
 # Large binary assets — upload directly to server, not tracked in git
 public/legacy-assets/
+
+# graphify — commit graph outputs, skip local-only files
+graphify-out/cache/
+graphify-out/manifest.json
+graphify-out/cost.json
+graphify-out/.graphify_*.json
+graphify-out/.graphify_*.txt
