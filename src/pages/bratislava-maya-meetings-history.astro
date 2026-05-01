@@ -1,0 +1,638 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+type MeetingType = 'bmm' | 'emc' | 'academy';
+interface Topic {
+  label: string;
+  category: 'conference' | 'workshop' | 'special';
+  text: string;
+}
+interface Meeting {
+  year: string;
+  title: string;
+  type: MeetingType;
+  topics: Topic[];
+}
+
+const meetings: Meeting[] = [
+  {
+    year: '2019',
+    title: '9th Bratislava Maya Meeting',
+    type: 'bmm',
+    topics: [
+      { label: 'Conference', category: 'conference', text: 'Mesoamerican Worldviews' },
+      { label: 'Beginners', category: 'workshop', text: 'How to Read Maya Hieroglyphs' },
+      { label: 'Intermediate I', category: 'workshop', text: 'Mesoamerican Writing Systems: A Graphic Analysis' },
+      { label: 'Special', category: 'special', text: 'Late and Terminal Classic Uaxactun in Regional Context' },
+    ],
+  },
+  {
+    year: '2018',
+    title: '8th Bratislava Maya Meeting',
+    type: 'bmm',
+    topics: [
+      { label: 'Conference', category: 'conference', text: 'Lights and Shadows of Xibalba: Reading the Maya Otherworld' },
+      { label: 'Beginners', category: 'workshop', text: 'Introduction to Maya Hieroglyphs' },
+      { label: 'Intermediate I', category: 'workshop', text: 'Jubuy utookʹ upakal: Ancient Maya Warfare in the Epigraphic Records' },
+      { label: 'Special', category: 'special', text: 'Paleography of Colonial Documents in Maya Area' },
+    ],
+  },
+  {
+    year: '2016',
+    title: '7th Bratislava Maya Meeting',
+    type: 'bmm',
+    topics: [
+      { label: 'Conference', category: 'conference', text: 'Imago Mundi: Conceptualization of Space in Mesoamerica' },
+      { label: 'Beginners', category: 'workshop', text: 'Where the White Flower Grows: Toponyms in the Classic Maya Inscriptions' },
+      { label: 'Intermediate I', category: 'workshop', text: 'Animals in the Maya Imagery and Writing' },
+      { label: 'Special', category: 'special', text: 'Kings of Canyons and Rivers: Epigraphic History of Piedras Negras' },
+    ],
+  },
+  {
+    year: '2015',
+    title: '6th Bratislava Maya Meeting',
+    type: 'bmm',
+    topics: [
+      { label: 'Conference', category: 'conference', text: 'Maya Ritualism' },
+      { label: 'Beginners', category: 'workshop', text: 'Kings of the Usumacinta Valley' },
+      { label: 'Intermediate', category: 'workshop', text: 'In the Shadow of Teotihuacan – Early Classic Inscriptions of Uaxactun and Surroundings' },
+      { label: 'Advanced', category: 'workshop', text: 'Maya Grammar' },
+      { label: 'Special', category: 'special', text: 'Tuʹux ku binoʹob le kuoʹoboʹ: An Ethnographic and Epigraphic Examination of Maya Deities' },
+    ],
+  },
+  {
+    year: '2014',
+    title: '19th European Maya Conference',
+    type: 'emc',
+    topics: [
+      { label: 'Conference', category: 'conference', text: 'Maya Cosmology: Terrestrial and Celestial Landscapes' },
+      { label: 'Beginners', category: 'workshop', text: 'How to Read Maya Hieroglyphs?' },
+      { label: 'Intermediate', category: 'workshop', text: 'Godly Stories and Earthly Matters: Hieroglyphic Narratives on Gods and Men' },
+      { label: 'Advanced', category: 'workshop', text: 'Methods in Maya Hieroglyphic Studies' },
+      { label: 'Special', category: 'special', text: 'U Uich Ku: Tracking Maya Deities in the Codices and Ethnohistorical Sources' },
+    ],
+  },
+  {
+    year: '2013',
+    title: '5th Autumn Academy of Maya Hieroglyphic Writing',
+    type: 'academy',
+    topics: [
+      { label: 'Beginners', category: 'workshop', text: 'Inscriptions of Naranjo' },
+      { label: 'Intermediate', category: 'workshop', text: 'Methods in Epigraphic Analysis' },
+      { label: 'Special', category: 'special', text: 'Inscriptions from Uaxactun and Its Powerful Neighbors' },
+    ],
+  },
+  {
+    year: '2012',
+    title: '4th Autumn Academy of Maya Hieroglyphic Writing',
+    type: 'academy',
+    topics: [
+      { label: 'Conference', category: 'conference', text: 'At the Close of Time: Maya Cycles and Periods' },
+      { label: 'Beginners', category: 'workshop', text: 'Inscriptions of Naranjo' },
+      { label: 'Intermediate', category: 'workshop', text: 'Inscriptions of Piedras Negras, Yaxchílán and Toniná' },
+    ],
+  },
+  {
+    year: '2011',
+    title: '3rd Autumn Academy of Maya Hieroglyphic Writing',
+    type: 'academy',
+    topics: [
+      { label: 'Beginners', category: 'workshop', text: 'The Inscriptions of Piedras Negras' },
+      { label: 'Intermediate I', category: 'workshop', text: 'The Palace Schools of the Northeastern Petén – dedicatory formulae and imagery on Classic Maya ceramics' },
+      { label: 'Intermediate II', category: 'workshop', text: 'Early Classic monumental inscriptions of Northeastern Petén' },
+    ],
+  },
+  {
+    year: '2010',
+    title: '2nd Autumn Academy of Maya Hieroglyphic Writing',
+    type: 'academy',
+    topics: [
+      { label: 'Beginners', category: 'workshop', text: 'Inscriptions of Piedras Negras' },
+      { label: 'Intermediate I', category: 'workshop', text: 'Inscriptions of Caracol' },
+      { label: 'Intermediate II', category: 'workshop', text: 'Inscriptions of Yaxchílán' },
+    ],
+  },
+  {
+    year: '2009',
+    title: '1st Autumn Academy of Maya Hieroglyphic Writing',
+    type: 'academy',
+    topics: [
+      { label: 'Beginners', category: 'workshop', text: 'Inscriptions of Piedras Negras' },
+      { label: 'Intermediate', category: 'workshop', text: 'Inscriptions of Caracol and Palenque' },
+    ],
+  },
+];
+
+const ERA_BREAK_AFTER = 4;
+---
+
+<Layout
+  title="Bratislava Maya Meetings — History"
+  description="History of the annual Bratislava Maya Meeting and Autumn Academy of Maya Hieroglyphic Writing, organized by the Center for Mesoamerican Studies since 2009."
+  bodyClass="bmm-history-page"
+>
+  <div class="bmm-shell">
+
+    <header class="bmm-header" data-reveal>
+      <div class="bmm-header-top">
+        <h1 class="bmm-page-title">Bratislava Maya Meetings</h1>
+        <div class="bmm-header-meta">
+          <span class="bmm-meta-stat"><strong>10</strong> events</span>
+          <span class="bmm-meta-sep" aria-hidden="true">·</span>
+          <span class="bmm-meta-stat"><strong>2009</strong> – <strong>2019</strong></span>
+          <span class="bmm-meta-sep" aria-hidden="true">·</span>
+          <span class="bmm-meta-stat">Bratislava</span>
+        </div>
+      </div>
+      <hr class="bmm-rule" />
+      <nav class="bmm-subnav" aria-label="Conferences pages">
+        <a href="/bratislava-maya-meetings-history" class="bmm-subnav-link is-current" aria-current="page">History</a>
+        <span class="bmm-subnav-sep" aria-hidden="true"></span>
+        <a href="/bratislava-maya-meetings-news" class="bmm-subnav-link">News</a>
+        <span class="bmm-subnav-sep" aria-hidden="true"></span>
+        <a href="/bratislava-maya-meetings-gallery" class="bmm-subnav-link">Gallery</a>
+      </nav>
+    </header>
+
+    <div class="bmm-intro" data-reveal data-reveal-delay="1">
+      <p class="bmm-intro-text">
+        Annual event combining a scholarly conference with hands-on workshops in Maya hieroglyphic writing, organized by the Center for Mesoamerican Studies at Comenius University. Held continuously from 2009 until 2019, the event draws Slovak and international researchers in epigraphy, archaeology, and Maya studies.
+      </p>
+      <div class="bmm-type-legend" aria-label="Event types">
+        <span class="bmm-legend-item bmm-legend--bmm">Bratislava Maya Meeting</span>
+        <span class="bmm-legend-item bmm-legend--emc">European Maya Conference</span>
+        <span class="bmm-legend-item bmm-legend--academy">Autumn Academy</span>
+      </div>
+    </div>
+
+    <ol class="bmm-timeline" reversed>
+      {meetings.map((meeting, i) => (
+        <>
+          <li
+            class="bmm-entry"
+            data-type={meeting.type}
+            data-reveal
+            data-reveal-delay={String(i + 2)}
+          >
+            <div class="bmm-entry-year" aria-hidden="true">{meeting.year}</div>
+            <div class="bmm-entry-body">
+              <h3 class="bmm-entry-title">{meeting.title}</h3>
+              <ul class="bmm-topic-list">
+                {meeting.topics.map((topic) => (
+                  <li class={`bmm-topic bmm-topic--${topic.category}`}>
+                    <span class="bmm-topic-label">{topic.label}</span>
+                    <span class="bmm-topic-text">{topic.text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </li>
+          {i === ERA_BREAK_AFTER && (
+            <li class="bmm-era-divider" data-reveal data-reveal-delay={String(i + 3)}>
+              <span class="bmm-era-eyebrow">Era II — 2009–2013</span>
+              <span class="bmm-era-label">Founding years</span>
+              <span class="bmm-era-sub">Autumn Academy of Maya Hieroglyphic Writing</span>
+            </li>
+          )}
+        </>
+      ))}
+    </ol>
+
+  </div>
+</Layout>
+
+<script>
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function getDelay(order: number): number {
+    return Math.min(order * 55, 480);
+  }
+
+  function initReveal() {
+    const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
+    if (mq.matches || !('IntersectionObserver' in window)) {
+      targets.forEach(el => el.classList.add('is-visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          const order = parseInt(el.dataset.revealDelay ?? '0', 10);
+          el.style.transitionDelay = `${getDelay(order)}ms`;
+          el.classList.add('is-visible');
+          observer.unobserve(el);
+        });
+      },
+      { rootMargin: '0px 0px -6% 0px', threshold: 0.04 },
+    );
+
+    targets.forEach(el => {
+      el.classList.add('will-reveal');
+      observer.observe(el);
+    });
+  }
+
+  initReveal();
+</script>
+
+<style>
+  /* ── Shell ── */
+  .bmm-shell {
+    width: min(100%, 90rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(5rem, 10vw, 7rem);
+  }
+
+  /* ── Header ── */
+  .bmm-header {
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .bmm-header-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+  }
+
+  .bmm-page-title {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: var(--site-text);
+    text-wrap: balance;
+  }
+
+  .bmm-header-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-bottom: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .bmm-meta-stat {
+    font-family: var(--site-font);
+    font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-text-strong);
+  }
+
+  .bmm-meta-stat strong {
+    color: oklch(0.86 0.14 92);
+    font-weight: 700;
+  }
+
+  .bmm-meta-sep {
+    color: var(--site-text-dim);
+    opacity: 0.5;
+  }
+
+  .bmm-rule {
+    border: 0;
+    border-top: 1px solid oklch(0.76 0.08 92 / 0.4);
+    margin: 0 0 1.4rem;
+  }
+
+  .bmm-subnav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .bmm-subnav-link {
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    text-decoration: none;
+    transition: color 200ms ease-out;
+  }
+
+  .bmm-subnav-link:hover,
+  .bmm-subnav-link:focus-visible {
+    color: var(--site-gold);
+  }
+
+  .bmm-subnav-link.is-current {
+    color: var(--site-gold);
+  }
+
+  .bmm-subnav-sep {
+    display: inline-block;
+    width: 1px;
+    height: 0.7em;
+    background: var(--site-border);
+    opacity: 0.7;
+  }
+
+  /* ── Intro ── */
+  .bmm-intro {
+    padding: clamp(2rem, 4vw, 3rem) 0;
+    border-bottom: 1px solid var(--site-border);
+    margin-bottom: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 900px) {
+    .bmm-intro {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 3rem;
+    }
+  }
+
+  .bmm-intro-text {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: clamp(1.08rem, 1.5vw, 1.22rem);
+    line-height: 1.7;
+    max-width: 68ch;
+    text-wrap: pretty;
+  }
+
+  .bmm-type-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  .bmm-legend-item {
+    font-family: var(--site-font);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--site-text-strong);
+  }
+
+  .bmm-legend-item::before {
+    content: '';
+    display: inline-block;
+    width: 0.85rem;
+    height: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .bmm-legend--bmm::before     { background: oklch(0.82 0.13 92); }
+  .bmm-legend--emc::before     { background: oklch(0.76 0.12 178); }
+  .bmm-legend--academy::before { background: oklch(0.78 0.018 88); }
+
+  /* ── Timeline ── */
+  .bmm-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ── Entry ── */
+  .bmm-entry {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+    padding: clamp(2.25rem, 4.5vw, 3.25rem) clamp(0.75rem, 1.5vw, 1.25rem);
+    margin: 0 calc(-1 * clamp(0.75rem, 1.5vw, 1.25rem));
+    border-bottom: 1px solid var(--site-border);
+    transition: background-color 280ms ease-out, box-shadow 280ms ease-out;
+    cursor: default;
+    position: relative;
+  }
+
+  .bmm-entry:last-of-type {
+    border-bottom: 0;
+  }
+
+  @media (min-width: 640px) {
+    .bmm-entry {
+      grid-template-columns: 6.5rem 1fr;
+      gap: 0 clamp(1.75rem, 3vw, 2.75rem);
+      align-items: start;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .bmm-entry {
+      grid-template-columns: 8rem 1fr;
+    }
+  }
+
+  /* Hover: type-tinted background + brighten year */
+  .bmm-entry[data-type="bmm"]:hover     { background-color: oklch(0.76 0.08 92 / 0.07); }
+  .bmm-entry[data-type="emc"]:hover     { background-color: oklch(0.68 0.075 178 / 0.09); }
+  .bmm-entry[data-type="academy"]:hover { background-color: oklch(0.55 0.04 178 / 0.14); }
+
+  .bmm-entry:hover .bmm-entry-year {
+    color: var(--site-text-strong);
+  }
+
+  /* ── Year (color = type) ── */
+  .bmm-entry-year {
+    font-family: var(--site-font);
+    font-size: clamp(2.4rem, 4.2vw, 4.25rem);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+    padding-top: 0.05em;
+    user-select: none;
+    transition: color 280ms ease-out;
+  }
+
+  .bmm-entry[data-type="bmm"]     .bmm-entry-year { color: oklch(0.82 0.13 92); }
+  .bmm-entry[data-type="emc"]     .bmm-entry-year { color: oklch(0.76 0.12 178); }
+  .bmm-entry[data-type="academy"] .bmm-entry-year { color: oklch(0.78 0.018 88); }
+
+  /* ── Entry body ── */
+  .bmm-entry-body {
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  .bmm-entry-title {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    color: var(--site-text-strong);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  /* ── Topic list ── */
+  .bmm-topic-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .bmm-topic {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 0 1.25rem;
+    align-items: baseline;
+    padding: 0.7rem 0;
+  }
+
+  .bmm-topic + .bmm-topic {
+    border-top: 1px solid oklch(0.5 0.025 185 / 0.45);
+  }
+
+  .bmm-topic-label {
+    font-family: var(--site-font);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-top: 0.1em;
+    transition: color 200ms ease-out;
+  }
+
+  .bmm-topic--conference .bmm-topic-label { color: oklch(0.86 0.14 92); }
+  .bmm-topic--workshop   .bmm-topic-label { color: oklch(0.78 0.12 178); }
+  .bmm-topic--special    .bmm-topic-label { color: var(--site-text-strong); }
+
+  .bmm-topic-text {
+    color: var(--site-text-strong);
+    font-size: clamp(1.05rem, 1.35vw, 1.18rem);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .bmm-topic--conference .bmm-topic-text {
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  /* ── Era divider ── */
+  .bmm-era-divider {
+    list-style: none;
+    padding: clamp(3rem, 6vw, 4.5rem) 0 clamp(2rem, 4vw, 3rem);
+    margin: clamp(0.5rem, 1vw, 1rem) 0;
+    display: grid;
+    gap: 0.5rem;
+    text-align: left;
+  }
+
+  .bmm-era-eyebrow {
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: oklch(0.86 0.14 92);
+  }
+
+  .bmm-era-label {
+    font-family: var(--site-font);
+    font-size: clamp(2rem, 3.6vw, 2.85rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--site-text-strong);
+  }
+
+  .bmm-era-sub {
+    font-family: var(--site-font);
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    font-style: italic;
+    color: var(--site-text);
+    margin-top: 0.15rem;
+  }
+
+  /* ── Scroll reveal ── */
+  .will-reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 550ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  .will-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .will-reveal {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 639px) {
+    .bmm-header-top {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .bmm-header-meta {
+      padding-bottom: 0;
+      flex-wrap: wrap;
+    }
+
+    .bmm-entry {
+      padding-inline: 0;
+      margin-inline: 0;
+    }
+
+    .bmm-entry-year {
+      font-size: 2.2rem;
+    }
+
+    .bmm-entry-title {
+      font-size: 1.2rem;
+    }
+
+    .bmm-topic {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+      padding: 0.6rem 0;
+    }
+
+    .bmm-topic-label {
+      font-size: 0.72rem;
+    }
+
+    .bmm-topic-text {
+      font-size: 1rem;
+    }
+
+    .bmm-type-legend {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.6rem 1rem;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .bmm-intro {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
