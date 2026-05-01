@@ -778,7 +778,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     transition: transform 220ms var(--nav-ease), opacity 160ms var(--nav-ease);
   }
 
-  @media (max-width: 1380px) {
+  @media (max-width: 1480px) {
     :global(body.nav-open) {
       overflow: hidden;
     }
@@ -1015,19 +1015,6 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
 </style>
 
 <script>
-  const toggle = document.querySelector('.nav-mobile-toggle') as HTMLButtonElement | null;
-  const links = document.querySelector('#site-nav-links') as HTMLElement | null;
-  const docBody = document.body;
-  const pdfSearch = document.querySelector<HTMLElement>('[data-pdf-search]');
-  const pdfSearchTrigger = document.querySelector<HTMLButtonElement>('[data-pdf-search-trigger]');
-  const pdfSearchPanel = document.querySelector<HTMLElement>('#pdf-search-panel');
-  const pdfSearchInput = document.querySelector<HTMLInputElement>('[data-pdf-search-input]');
-  const pdfSearchForm = document.querySelector<HTMLFormElement>('[data-pdf-search-form]');
-  const pdfSearchStatus = document.querySelector<HTMLElement>('[data-pdf-search-status]');
-  const pdfSearchResults = document.querySelector<HTMLElement>('[data-pdf-search-results]');
-  const pdfSearchEmpty = document.querySelector<HTMLElement>('[data-pdf-search-empty]');
-  const pdfSearchData = document.querySelector<HTMLScriptElement>('#pdf-search-data');
-
   type PdfSearchItem = {
     title: string;
     filename: string;
@@ -1038,215 +1025,204 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     search: string;
   };
 
-  const pdfItems: PdfSearchItem[] = JSON.parse(pdfSearchData?.textContent || '[]');
+  const MOBILE_MQ = '(max-width: 1480px)';
+  let navController: AbortController | null = null;
 
-  const setMenuState = (open: boolean) => {
-    links?.classList.toggle('open', open);
-    toggle?.setAttribute('aria-expanded', String(open));
-    docBody.classList.toggle('nav-open', open);
+  document.addEventListener('astro:page-load', () => {
+    navController?.abort();
+    navController = new AbortController();
+    const { signal } = navController;
 
-    document.querySelectorAll<HTMLElement>('.has-dropdown.is-expanded').forEach((item) => {
-      item.classList.remove('is-expanded');
-    });
-    document
-      .querySelectorAll<HTMLButtonElement>('.nav-dropdown-toggle[aria-expanded="true"]')
-      .forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
-  };
+    const toggle = document.querySelector('.nav-mobile-toggle') as HTMLButtonElement | null;
+    const links = document.querySelector('#site-nav-links') as HTMLElement | null;
+    const docBody = document.body;
+    const pdfSearch = document.querySelector<HTMLElement>('[data-pdf-search]');
+    const pdfSearchTrigger = document.querySelector<HTMLButtonElement>('[data-pdf-search-trigger]');
+    const pdfSearchPanel = document.querySelector<HTMLElement>('#pdf-search-panel');
+    const pdfSearchInput = document.querySelector<HTMLInputElement>('[data-pdf-search-input]');
+    const pdfSearchForm = document.querySelector<HTMLFormElement>('[data-pdf-search-form]');
+    const pdfSearchStatus = document.querySelector<HTMLElement>('[data-pdf-search-status]');
+    const pdfSearchResults = document.querySelector<HTMLElement>('[data-pdf-search-results]');
+    const pdfSearchEmpty = document.querySelector<HTMLElement>('[data-pdf-search-empty]');
+    const pdfSearchData = document.querySelector<HTMLScriptElement>('#pdf-search-data');
 
-  const normalizePdfQuery = (value = '') =>
-    value
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[_./-]+/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const pdfItems: PdfSearchItem[] = JSON.parse(pdfSearchData?.textContent || '[]');
 
-  const slugifyHeading = (text: string) =>
-    text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-
-  const renderPdfResults = () => {
-    if (!pdfSearchInput || !pdfSearchResults || !pdfSearchStatus || !pdfSearchEmpty) {
-      return;
-    }
-
-    const query = normalizePdfQuery(pdfSearchInput.value);
-    pdfSearchResults.replaceChildren();
-
-    if (!query) {
-      pdfSearchStatus.textContent = `${pdfItems.length} publications indexed. Type a title, report, catalogue, author, or year.`;
-      pdfSearchEmpty.hidden = true;
-      return;
-    }
-
-    const terms = query.split(' ').filter(Boolean);
-    const matches = pdfItems
-      .map((item) => {
-        if (!terms.every((term) => item.search.includes(term))) {
-          return null;
-        }
-
-        let score = 0;
-        const title = normalizePdfQuery(item.title);
-        const filename = normalizePdfQuery(item.filename);
-        const source = normalizePdfQuery(item.sourcePage);
-
-        terms.forEach((term) => {
-          if (title.startsWith(term)) score += 18;
-          if (filename.startsWith(term)) score += 14;
-          if (title.includes(term)) score += 8;
-          if (filename.includes(term)) score += 6;
-          if (source.includes(term)) score += 3;
-        });
-
-        return { item, score };
-      })
-      .filter((match): match is { item: PdfSearchItem; score: number } => Boolean(match))
-      .sort((first, second) => second.score - first.score || first.item.title.localeCompare(second.item.title));
-
-    const fragment = document.createDocumentFragment();
-
-    matches.forEach(({ item }) => {
-      const result = document.createElement('li');
-      result.className = 'pdf-search-result';
-
-      const card = document.createElement('div');
-      card.className = 'pdf-search-result-card';
-
-      const info = document.createElement('div');
-      info.className = 'pdf-search-result-info';
-
-      const titleEl = document.createElement('strong');
-      titleEl.textContent = item.title;
-
-      const sourceEl = document.createElement('span');
-      sourceEl.className = 'pdf-search-result-source';
-      sourceEl.textContent = item.sourcePage;
-
-      info.append(titleEl, sourceEl);
-
-      const actions = document.createElement('div');
-      actions.className = 'pdf-search-result-actions';
-
-      const pageBtn = document.createElement('a');
-      const headingSlug = slugifyHeading(item.title);
-      pageBtn.href = `${item.sourcePath || '/'}${headingSlug ? '#' + headingSlug : ''}`;
-      pageBtn.className = 'pdf-search-result-btn pdf-search-result-btn--page';
-      pageBtn.textContent = 'View on page';
-
-      const openBtn = document.createElement('a');
-      openBtn.href = item.href;
-      openBtn.target = '_blank';
-      openBtn.rel = 'noopener noreferrer';
-      openBtn.className = 'pdf-search-result-btn pdf-search-result-btn--open';
-      openBtn.textContent = 'Open document';
-
-      actions.append(pageBtn, openBtn);
-      card.append(info, actions);
-      result.append(card);
-      fragment.append(result);
-    });
-
-    pdfSearchResults.append(fragment);
-    pdfSearchEmpty.hidden = matches.length > 0;
-    pdfSearchStatus.textContent =
-      matches.length === 1 ? '1 publication found.' : `${matches.length} publications found.`;
-  };
-
-  const setSearchState = (open: boolean) => {
-    pdfSearch?.classList.toggle('is-open', open);
-    pdfSearchTrigger?.setAttribute('aria-expanded', String(open));
-    pdfSearchPanel?.setAttribute('aria-hidden', String(!open));
-    pdfSearchPanel?.toggleAttribute('inert', !open);
-
-    if (open) {
-      setMenuState(false);
-      renderPdfResults();
-      window.requestAnimationFrame(() => pdfSearchInput?.focus());
-    }
-  };
-
-  toggle?.addEventListener('click', () => {
-    setSearchState(false);
-    setMenuState(!(links?.classList.contains('open') ?? false));
-  });
-
-  pdfSearchTrigger?.addEventListener('click', () => {
-    setSearchState(!(pdfSearch?.classList.contains('is-open') ?? false));
-  });
-
-  pdfSearchInput?.addEventListener('input', renderPdfResults);
-
-  pdfSearchForm?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    pdfSearchResults?.querySelector<HTMLAnchorElement>('.pdf-search-result-btn--open')?.click();
-  });
-
-  document.addEventListener('click', (event) => {
-    const target = event.target as Node | null;
-    if (target && pdfSearch?.classList.contains('is-open') && !pdfSearch.contains(target)) {
-      setSearchState(false);
-    }
-  });
-
-  links?.addEventListener('click', (event) => {
-    const target = event.target as HTMLElement | null;
-    const mobileMenu = window.matchMedia('(max-width: 1380px)').matches;
-    const dropdownTrigger = target?.closest<HTMLButtonElement>('[data-dropdown-trigger]');
-
-    if (mobileMenu && dropdownTrigger) {
-      event.preventDefault();
-      const item = dropdownTrigger.closest<HTMLElement>('.has-dropdown');
-      const expanded = !(item?.classList.contains('is-expanded') ?? false);
-
-      item?.classList.toggle('is-expanded', expanded);
-      dropdownTrigger.setAttribute('aria-expanded', String(expanded));
-      return;
-    }
-
-    if (mobileMenu && target?.closest('a')) {
-      setMenuState(false);
-    }
-  });
-
-  window.addEventListener('resize', () => {
-    if (!window.matchMedia('(max-width: 1380px)').matches) {
-      setMenuState(false);
-    }
-  });
-
-  window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      setSearchState(false);
-      setMenuState(false);
+    const setMenuState = (open: boolean) => {
+      links?.classList.toggle('open', open);
+      toggle?.setAttribute('aria-expanded', String(open));
+      docBody.classList.toggle('nav-open', open);
+      document.querySelectorAll<HTMLElement>('.has-dropdown.is-expanded').forEach((item) => {
+        item.classList.remove('is-expanded');
+      });
       document
         .querySelectorAll<HTMLButtonElement>('.nav-dropdown-toggle[aria-expanded="true"]')
         .forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
-    }
-  });
-
-  document.querySelectorAll<HTMLElement>('.has-dropdown').forEach((item) => {
-    const trigger = item.querySelector<HTMLButtonElement>(':scope .nav-dropdown-toggle[aria-haspopup="true"]');
-
-    const setExpanded = (expanded: boolean) => {
-      if (window.matchMedia('(max-width: 1380px)').matches) {
-        return;
-      }
-      trigger?.setAttribute('aria-expanded', String(expanded));
     };
 
-    item.addEventListener('pointerenter', () => setExpanded(true));
-    item.addEventListener('pointerleave', () => setExpanded(false));
-    item.addEventListener('focusin', () => setExpanded(true));
-    item.addEventListener('focusout', (event) => {
-      if (!item.contains(event.relatedTarget as Node | null)) {
-        setExpanded(false);
+    const normalizePdfQuery = (value = '') =>
+      value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[_./-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const slugifyHeading = (text: string) =>
+      text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+    const renderPdfResults = () => {
+      if (!pdfSearchInput || !pdfSearchResults || !pdfSearchStatus || !pdfSearchEmpty) return;
+
+      const query = normalizePdfQuery(pdfSearchInput.value);
+      pdfSearchResults.replaceChildren();
+
+      if (!query) {
+        pdfSearchStatus.textContent = `${pdfItems.length} publications indexed. Type a title, report, catalogue, author, or year.`;
+        pdfSearchEmpty.hidden = true;
+        return;
       }
+
+      const terms = query.split(' ').filter(Boolean);
+      const matches = pdfItems
+        .map((item) => {
+          if (!terms.every((term) => item.search.includes(term))) return null;
+          let score = 0;
+          const title = normalizePdfQuery(item.title);
+          const filename = normalizePdfQuery(item.filename);
+          const source = normalizePdfQuery(item.sourcePage);
+          terms.forEach((term) => {
+            if (title.startsWith(term)) score += 18;
+            if (filename.startsWith(term)) score += 14;
+            if (title.includes(term)) score += 8;
+            if (filename.includes(term)) score += 6;
+            if (source.includes(term)) score += 3;
+          });
+          return { item, score };
+        })
+        .filter((match): match is { item: PdfSearchItem; score: number } => Boolean(match))
+        .sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title));
+
+      const fragment = document.createDocumentFragment();
+      matches.forEach(({ item }) => {
+        const result = document.createElement('li');
+        result.className = 'pdf-search-result';
+        const card = document.createElement('div');
+        card.className = 'pdf-search-result-card';
+        const info = document.createElement('div');
+        info.className = 'pdf-search-result-info';
+        const titleEl = document.createElement('strong');
+        titleEl.textContent = item.title;
+        const sourceEl = document.createElement('span');
+        sourceEl.className = 'pdf-search-result-source';
+        sourceEl.textContent = item.sourcePage;
+        info.append(titleEl, sourceEl);
+        const actions = document.createElement('div');
+        actions.className = 'pdf-search-result-actions';
+        const pageBtn = document.createElement('a');
+        pageBtn.href = `${item.sourcePath || '/'}${slugifyHeading(item.title) ? '#' + slugifyHeading(item.title) : ''}`;
+        pageBtn.className = 'pdf-search-result-btn pdf-search-result-btn--page';
+        pageBtn.textContent = 'View on page';
+        const openBtn = document.createElement('a');
+        openBtn.href = item.href;
+        openBtn.target = '_blank';
+        openBtn.rel = 'noopener noreferrer';
+        openBtn.className = 'pdf-search-result-btn pdf-search-result-btn--open';
+        openBtn.textContent = 'Open document';
+        actions.append(pageBtn, openBtn);
+        card.append(info, actions);
+        result.append(card);
+        fragment.append(result);
+      });
+
+      pdfSearchResults.append(fragment);
+      pdfSearchEmpty.hidden = matches.length > 0;
+      pdfSearchStatus.textContent =
+        matches.length === 1 ? '1 publication found.' : `${matches.length} publications found.`;
+    };
+
+    const setSearchState = (open: boolean) => {
+      pdfSearch?.classList.toggle('is-open', open);
+      pdfSearchTrigger?.setAttribute('aria-expanded', String(open));
+      pdfSearchPanel?.setAttribute('aria-hidden', String(!open));
+      pdfSearchPanel?.toggleAttribute('inert', !open);
+      if (open) {
+        setMenuState(false);
+        renderPdfResults();
+        window.requestAnimationFrame(() => pdfSearchInput?.focus());
+      }
+    };
+
+    toggle?.addEventListener('click', () => {
+      setSearchState(false);
+      setMenuState(!(links?.classList.contains('open') ?? false));
+    });
+
+    pdfSearchTrigger?.addEventListener('click', () => {
+      setSearchState(!(pdfSearch?.classList.contains('is-open') ?? false));
+    });
+
+    pdfSearchInput?.addEventListener('input', renderPdfResults);
+
+    pdfSearchForm?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      pdfSearchResults?.querySelector<HTMLAnchorElement>('.pdf-search-result-btn--open')?.click();
+    });
+
+    document.addEventListener('click', (event) => {
+      const target = event.target as Node | null;
+      if (target && pdfSearch?.classList.contains('is-open') && !pdfSearch.contains(target)) {
+        setSearchState(false);
+      }
+    }, { signal });
+
+    links?.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement | null;
+      const mobileMenu = window.matchMedia(MOBILE_MQ).matches;
+      const dropdownTrigger = target?.closest<HTMLButtonElement>('[data-dropdown-trigger]');
+      if (mobileMenu && dropdownTrigger) {
+        event.preventDefault();
+        const item = dropdownTrigger.closest<HTMLElement>('.has-dropdown');
+        const expanded = !(item?.classList.contains('is-expanded') ?? false);
+        item?.classList.toggle('is-expanded', expanded);
+        dropdownTrigger.setAttribute('aria-expanded', String(expanded));
+        return;
+      }
+      if (mobileMenu && target?.closest('a')) setMenuState(false);
+    });
+
+    window.addEventListener('resize', () => {
+      if (!window.matchMedia(MOBILE_MQ).matches) setMenuState(false);
+    }, { signal });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setSearchState(false);
+        setMenuState(false);
+        document
+          .querySelectorAll<HTMLButtonElement>('.nav-dropdown-toggle[aria-expanded="true"]')
+          .forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
+      }
+    }, { signal });
+
+    document.querySelectorAll<HTMLElement>('.has-dropdown').forEach((item) => {
+      const trigger = item.querySelector<HTMLButtonElement>(':scope .nav-dropdown-toggle[aria-haspopup="true"]');
+      const setExpanded = (expanded: boolean) => {
+        if (window.matchMedia(MOBILE_MQ).matches) return;
+        trigger?.setAttribute('aria-expanded', String(expanded));
+      };
+      item.addEventListener('pointerenter', () => setExpanded(true));
+      item.addEventListener('pointerleave', () => setExpanded(false));
+      item.addEventListener('focusin', () => setExpanded(true));
+      item.addEventListener('focusout', (event) => {
+        if (!item.contains(event.relatedTarget as Node | null)) setExpanded(false);
+      });
     });
   });
 </script>
