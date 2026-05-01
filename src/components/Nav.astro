@@ -330,7 +330,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
 
 <script type="application/json" id="pdf-search-data" set:html={pdfSearchJson} is:inline></script>
 
-<style>
+<style is:global>
   :root {
     --nav-bg: oklch(0.36 0.04 190);
     --nav-bg-dark: oklch(0.28 0.035 194);
