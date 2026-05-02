@@ -164,27 +164,14 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-  const stage = document.querySelector('[data-model-stage]');
-  const loadButton = document.querySelector('[data-load-model]') as HTMLButtonElement | null;
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let modelRequested = false;
+  function init() {
+    const stage = document.querySelector('[data-model-stage]');
+    const loadButton = document.querySelector('[data-load-model]') as HTMLButtonElement | null;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let modelRequested = false;
 
-  const appendModelViewer = () => {
-    if (!stage || modelRequested) {
-      return;
-    }
-
-    modelRequested = true;
-    loadButton?.setAttribute('disabled', '');
-    if (loadButton) {
-      loadButton.textContent = 'Loading interactive view';
-    }
-
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.src = '/assets/vendor/model-viewer.min.js';
-
-    script.addEventListener('load', () => {
+    const createViewer = () => {
+      if (!stage) return;
       const viewer = document.createElement('model-viewer');
       viewer.setAttribute('src', '/assets/models/statue-compressed.glb');
       viewer.setAttribute('poster', '/assets/optimized/model-poster.webp');
@@ -198,93 +185,89 @@ import Layout from '../layouts/Layout.astro';
       viewer.setAttribute('min-field-of-view', '20deg');
       viewer.setAttribute('max-field-of-view', '75deg');
       viewer.setAttribute('alt', '3D model of a Mesoamerican artefact');
-
       if (!reducedMotion.matches) {
         viewer.setAttribute('auto-rotate', '');
         viewer.setAttribute('auto-rotate-delay', '0');
         viewer.setAttribute('rotation-per-second', '18deg');
       }
-
       stage.replaceChildren(viewer);
-    });
+    };
 
-    script.addEventListener('error', () => {
-      loadButton?.removeAttribute('disabled');
-      if (loadButton) {
-        loadButton.textContent = 'Retry interactive view';
+    const appendModelViewer = () => {
+      if (!stage || modelRequested) return;
+      modelRequested = true;
+      loadButton?.setAttribute('disabled', '');
+      if (loadButton) loadButton.textContent = 'Loading interactive view';
+
+      if (customElements.get('model-viewer')) {
+        createViewer();
+        return;
       }
-      modelRequested = false;
-    });
 
-    document.head.append(script);
-  };
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = '/assets/vendor/model-viewer.min.js';
+      script.addEventListener('load', createViewer);
+      script.addEventListener('error', () => {
+        loadButton?.removeAttribute('disabled');
+        if (loadButton) loadButton.textContent = 'Retry interactive view';
+        modelRequested = false;
+      });
+      document.head.append(script);
+    };
 
-  loadButton?.addEventListener('click', appendModelViewer);
+    loadButton?.addEventListener('click', appendModelViewer);
 
-  const scheduleModelLoad = () => {
-    if (!stage || modelRequested) {
-      return;
-    }
+    const scheduleModelLoad = () => {
+      if (!stage || modelRequested) return;
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) {
+              observer.disconnect();
+              appendModelViewer();
+            }
+          },
+          { rootMargin: '360px 0px' },
+        );
+        observer.observe(stage);
+        return;
+      }
+      globalThis.setTimeout(appendModelViewer, 800);
+    };
 
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((entry) => entry.isIntersecting)) {
-            observer.disconnect();
-            appendModelViewer();
-          }
-        },
-        { rootMargin: '360px 0px' },
-      );
-
-      observer.observe(stage);
-      return;
-    }
-
-    globalThis.setTimeout(appendModelViewer, 800);
-  };
-
-  const startAutomaticLoad = () => {
     const idleWindow = window as Window & {
       requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
     };
-
     if (idleWindow.requestIdleCallback) {
       idleWindow.requestIdleCallback(scheduleModelLoad, { timeout: 1400 });
-      return;
+    } else {
+      globalThis.setTimeout(scheduleModelLoad, 450);
     }
 
-    globalThis.setTimeout(scheduleModelLoad, 450);
-  };
-
-  if (document.readyState === 'complete') {
-    startAutomaticLoad();
-  } else {
-    window.addEventListener('load', startAutomaticLoad, { once: true });
-  }
-
-  const revealSections = document.querySelectorAll<HTMLElement>(
-    '.intro-ribbon, .domains-section, .feature-band, .institute-section',
-  );
-
-  if (!reducedMotion.matches && revealSections.length > 0 && 'IntersectionObserver' in window) {
-    const revealObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            revealObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+    const revealSections = document.querySelectorAll<HTMLElement>(
+      '.intro-ribbon, .domains-section, .feature-band, .institute-section',
     );
-
-    revealSections.forEach((section) => {
-      section.classList.add('home-scroll-reveal');
-      revealObserver.observe(section);
-    });
+    if (!reducedMotion.matches && revealSections.length > 0 && 'IntersectionObserver' in window) {
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
+      );
+      revealSections.forEach((section) => {
+        section.classList.add('home-scroll-reveal');
+        revealObserver.observe(section);
+      });
+    }
   }
+
+  document.addEventListener('astro:page-load', init);
 </script>
 
 <style>
