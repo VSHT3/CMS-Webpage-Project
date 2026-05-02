@@ -2,11 +2,17 @@
 import Layout from '../layouts/Layout.astro';
 import ResearchHeader from '../components/ResearchHeader.astro';
 
+interface Link {
+  label: string;
+  href: string;
+}
+
 interface Project {
   id: string;
   title: string;
   researcher?: string;
   note?: string;
+  links?: Link[];
 }
 
 const projects: Project[] = [
@@ -14,24 +20,40 @@ const projects: Project[] = [
     id: '09I03-03-V04-00234',
     title: 'Preclassic Maya Potbelly Sculptures in Peten, Guatemala and Their Connection to Ancestor Cult',
     researcher: 'prof. Milan Kováč, PhD.',
+    links: [
+      { label: 'Preliminary Database', href: 'https://mesoamerica.eu/pdfs/A1-Database - POTBELLY.pdf' },
+    ],
   },
   {
     id: '09I03-03-V04-00243',
     title: "Function of Tzolk'in Calendar Structures in the Postclassic Maya Codices",
     researcher: 'Mgr. Jakub Špoták, PhD.',
+    links: [
+      { label: 'Stage Report 1', href: 'https://mesoamerica.eu/pdfs/Report_1_MayaCal.pdf' },
+      { label: 'Stage Report 2', href: 'https://mesoamerica.eu/pdfs/Report_2_MayaCal.pdf' },
+    ],
   },
   {
     id: 'APVV-0864-12',
     title: 'Maya Ritual and Astronomical Complex',
     note: 'Research, conservation, and presentation of Slovak discoveries of world importance.',
+    links: [
+      { label: 'More Info', href: '/more-info/project-apvv-0864-12' },
+    ],
   },
   {
     id: 'VEGA 1/0858/17',
     title: 'Re-thinking the Maya Preclassic Period. From new data to new interpretations.',
+    links: [
+      { label: 'More Info', href: '/more-info/project-vega-1085817' },
+    ],
   },
   {
     id: 'VEGA 1/0011/13',
     title: 'New Corpus of Maya Hieroglyphic Inscriptions from Uaxactun.',
+    links: [
+      { label: 'More Info', href: '/more-info/project-vega-1001113' },
+    ],
   },
 ];
 ---
@@ -66,6 +88,13 @@ const projects: Project[] = [
               {p.note && (
                 <p class="grants-project-meta">{p.note}</p>
               )}
+              {p.links && p.links.length > 0 && (
+                <div class="grants-project-links">
+                  {p.links.map((l) => (
+                    <a href={l.href} class="grants-project-link" target={l.href.startsWith('http') ? '_blank' : undefined} rel={l.href.startsWith('http') ? 'noopener noreferrer' : undefined}>{l.label}</a>
+                  ))}
+                </div>
+              )}
             </div>
           </li>
         ))}
@@ -77,6 +106,7 @@ const projects: Project[] = [
       <p class="grants-conservation-text">
         Research, conservation, and restoration of Maya artifacts and sites.
       </p>
+      <a href="/about-us" class="grants-project-link">More Info</a>
     </section>
 
   </div>
@@ -215,6 +245,34 @@ const projects: Project[] = [
     color: var(--site-text-dim);
     line-height: 1.5;
     font-style: italic;
+  }
+
+  /* ── Project links ── */
+  .grants-project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .grants-project-link {
+    display: inline-block;
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+    text-decoration: none;
+    border: 1px solid oklch(0.76 0.08 92 / 0.5);
+    padding: 0.45rem 1rem;
+    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
+  }
+
+  .grants-project-link:hover,
+  .grants-project-link:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-text-strong);
   }
 
   /* ── Conservation ── */
