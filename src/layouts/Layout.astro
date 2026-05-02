@@ -140,6 +140,19 @@ const {
     color: var(--site-text-strong);
   }
 
+  /* View Transitions: instant out, fast fade-in. Eliminates cross-fade ghost. */
+  ::view-transition-old(root) {
+    animation: none;
+  }
+
+  ::view-transition-new(root) {
+    animation: vt-in 160ms var(--site-ease-out) both;
+  }
+
+  @keyframes vt-in {
+    from { opacity: 0; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -147,8 +160,8 @@ const {
       scroll-behavior: auto !important;
     }
 
-    body::before {
-      display: none;
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
       animation: none;
     }
   }

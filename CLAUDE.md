@@ -30,8 +30,19 @@ npm run check      # astro type-check
 | `src/layouts/Layout.astro` | Base layout — nav + slot + footer + global CSS tokens |
 | `src/layouts/WebstudioPage.astro` | Reads legacy HTML, sanitizes/restructures, outputs semantic HTML |
 | `src/components/Nav.astro` | Sticky nav + multi-level dropdowns + PDF search (scans all 36 legacy files at build) |
+| `src/components/ResearchHeader.astro` | Shared header + subnav for all 5 Research section pages (prop: `currentHref`) |
 | `src/components/WebstudioContent.astro` | Simple HTML injector — currently unused |
 | `legacy/source-html/` | 36 read-only Webstudio HTML files (never edit) |
+
+### Native Research pages (shadowing legacy catch-all)
+
+| Route | File |
+|-------|------|
+| `/research` | `src/pages/research.astro` — overview + PARU report list |
+| `/grants-and-investigations` | `src/pages/grants-and-investigations.astro` — project reports |
+| `/grants-and-investigations-grants` | `src/pages/grants-and-investigations-grants.astro` |
+| `/grants-and-investigations-investigation-notes` | `src/pages/grants-and-investigations-investigation-notes.astro` |
+| `/grants-and-investigations-gallery` | `src/pages/grants-and-investigations-gallery.astro` |
 
 ### WebstudioPage.astro pipeline
 
@@ -59,6 +70,14 @@ No Tailwind config file — v4 uses Vite plugin only. Custom colors go in CSS va
 ### PDF search
 
 `Nav.astro` scans all 36 legacy HTML files at build, extracts PDF links, embeds as JSON. Search runs client-side with multi-term scoring. No runtime indexing.
+
+### Astro CSS scoping gotcha
+
+Elements rendered inside nested `.map()` with conditionals lose their `data-astro-cid-*` attribute — scoped CSS selectors won't match. Fix: move those rules to `<style is:global>` (or a named class with global modifier). Affects `grants-and-investigations.astro` `.grants-project-links` / `.grants-project-link`.
+
+### View Transitions + client scripts
+
+Scripts run once on initial load. For any script that touches the DOM or sets module-level state, wrap all logic in `init()` and call via `document.addEventListener('astro:page-load', init)` — this fires on initial load AND every View Transitions navigation. Check `customElements.get('tag-name')` before re-appending external custom element scripts.
 
 ### Git workflow
 
