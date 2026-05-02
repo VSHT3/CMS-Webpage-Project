@@ -1,0 +1,141 @@
+---
+interface Props {
+  currentHref: string;
+}
+
+const { currentHref } = Astro.props;
+
+const subnav = [
+  { label: 'Overview',            href: '/research' },
+  { label: 'Grants',              href: '/grants-and-investigations-grants' },
+  { label: 'Project Reports',     href: '/grants-and-investigations' },
+  { label: 'Investigation Notes', href: '/grants-and-investigations-investigation-notes' },
+  { label: 'Gallery',             href: '/grants-and-investigations-gallery' },
+];
+---
+
+<header class="rh-header">
+  <div class="rh-header-row">
+    <h1 class="rh-page-title">Research</h1>
+    <div class="rh-institution" aria-label="Institutional affiliation">
+      <span>Faculty of Arts</span>
+      <span>Comenius University Bratislava</span>
+    </div>
+  </div>
+  <hr class="rh-rule" />
+  <nav class="rh-subnav" aria-label="Research pages">
+    {subnav.map((item, i) => (<>
+      {i > 0 && <span class="rh-subnav-sep" aria-hidden="true"></span>}
+      <a
+        href={item.href}
+        class:list={['rh-subnav-link', { 'is-current': item.href === currentHref }]}
+        aria-current={item.href === currentHref ? 'page' : undefined}
+      >{item.label}</a>
+    </>))}
+  </nav>
+</header>
+
+<style>
+  .rh-header {
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .rh-header-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .rh-page-title {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(3.2rem, 7.5vw, 7rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: 0.04em;
+    color: var(--site-text);
+    text-wrap: balance;
+    flex-shrink: 0;
+  }
+
+  .rh-institution {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    padding-bottom: 0.3rem;
+  }
+
+  .rh-institution span {
+    font-family: var(--site-font);
+    font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  .rh-rule {
+    border: 0;
+    border-top: 1px solid oklch(0.76 0.08 92 / 0.5);
+    margin: 0 0 1.4rem;
+  }
+
+  .rh-subnav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .rh-subnav-link {
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    text-decoration: none;
+    transition: color 180ms var(--site-ease-out);
+  }
+
+  .rh-subnav-link:hover,
+  .rh-subnav-link:focus-visible {
+    color: var(--site-gold);
+  }
+
+  .rh-subnav-link.is-current {
+    color: var(--site-gold);
+  }
+
+  .rh-subnav-sep {
+    display: inline-block;
+    width: 1px;
+    height: 0.7em;
+    background: var(--site-border);
+    opacity: 0.7;
+  }
+
+  @media (max-width: 679px) {
+    .rh-header-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .rh-institution {
+      align-items: flex-start;
+    }
+
+    .rh-institution span {
+      text-align: left;
+    }
+
+    .rh-subnav-link {
+      font-size: 0.72rem;
+    }
+  }
+</style>

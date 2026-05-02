@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import ResearchHeader from '../components/ResearchHeader.astro';
 
 interface Report {
   title: string;
@@ -34,14 +35,6 @@ const petnReports: Report[] = [
 ];
 
 const archivesHref = 'https://drive.google.com/drive/folders/1La4VhMMrKLhA9mnwJz98koKcTXG0rJNO?usp=sharing';
-
-const subnav = [
-  { label: 'Overview',            href: '/research' },
-  { label: 'Grants',              href: '/grants-and-investigations-grants' },
-  { label: 'Project Reports',     href: '/grants-and-investigations' },
-  { label: 'Investigation Notes', href: '/grants-and-investigations-investigation-notes' },
-  { label: 'Gallery',             href: '/grants-and-investigations-gallery' },
-];
 ---
 
 <Layout
@@ -51,26 +44,7 @@ const subnav = [
 >
   <div class="research-shell">
 
-    <header class="research-header reveal-target">
-      <div class="research-header-row">
-        <h1 class="research-page-title">Research</h1>
-        <div class="research-institution" aria-label="Institutional affiliation">
-          <span>Faculty of Arts</span>
-          <span>Comenius University Bratislava</span>
-        </div>
-      </div>
-      <hr class="research-rule" />
-      <nav class="research-subnav" aria-label="Research pages">
-        {subnav.map((item, i) => (<>
-          {i > 0 && <span class="research-subnav-sep" aria-hidden="true"></span>}
-          <a
-            href={item.href}
-            class:list={['research-subnav-link', { 'is-current': item.href === '/research' }]}
-            aria-current={item.href === '/research' ? 'page' : undefined}
-          >{item.label}</a>
-        </>))}
-      </nav>
-    </header>
+    <ResearchHeader currentHref="/research" />
 
     <div class="research-intro reveal-target" style="--reveal-delay: 80ms">
       <h2 class="research-project-name">PARU Uaxactun</h2>
@@ -78,7 +52,7 @@ const subnav = [
     </div>
 
     <section class="research-reports reveal-target" style="--reveal-delay: 140ms">
-      <h2 class="research-series-heading">Archaeological Reports</h2>
+      <h2 class="research-section-label">Archaeological Reports</h2>
 
       <div class="research-series">
         <h3 class="research-series-label">Nuevas excavaciones en Uaxactun</h3>
@@ -115,7 +89,7 @@ const subnav = [
     </section>
 
     <section class="research-archives reveal-target" style="--reveal-delay: 200ms">
-      <h2 class="research-series-heading">Archives</h2>
+      <h2 class="research-section-label">Archives</h2>
       <p class="research-archives-text">
         Full field documentation, photographs, and supplementary materials are preserved in the project archives.
       </p>
@@ -157,95 +131,10 @@ const subnav = [
     padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
   }
 
-  /* ── Header ── */
-  .research-header {
-    margin-bottom: clamp(2.5rem, 5vw, 4rem);
-  }
-
-  .research-header-row {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 2rem;
-    margin-bottom: clamp(1rem, 2vw, 1.5rem);
-  }
-
-  .research-page-title {
-    margin: 0;
-    font-family: var(--site-font);
-    font-size: clamp(3.2rem, 7.5vw, 7rem);
-    font-weight: 300;
-    line-height: 0.95;
-    letter-spacing: 0.04em;
-    color: var(--site-text);
-    text-wrap: balance;
-    flex-shrink: 0;
-  }
-
-  .research-institution {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.2rem;
-    padding-bottom: 0.3rem;
-  }
-
-  .research-institution span {
-    font-family: var(--site-font);
-    font-size: clamp(0.72rem, 1.1vw, 0.82rem);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--site-text-dim);
-    text-align: right;
-    line-height: 1.4;
-  }
-
-  .research-rule {
-    border: 0;
-    border-top: 1px solid oklch(0.76 0.08 92 / 0.5);
-    margin: 0 0 1.4rem;
-  }
-
-  .research-subnav {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .research-subnav-link {
-    font-family: var(--site-font);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--site-text-dim);
-    text-decoration: none;
-    transition: color 180ms var(--site-ease-out);
-  }
-
-  .research-subnav-link:hover,
-  .research-subnav-link:focus-visible {
-    color: var(--site-gold);
-  }
-
-  .research-subnav-link.is-current {
-    color: var(--site-gold);
-  }
-
-  .research-subnav-sep {
-    display: inline-block;
-    width: 1px;
-    height: 0.7em;
-    background: var(--site-border);
-    opacity: 0.7;
-  }
-
   /* ── Intro ── */
   .research-intro {
     padding: clamp(2rem, 4vw, 3rem) 0;
     border-bottom: 1px solid var(--site-border);
-    margin-bottom: 0;
   }
 
   .research-project-name {
@@ -265,13 +154,8 @@ const subnav = [
     text-transform: uppercase;
   }
 
-  /* ── Reports ── */
-  .research-reports {
-    padding: clamp(2.5rem, 5vw, 4rem) 0;
-    border-bottom: 1px solid var(--site-border);
-  }
-
-  .research-series-heading {
+  /* ── Section label (shared) ── */
+  .research-section-label {
     margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
     font-family: var(--site-font);
     font-size: clamp(0.78rem, 1.1vw, 0.88rem);
@@ -279,6 +163,12 @@ const subnav = [
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--site-text-dim);
+  }
+
+  /* ── Reports ── */
+  .research-reports {
+    padding: clamp(2.5rem, 5vw, 4rem) 0;
+    border-bottom: 1px solid var(--site-border);
   }
 
   .research-series {
@@ -417,26 +307,7 @@ const subnav = [
     }
   }
 
-  /* ── Mobile ── */
   @media (max-width: 679px) {
-    .research-header-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.75rem;
-    }
-
-    .research-institution {
-      align-items: flex-start;
-    }
-
-    .research-institution span {
-      text-align: left;
-    }
-
-    .research-subnav-link {
-      font-size: 0.72rem;
-    }
-
     .research-report-item {
       flex-direction: column;
       gap: 0.4rem;
