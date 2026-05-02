@@ -6,11 +6,13 @@ const grants = [
   {
     title: 'Preliminary catalog of rock art in the Kaua Cave - 2025',
     researcher: 'Fátima del Rosario Tec Pool',
+    pdf: { label: 'Preliminary Catalogue', href: 'https://mesoamerica.eu/pdfs/Preliminary_catalog_of_rock_art_in_the_Kaua_Cave_-_2025.pdf' },
   },
   {
     title: 'Final report on the CU grant 2025',
     description: 'Documentation of rock art motifs from the Kaua Cave in Yucatán, Mexico, using LiDAR',
     researcher: 'Fátima del Rosario Tec Pool',
+    pdf: { label: 'Final Report', href: 'https://mesoamerica.eu/pdfs/Final_report_on_the_CU_grant_2025.pdf' },
   },
 ];
 ---
@@ -33,6 +35,9 @@ const grants = [
               <p class="gl-grant-title">{g.title}</p>
               {g.description && <p class="gl-grant-desc">{g.description}</p>}
               <p class="gl-grant-researcher">Researcher: {g.researcher}</p>
+              {g.pdf && (
+                <a href={g.pdf.href} class="gl-grant-pdf" target="_blank" rel="noopener noreferrer">{g.pdf.label}</a>
+              )}
             </div>
           </li>
         ))}
@@ -132,6 +137,28 @@ const grants = [
     font-size: clamp(0.82rem, 1vw, 0.9rem);
     color: var(--site-text-dim);
     letter-spacing: 0.04em;
+  }
+
+  .gl-grant-pdf {
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+    text-decoration: none;
+    border: 1px solid oklch(0.76 0.08 92 / 0.5);
+    padding: 0.45rem 1rem;
+    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
+    align-self: start;
+  }
+
+  .gl-grant-pdf:hover,
+  .gl-grant-pdf:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-text-strong);
   }
 
   .will-reveal {
