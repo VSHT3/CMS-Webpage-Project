@@ -1,0 +1,316 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ResearchHeader from '../components/ResearchHeader.astro';
+
+interface Report {
+  title: string;
+  links: { label: string; href: string }[];
+}
+
+const uaxactunReports: Report[] = [
+  { title: 'Nuevas excavaciones en Uaxactun I.',   links: [{ label: 'View', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-01.pdf' }] },
+  { title: 'Nuevas excavaciones en Uaxactun II.',  links: [{ label: 'View', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-02.pdf' }] },
+  { title: 'Nuevas excavaciones en Uaxactun III.', links: [{ label: 'View', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-03.pdf' }] },
+  { title: 'Nuevas excavaciones en Uaxactun IV.',  links: [{ label: 'View', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-04.pdf' }] },
+  { title: 'Nuevas excavaciones en Uaxactun V.',   links: [{ label: 'View', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-05.pdf' }] },
+  { title: 'Nuevas excavaciones en Uaxactun VI.',  links: [
+    { label: 'View vol. 1', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-06.pdf' },
+    { label: 'View vol. 2', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-06b.pdf' },
+  ]},
+  { title: 'Nuevas excavaciones en Uaxactun VII.', links: [{ label: 'View', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-07.pdf' }] },
+  { title: 'Nuevas excavaciones en Uaxactun VIII.',links: [{ label: 'View', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-08.pdf' }] },
+  { title: 'Nuevas excavaciones en Uaxactun IX.',  links: [{ label: 'View', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-09.pdf' }] },
+  { title: 'Nuevas excavaciones en Uaxactun X.',   links: [{ label: 'View', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-10.pdf' }] },
+  { title: 'Nuevas excavaciones en Uaxactun XI.',  links: [{ label: 'View', href: '/assets/pdfs/reports/uaxactun/uaxactun-vol-11.pdf' }] },
+];
+
+const petnReports: Report[] = [
+  { title: 'Excavaciones en el Peten Noreste I',   links: [{ label: 'View', href: '/assets/pdfs/reports/peten/peten-noreste-vol-01.pdf' }] },
+  { title: 'Excavaciones en el Peten Noreste II',  links: [{ label: 'View', href: '/assets/pdfs/reports/peten/peten-noreste-vol-02.pdf' }] },
+  { title: 'Excavaciones en el Peten Noreste III', links: [{ label: 'View', href: '/assets/pdfs/reports/peten/peten-noreste-vol-03.pdf' }] },
+  { title: 'Excavaciones en el Peten Noreste IV',  links: [{ label: 'View', href: '/assets/pdfs/reports/peten/peten-noreste-vol-04.pdf' }] },
+  { title: 'Excavaciones en el Peten Noreste V',   links: [{ label: 'View', href: '/assets/pdfs/reports/peten/peten-noreste-vol-05.pdf' }] },
+  { title: 'Excavaciones en el Peten Noreste VI',  links: [{ label: 'View', href: '/assets/pdfs/reports/peten/peten-noreste-vol-06.pdf' }] },
+  { title: 'Excavaciones en el Peten Noreste VII', links: [] },
+];
+
+const archivesHref = 'https://drive.google.com/drive/folders/1La4VhMMrKLhA9mnwJz98koKcTXG0rJNO?usp=sharing';
+---
+
+<Layout
+  title="Research — Center for Mesoamerican Studies"
+  description="Research activity of the Center for Mesoamerican Studies — PARU Uaxactun archaeological project, excavation reports, and field archives."
+  bodyClass="research-page"
+>
+  <div class="research-shell">
+
+    <ResearchHeader currentHref="/research" />
+
+    <div class="research-intro reveal-target" style="--reveal-delay: 80ms">
+      <h2 class="research-project-name">PARU Uaxactun</h2>
+      <p class="research-project-meta">Uaxactun Regional Archaeological Project &ensp;·&ensp; est. 2016 &ensp;·&ensp; Petén, Guatemala</p>
+    </div>
+
+    <section class="research-reports reveal-target" style="--reveal-delay: 140ms">
+      <h2 class="research-section-label">Archaeological Reports</h2>
+
+      <div class="research-series">
+        <h3 class="research-series-label">Nuevas excavaciones en Uaxactun</h3>
+        <ol class="research-report-list">
+          {uaxactunReports.map((r) => (
+            <li class="research-report-item">
+              <span class="research-report-title">{r.title}</span>
+              <span class="research-report-links">
+                {r.links.map((l) => (
+                  <a href={l.href} class="research-report-link" target="_blank" rel="noopener noreferrer">{l.label}</a>
+                ))}
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="research-series">
+        <h3 class="research-series-label">Excavaciones en el Peten Noreste</h3>
+        <ol class="research-report-list">
+          {petnReports.map((r) => (
+            <li class="research-report-item">
+              <span class="research-report-title">{r.title}</span>
+              <span class="research-report-links">
+                {r.links.map((l) => (
+                  <a href={l.href} class="research-report-link" target="_blank" rel="noopener noreferrer">{l.label}</a>
+                ))}
+                {r.links.length === 0 && <span class="research-report-pending">Coming soon</span>}
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="research-archives reveal-target" style="--reveal-delay: 200ms">
+      <h2 class="research-section-label">Archives</h2>
+      <p class="research-archives-text">
+        Full field documentation, photographs, and supplementary materials are preserved in the project archives.
+      </p>
+      <a href={archivesHref} class="research-archives-link" target="_blank" rel="noopener noreferrer">Browse archives</a>
+    </section>
+
+  </div>
+</Layout>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll<HTMLElement>('.reveal-target');
+
+  if (!reduceMotion && targets.length > 0 && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            el.style.transitionDelay = el.style.getPropertyValue('--reveal-delay') || '0ms';
+            el.classList.add('is-visible');
+            observer.unobserve(el);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+    );
+    targets.forEach((el) => {
+      el.classList.add('will-reveal');
+      observer.observe(el);
+    });
+  }
+</script>
+
+<style>
+  .research-shell {
+    width: min(100%, 90rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  /* ── Intro ── */
+  .research-intro {
+    padding: clamp(2rem, 4vw, 3rem) 0;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .research-project-name {
+    margin: 0 0 0.55rem;
+    font-family: var(--site-font);
+    font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    color: var(--site-text-strong);
+  }
+
+  .research-project-meta {
+    margin: 0;
+    color: var(--site-text-dim);
+    font-size: clamp(0.78rem, 1.1vw, 0.88rem);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── Section label (shared) ── */
+  .research-section-label {
+    margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+    font-family: var(--site-font);
+    font-size: clamp(0.78rem, 1.1vw, 0.88rem);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+  }
+
+  /* ── Reports ── */
+  .research-reports {
+    padding: clamp(2.5rem, 5vw, 4rem) 0;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .research-series {
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
+  .research-series:last-child {
+    margin-bottom: 0;
+  }
+
+  .research-series-label {
+    margin: 0 0 1rem;
+    font-family: var(--site-font);
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--site-text-strong);
+    font-style: italic;
+  }
+
+  .research-report-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .research-report-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.7rem 0;
+    border-top: 1px solid oklch(0.5 0.025 185 / 0.35);
+  }
+
+  .research-report-item:last-child {
+    border-bottom: 1px solid oklch(0.5 0.025 185 / 0.35);
+  }
+
+  .research-report-title {
+    font-family: var(--site-font);
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    color: var(--site-text-strong);
+    line-height: 1.5;
+  }
+
+  .research-report-links {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .research-report-link {
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-teal);
+    text-decoration: none;
+    transition: color 180ms var(--site-ease-out);
+    white-space: nowrap;
+  }
+
+  .research-report-link:hover,
+  .research-report-link:focus-visible {
+    color: var(--site-gold);
+  }
+
+  .research-report-pending {
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+    opacity: 0.6;
+  }
+
+  /* ── Archives ── */
+  .research-archives {
+    padding: clamp(2.5rem, 5vw, 4rem) 0 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .research-archives-text {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: clamp(1rem, 1.35vw, 1.1rem);
+    line-height: 1.8;
+    max-width: 60ch;
+    text-wrap: pretty;
+  }
+
+  .research-archives-link {
+    display: inline-block;
+    font-family: var(--site-font);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+    text-decoration: none;
+    border: 1px solid oklch(0.76 0.08 92 / 0.5);
+    padding: 0.55rem 1.1rem;
+    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
+    align-self: start;
+  }
+
+  .research-archives-link:hover,
+  .research-archives-link:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-text-strong);
+  }
+
+  /* ── Scroll reveal ── */
+  .will-reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 500ms var(--site-ease-out),
+      transform 600ms var(--site-ease-out);
+    will-change: opacity, transform;
+  }
+
+  .will-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .will-reveal {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (max-width: 679px) {
+    .research-report-item {
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+  }
+</style>

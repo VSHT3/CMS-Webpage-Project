@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ResearchHeader from '../components/ResearchHeader.astro';
+---
+
+<Layout
+  title="Investigation Notes — Research — Center for Mesoamerican Studies"
+  description="Field investigation notes from research projects of the Center for Mesoamerican Studies."
+  bodyClass="inv-notes-page"
+>
+  <div class="in-shell">
+    <ResearchHeader currentHref="/grants-and-investigations-investigation-notes" />
+    <p class="in-placeholder">Content coming soon.</p>
+  </div>
+</Layout>
+
+<style>
+  .in-shell {
+    width: min(100%, 90rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .in-placeholder {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: 1rem;
+    color: var(--site-text-dim);
+    font-style: italic;
+    padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  }
+</style>

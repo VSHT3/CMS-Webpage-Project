@@ -5,11 +5,8 @@ dist/
 # Webstudio raw export — source of truth is legacy/source-html/
 mesoamerica/
 
-# Uploaded assets before migration
-assets_old/
-
 # Large binary assets — upload directly to server, not tracked in git
-public/legacy-assets/
+public/assets/pdfs/
 
 # graphify — commit graph outputs, skip local-only files
 graphify-out/cache/

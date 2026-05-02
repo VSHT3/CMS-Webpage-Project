@@ -1,0 +1,176 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ResearchHeader from '../components/ResearchHeader.astro';
+
+const grants = [
+  {
+    title: 'Preliminary catalog of rock art in the Kaua Cave - 2025',
+    researcher: 'Fátima del Rosario Tec Pool',
+    pdf: { label: 'Preliminary Catalogue', href: '/assets/pdfs/publications/kaua-cave-rock-art-catalog-2025.pdf' },
+  },
+  {
+    title: 'Final report on the CU grant 2025',
+    description: 'Documentation of rock art motifs from the Kaua Cave in Yucatán, Mexico, using LiDAR',
+    researcher: 'Fátima del Rosario Tec Pool',
+    pdf: { label: 'Final Report', href: '/assets/pdfs/grants/cu-grant-final-report-2025.pdf' },
+  },
+];
+---
+
+<Layout
+  title="Grants — Research — Center for Mesoamerican Studies"
+  description="Research grants of the Center for Mesoamerican Studies, including rock art documentation in the Kaua Cave, Yucatán."
+  bodyClass="grants-list-page"
+>
+  <div class="gl-shell">
+
+    <ResearchHeader currentHref="/grants-and-investigations-grants" />
+
+    <section class="gl-section reveal-target" style="--reveal-delay: 80ms">
+      <h2 class="gl-section-label">Active Grants</h2>
+      <ol class="gl-grant-list">
+        {grants.map((g) => (
+          <li class="gl-grant-item">
+            <div class="gl-grant-body">
+              <p class="gl-grant-title">{g.title}</p>
+              {g.description && <p class="gl-grant-desc">{g.description}</p>}
+              <p class="gl-grant-researcher">Researcher: {g.researcher}</p>
+              {g.pdf && (
+                <a href={g.pdf.href} class="gl-grant-pdf" target="_blank" rel="noopener noreferrer">{g.pdf.label}</a>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+  </div>
+</Layout>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll<HTMLElement>('.reveal-target');
+  if (!reduceMotion && targets.length > 0 && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            el.style.transitionDelay = el.style.getPropertyValue('--reveal-delay') || '0ms';
+            el.classList.add('is-visible');
+            observer.unobserve(el);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+    );
+    targets.forEach((el) => { el.classList.add('will-reveal'); observer.observe(el); });
+  }
+</script>
+
+<style>
+  .gl-shell {
+    width: min(100%, 90rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .gl-section {
+    padding-top: clamp(2rem, 4vw, 3rem);
+  }
+
+  .gl-section-label {
+    margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+    font-family: var(--site-font);
+    font-size: clamp(0.78rem, 1.1vw, 0.88rem);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+  }
+
+  .gl-grant-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .gl-grant-item {
+    padding: clamp(1.25rem, 2.5vw, 1.75rem) 0;
+    border-top: 1px solid oklch(0.5 0.025 185 / 0.35);
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .gl-grant-item:last-child {
+    border-bottom: 1px solid oklch(0.5 0.025 185 / 0.35);
+  }
+
+  .gl-grant-body {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .gl-grant-title {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    font-weight: 500;
+    color: var(--site-text-strong);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .gl-grant-desc {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    color: var(--site-text);
+    line-height: 1.6;
+    text-wrap: pretty;
+    font-style: italic;
+  }
+
+  .gl-grant-researcher {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(0.82rem, 1vw, 0.9rem);
+    color: var(--site-text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  .gl-grant-pdf {
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+    text-decoration: none;
+    border: 1px solid oklch(0.76 0.08 92 / 0.5);
+    padding: 0.45rem 1rem;
+    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
+    align-self: start;
+  }
+
+  .gl-grant-pdf:hover,
+  .gl-grant-pdf:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-text-strong);
+  }
+
+  .will-reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 500ms var(--site-ease-out), transform 600ms var(--site-ease-out);
+    will-change: opacity, transform;
+  }
+
+  .will-reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .will-reveal { transition: none; opacity: 1; transform: none; }
+  }
+</style>

@@ -1,0 +1,316 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ResearchHeader from '../components/ResearchHeader.astro';
+
+interface Link {
+  label: string;
+  href: string;
+}
+
+interface Project {
+  id: string;
+  title: string;
+  researcher?: string;
+  note?: string;
+  links?: Link[];
+}
+
+const projects: Project[] = [
+  {
+    id: '09I03-03-V04-00234',
+    title: 'Preclassic Maya Potbelly Sculptures in Peten, Guatemala and Their Connection to Ancestor Cult',
+    researcher: 'prof. Milan Kováč, PhD.',
+    links: [
+      { label: 'Preliminary Database', href: '/assets/pdfs/grants/A1-Database-POTBELLY.pdf' },
+    ],
+  },
+  {
+    id: '09I03-03-V04-00243',
+    title: "Function of Tzolk'in Calendar Structures in the Postclassic Maya Codices",
+    researcher: 'Mgr. Jakub Špoták, PhD.',
+    links: [
+      { label: 'Stage Report 1', href: '/assets/pdfs/grants/mayacal-report-1.pdf' },
+      { label: 'Stage Report 2', href: '/assets/pdfs/grants/mayacal-report-2.pdf' },
+    ],
+  },
+  {
+    id: 'APVV-0864-12',
+    title: 'Maya Ritual and Astronomical Complex',
+    note: 'Research, conservation, and presentation of Slovak discoveries of world importance.',
+    links: [
+      { label: 'More Info', href: '/more-info/project-apvv-0864-12' },
+    ],
+  },
+  {
+    id: 'VEGA 1/0858/17',
+    title: 'Re-thinking the Maya Preclassic Period. From new data to new interpretations.',
+    links: [
+      { label: 'More Info', href: '/more-info/project-vega-1085817' },
+    ],
+  },
+  {
+    id: 'VEGA 1/0011/13',
+    title: 'New Corpus of Maya Hieroglyphic Inscriptions from Uaxactun.',
+    links: [
+      { label: 'More Info', href: '/more-info/project-vega-1001113' },
+    ],
+  },
+];
+---
+
+<Layout
+  title="Project Reports — Research — Center for Mesoamerican Studies"
+  description="Funded research projects of the Center for Mesoamerican Studies — archaeological investigations in Uaxactun, Guatemala, and related Mesoamerican studies."
+  bodyClass="grants-page"
+>
+  <div class="grants-shell">
+
+    <ResearchHeader currentHref="/grants-and-investigations" />
+
+    <div class="grants-intro reveal-target" style="--reveal-delay: 80ms">
+      <h2 class="grants-section-title">Archaeological Projects: Uaxactun, Guatemala</h2>
+      <p class="grants-intro-text">
+        Our research focuses on the Maya civilization, including conservation and presentation of Slovak discoveries of international importance.
+      </p>
+    </div>
+
+    <section class="grants-projects reveal-target" style="--reveal-delay: 140ms">
+      <h2 class="grants-section-label">Funded Projects</h2>
+      <ol class="grants-project-list">
+        {projects.map((p) => (
+          <li class="grants-project-item">
+            <span class="grants-project-id">{p.id}</span>
+            <div class="grants-project-body">
+              <p class="grants-project-title">{p.title}</p>
+              {p.researcher && (
+                <p class="grants-project-meta">Researcher: {p.researcher}</p>
+              )}
+              {p.note && (
+                <p class="grants-project-meta">{p.note}</p>
+              )}
+              {p.links && p.links.length > 0 && (
+                <div class="grants-project-links">
+                  {p.links.map((l) => (
+                    <a href={l.href} class="grants-project-link" target={l.href.startsWith('http') ? '_blank' : undefined} rel={l.href.startsWith('http') ? 'noopener noreferrer' : undefined}>{l.label}</a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="grants-conservation reveal-target" style="--reveal-delay: 200ms">
+      <h2 class="grants-section-label">Conservation &amp; Restoration</h2>
+      <p class="grants-conservation-text">
+        Research, conservation, and restoration of Maya artifacts and sites.
+      </p>
+      <a href="/about-us" class="grants-project-link">More Info</a>
+    </section>
+
+  </div>
+</Layout>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll<HTMLElement>('.reveal-target');
+
+  if (!reduceMotion && targets.length > 0 && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            el.style.transitionDelay = el.style.getPropertyValue('--reveal-delay') || '0ms';
+            el.classList.add('is-visible');
+            observer.unobserve(el);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+    );
+    targets.forEach((el) => {
+      el.classList.add('will-reveal');
+      observer.observe(el);
+    });
+  }
+</script>
+
+<style>
+  .grants-shell {
+    width: min(100%, 90rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  /* ── Intro ── */
+  .grants-intro {
+    padding: clamp(2rem, 4vw, 3rem) 0;
+    border-bottom: 1px solid var(--site-border);
+    display: grid;
+    gap: 1rem;
+  }
+
+  .grants-section-title {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    color: var(--site-text-strong);
+  }
+
+  .grants-intro-text {
+    margin: 0;
+    color: var(--site-text);
+    font-size: clamp(1rem, 1.35vw, 1.1rem);
+    line-height: 1.8;
+    max-width: 68ch;
+    text-wrap: pretty;
+  }
+
+  /* ── Section label ── */
+  .grants-section-label {
+    margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+    font-family: var(--site-font);
+    font-size: clamp(0.78rem, 1.1vw, 0.88rem);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+  }
+
+  /* ── Projects ── */
+  .grants-projects {
+    padding: clamp(2.5rem, 5vw, 4rem) 0;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .grants-project-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .grants-project-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: clamp(1.25rem, 2.5vw, 1.75rem) 0;
+    border-top: 1px solid oklch(0.5 0.025 185 / 0.35);
+  }
+
+  .grants-project-item:last-child {
+    border-bottom: 1px solid oklch(0.5 0.025 185 / 0.35);
+  }
+
+  @media (min-width: 640px) {
+    .grants-project-item {
+      grid-template-columns: 14rem 1fr;
+      gap: 0 clamp(1.5rem, 3vw, 2.5rem);
+      align-items: start;
+    }
+  }
+
+  .grants-project-id {
+    font-family: var(--site-font);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+    padding-top: 0.2em;
+    line-height: 1.4;
+  }
+
+  .grants-project-body {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .grants-project-title {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(1rem, 1.35vw, 1.1rem);
+    color: var(--site-text-strong);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .grants-project-meta {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(0.82rem, 1vw, 0.9rem);
+    color: var(--site-text-dim);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+
+  /* ── Conservation ── */
+  .grants-conservation {
+    padding: clamp(2.5rem, 5vw, 4rem) 0 0;
+  }
+
+  .grants-conservation-text {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: clamp(1rem, 1.35vw, 1.1rem);
+    line-height: 1.8;
+    max-width: 60ch;
+    text-wrap: pretty;
+  }
+
+  /* ── Scroll reveal ── */
+  .will-reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 500ms var(--site-ease-out),
+      transform 600ms var(--site-ease-out);
+    will-change: opacity, transform;
+  }
+
+  .will-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .will-reveal {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<style is:global>
+  .grants-project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+  }
+
+  .grants-project-link {
+    display: inline-block;
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+    text-decoration: none;
+    border: 1px solid oklch(0.76 0.08 92 / 0.5);
+    padding: 0.45rem 1rem;
+    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
+  }
+
+  .grants-project-link:hover,
+  .grants-project-link:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-text-strong);
+  }
+</style>

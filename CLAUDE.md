@@ -43,7 +43,7 @@ Allowed tags: `h1–h6, p, section, article, ul, ol, li, a, img, iframe, figure,
 
 - `public/assets/` — images, logos, 3D model (`models/statue-compressed.glb`), vendor JS (`vendor/model-viewer.min.js`)
 - `public/assets/optimized/` — webp srcsets at 720w/1200w/1800w (pattern: `{base}-{720|1200|1800}.webp`)
-- `public/legacy-assets/` — PDFs and uploaded files
+- `public/assets/pdfs/` — PDFs (gitignored, upload to server manually). Subdirs: `grants/`, `publications/`, `reports/uaxactun/`, `reports/peten/`
 
 ### Design tokens (CSS vars in `Layout.astro`)
 
