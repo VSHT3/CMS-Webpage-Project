@@ -247,33 +247,6 @@ const projects: Project[] = [
     font-style: italic;
   }
 
-  /* ── Project links ── */
-  .grants-project-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
-  .grants-project-link {
-    display: inline-block;
-    font-family: var(--site-font);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--site-gold);
-    text-decoration: none;
-    border: 1px solid oklch(0.76 0.08 92 / 0.5);
-    padding: 0.45rem 1rem;
-    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
-  }
-
-  .grants-project-link:hover,
-  .grants-project-link:focus-visible {
-    border-color: var(--site-gold);
-    color: var(--site-text-strong);
-  }
 
   /* ── Conservation ── */
   .grants-conservation {
@@ -310,5 +283,34 @@ const projects: Project[] = [
       opacity: 1;
       transform: none;
     }
+  }
+</style>
+
+<style is:global>
+  .grants-project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+  }
+
+  .grants-project-link {
+    display: inline-block;
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+    text-decoration: none;
+    border: 1px solid oklch(0.76 0.08 92 / 0.5);
+    padding: 0.45rem 1rem;
+    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
+  }
+
+  .grants-project-link:hover,
+  .grants-project-link:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-text-strong);
   }
 </style>
