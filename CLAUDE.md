@@ -60,6 +60,14 @@ No Tailwind config file — v4 uses Vite plugin only. Custom colors go in CSS va
 
 `Nav.astro` scans all 36 legacy HTML files at build, extracts PDF links, embeds as JSON. Search runs client-side with multi-term scoring. No runtime indexing.
 
+### Git workflow
+
+Always merge with `--no-ff` to preserve visible branch structure in the graph:
+```bash
+git merge --no-ff <branch>
+```
+Never use `--ff-only`. Delete merged branches after: `git branch -d <branch> && git push origin --delete <branch>`.
+
 ### Deploy
 
 `npm run build` → `/dist` → copy to Coolify VPS. Fully static, no backend.
