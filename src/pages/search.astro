@@ -1,0 +1,505 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { buildPdfSearchIndex } from '../lib/pdf-search';
+
+const items = buildPdfSearchIndex();
+const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
+---
+
+<Layout
+  title="Search Publications — Center for Mesoamerican Studies"
+  description="Search across publications, reports, and catalogues from the Center for Mesoamerican Studies."
+  bodyClass="search-page"
+>
+  <div class="search-shell">
+    <header class="search-header">
+      <p class="search-eyebrow">Publications</p>
+      <h1 class="search-title">Search</h1>
+      <p class="search-subtitle">{items.length} documents indexed across reports, catalogues, and publications.</p>
+
+      <form class="search-form" method="get" action="/search" data-search-form>
+        <label for="search-input" class="visually-hidden">Search query</label>
+        <input
+          id="search-input"
+          class="search-input"
+          type="search"
+          name="q"
+          placeholder="Type a title, year, author, or keyword..."
+          autocomplete="off"
+          autofocus
+          data-search-input
+        />
+        <button type="submit" class="search-submit">Search</button>
+      </form>
+
+      <p class="search-status" aria-live="polite" data-search-status></p>
+    </header>
+
+    <ul class="search-results" data-search-results role="list"></ul>
+    <p class="search-empty" hidden data-search-empty>No matching publications. Try a different keyword.</p>
+  </div>
+</Layout>
+
+<script type="application/json" id="search-data" set:html={itemsJson} is:inline></script>
+
+<script>
+  type PdfSearchItem = {
+    title: string;
+    filename: string;
+    displayFilename: string;
+    href: string;
+    sourcePage: string;
+    sourcePath: string;
+    search: string;
+  };
+
+  const normalizeQuery = (value = '') =>
+    value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[_./-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const slugify = (text: string) =>
+    text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+  let previewObserver: IntersectionObserver | null = null;
+
+  const ensurePreviewObserver = () => {
+    if (previewObserver || !('IntersectionObserver' in window)) return previewObserver;
+    previewObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const wrapper = entry.target as HTMLElement;
+          const src = wrapper.getAttribute('data-preview-src');
+          if (!src) return;
+          const iframe = document.createElement('iframe');
+          iframe.src = `${src}#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&messages=0&pagemode=none&view=FitV`;
+          iframe.title = wrapper.getAttribute('data-preview-title') ?? 'PDF preview';
+          iframe.loading = 'lazy';
+          iframe.setAttribute('aria-hidden', 'true');
+          wrapper.replaceChildren(iframe);
+          wrapper.classList.add('is-loaded');
+          previewObserver?.unobserve(wrapper);
+        });
+      },
+      { rootMargin: '320px 0px' },
+    );
+    return previewObserver;
+  };
+
+  const init = () => {
+    const dataEl = document.querySelector<HTMLScriptElement>('#search-data');
+    const form = document.querySelector<HTMLFormElement>('[data-search-form]');
+    const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+    const resultsEl = document.querySelector<HTMLElement>('[data-search-results]');
+    const statusEl = document.querySelector<HTMLElement>('[data-search-status]');
+    const emptyEl = document.querySelector<HTMLElement>('[data-search-empty]');
+    if (!dataEl || !form || !input || !resultsEl || !statusEl || !emptyEl) return;
+
+    const items: PdfSearchItem[] = JSON.parse(dataEl.textContent || '[]');
+
+    const urlQuery = new URL(window.location.href).searchParams.get('q') ?? '';
+    if (urlQuery) input.value = urlQuery;
+
+    const render = () => {
+      previewObserver?.disconnect();
+      previewObserver = null;
+
+      const query = normalizeQuery(input.value);
+      resultsEl.replaceChildren();
+
+      if (!query) {
+        statusEl.textContent = 'Type a query to begin searching.';
+        emptyEl.hidden = true;
+        return;
+      }
+
+      const terms = query.split(' ').filter(Boolean);
+      const matches = items
+        .map((item) => {
+          if (!terms.every((term) => item.search.includes(term))) return null;
+          let score = 0;
+          const title = normalizeQuery(item.title);
+          const filename = normalizeQuery(item.filename);
+          const source = normalizeQuery(item.sourcePage);
+          terms.forEach((term) => {
+            if (title.startsWith(term)) score += 18;
+            if (filename.startsWith(term)) score += 14;
+            if (title.includes(term)) score += 8;
+            if (filename.includes(term)) score += 6;
+            if (source.includes(term)) score += 3;
+          });
+          return { item, score };
+        })
+        .filter((m): m is { item: PdfSearchItem; score: number } => Boolean(m))
+        .sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title));
+
+      if (matches.length === 0) {
+        statusEl.textContent = `No results for "${input.value}".`;
+        emptyEl.hidden = false;
+        return;
+      }
+
+      emptyEl.hidden = true;
+      statusEl.textContent = matches.length === 1
+        ? `1 publication for "${input.value}".`
+        : `${matches.length} publications for "${input.value}".`;
+
+      const observer = ensurePreviewObserver();
+      const fragment = document.createDocumentFragment();
+
+      matches.forEach(({ item }) => {
+        const li = document.createElement('li');
+        li.className = 'search-result';
+
+        const preview = document.createElement('div');
+        preview.className = 'search-result-preview';
+        preview.setAttribute('data-preview-src', item.href);
+        preview.setAttribute('data-preview-title', `${item.title} — preview`);
+        preview.innerHTML = '<span class="search-result-preview-spinner" aria-hidden="true">PDF</span>';
+
+        const info = document.createElement('div');
+        info.className = 'search-result-info';
+
+        const title = document.createElement('h2');
+        title.className = 'search-result-title';
+        title.textContent = item.title;
+
+        const meta = document.createElement('p');
+        meta.className = 'search-result-meta';
+        meta.textContent = item.sourcePage;
+
+        const filename = document.createElement('p');
+        filename.className = 'search-result-filename';
+        filename.textContent = item.displayFilename;
+
+        const actions = document.createElement('div');
+        actions.className = 'search-result-actions';
+
+        const openBtn = document.createElement('a');
+        openBtn.href = item.href;
+        openBtn.target = '_blank';
+        openBtn.rel = 'noopener noreferrer';
+        openBtn.className = 'search-result-btn search-result-btn--primary';
+        openBtn.textContent = 'Open document';
+
+        const pageBtn = document.createElement('a');
+        const slug = slugify(item.title);
+        pageBtn.href = `${item.sourcePath || '/'}${slug ? '#' + slug : ''}`;
+        pageBtn.className = 'search-result-btn';
+        pageBtn.textContent = 'View on page';
+
+        actions.append(openBtn, pageBtn);
+        info.append(title, meta, filename, actions);
+        li.append(preview, info);
+        fragment.append(li);
+
+        if (observer) observer.observe(preview);
+      });
+
+      resultsEl.append(fragment);
+    };
+
+    let inputDebounce = 0;
+    input.addEventListener('input', () => {
+      window.clearTimeout(inputDebounce);
+      inputDebounce = window.setTimeout(render, 120);
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const url = new URL(window.location.href);
+      const value = input.value.trim();
+      if (value) url.searchParams.set('q', value);
+      else url.searchParams.delete('q');
+      window.history.replaceState(null, '', url.toString());
+      render();
+    });
+
+    render();
+  };
+
+  document.addEventListener('astro:page-load', init);
+</script>
+
+<style>
+  .search-shell {
+    width: min(100%, 78rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .search-header {
+    display: grid;
+    gap: clamp(0.75rem, 1.5vw, 1rem);
+    padding-bottom: clamp(1.5rem, 3vw, 2.25rem);
+    border-bottom: 1px solid var(--site-border);
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
+  .search-eyebrow {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(0.78rem, 1.1vw, 0.88rem);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+  }
+
+  .search-title {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--site-text-strong);
+  }
+
+  .search-subtitle {
+    margin: 0;
+    color: var(--site-text-dim);
+    font-size: clamp(0.9rem, 1.2vw, 1rem);
+    line-height: 1.6;
+  }
+
+  .search-form {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: clamp(0.75rem, 2vw, 1.25rem);
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    flex: 1 1 22rem;
+    min-width: 0;
+    min-height: 3.2rem;
+    padding: 0.85rem 1.1rem;
+    border: 1px solid var(--site-border);
+    border-radius: 0;
+    background: oklch(0.18 0.026 202 / 0.78);
+    color: var(--site-text);
+    font: inherit;
+    font-size: 1.05rem;
+    line-height: 1.3;
+    outline: none;
+    transition: border-color 180ms var(--site-ease-out), background-color 180ms var(--site-ease-out);
+  }
+
+  .search-input::placeholder {
+    color: var(--site-text-dim);
+  }
+
+  .search-input:focus {
+    border-color: var(--site-gold);
+    background: oklch(0.16 0.024 202 / 0.92);
+  }
+
+  .search-submit {
+    min-height: 3.2rem;
+    padding: 0 clamp(1.25rem, 3vw, 1.75rem);
+    border: 1px solid var(--site-gold);
+    border-radius: 0;
+    background: oklch(0.84 0.075 88 / 0.1);
+    color: var(--site-gold);
+    font-family: var(--site-font);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      background-color 180ms var(--site-ease-out),
+      color 180ms var(--site-ease-out),
+      transform 180ms var(--site-ease-out);
+  }
+
+  .search-submit:hover,
+  .search-submit:focus-visible {
+    background: oklch(0.84 0.075 88 / 0.18);
+    color: var(--site-text-strong);
+  }
+
+  .search-submit:active {
+    transform: translateY(1px);
+  }
+
+  .search-status {
+    margin: 0;
+    color: var(--site-text-dim);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .search-results {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(1.25rem, 2vw, 1.75rem);
+  }
+
+  .search-empty {
+    margin-top: 1.5rem;
+    color: var(--site-text-dim);
+    font-style: italic;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<style is:global>
+  .search-result {
+    display: grid;
+    grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    padding: clamp(1.25rem, 2.5vw, 1.75rem);
+    border: 1px solid var(--site-border);
+    background: color-mix(in oklab, var(--site-surface) 32%, transparent);
+    transition: border-color 180ms var(--site-ease-out), background-color 180ms var(--site-ease-out);
+  }
+
+  .search-result:hover {
+    border-color: color-mix(in oklab, var(--site-gold) 50%, var(--site-border));
+    background: color-mix(in oklab, var(--site-surface) 48%, transparent);
+  }
+
+  .search-result-preview {
+    position: relative;
+    aspect-ratio: 1 / 1.414;
+    background: oklch(0.18 0.026 202 / 0.6);
+    border: 1px solid color-mix(in oklab, var(--site-border) 70%, transparent);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+
+  .search-result-preview iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    background: white;
+  }
+
+  .search-result-preview-spinner {
+    font-family: var(--site-font);
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+  }
+
+  .search-result-preview.is-loaded .search-result-preview-spinner {
+    display: none;
+  }
+
+  .search-result-info {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+  }
+
+  .search-result-title {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--site-text-strong);
+    text-wrap: pretty;
+  }
+
+  .search-result-meta {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+  }
+
+  .search-result-filename {
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: 0.82rem;
+    color: var(--site-text-dim);
+    word-break: break-word;
+  }
+
+  .search-result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+  }
+
+  .search-result-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--site-border);
+    border-radius: 0;
+    background: transparent;
+    color: var(--site-text-dim);
+    font-family: var(--site-font);
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+      color 180ms var(--site-ease-out),
+      border-color 180ms var(--site-ease-out),
+      background-color 180ms var(--site-ease-out);
+  }
+
+  .search-result-btn:hover,
+  .search-result-btn:focus-visible {
+    color: var(--site-text-strong);
+    border-color: color-mix(in oklab, var(--site-gold) 60%, var(--site-border));
+    background: oklch(0.84 0.075 88 / 0.08);
+  }
+
+  .search-result-btn--primary {
+    color: var(--site-gold);
+    border-color: color-mix(in oklab, var(--site-gold) 50%, transparent);
+  }
+
+  .search-result-btn--primary:hover,
+  .search-result-btn--primary:focus-visible {
+    background: oklch(0.84 0.075 88 / 0.14);
+    border-color: var(--site-gold);
+  }
+
+  @media (max-width: 720px) {
+    .search-result {
+      grid-template-columns: 1fr;
+    }
+
+    .search-result-preview {
+      aspect-ratio: 16 / 10;
+    }
+  }
+</style>
