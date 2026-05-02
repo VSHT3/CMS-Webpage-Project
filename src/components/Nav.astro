@@ -136,7 +136,7 @@ const buildPdfSearchIndex = () => {
 const pdfSearchItems = buildPdfSearchIndex();
 const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
 ---
-<header class="site-nav-wrapper">
+<header class="site-nav-wrapper" transition:name="site-nav" transition:animate="none">
   <nav class="site-nav" role="navigation" aria-label="Main navigation">
     <a href="/" class="nav-logo" aria-label="Center for Mesoamerican Studies — Home">
       <img src="/navimg.png" alt="Center for Mesoamerican Studies" class="nav-logo-img" />
