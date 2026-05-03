@@ -1,5 +1,6 @@
 ---
 import ClientRouter from 'astro/components/ClientRouter.astro';
+import CookieConsent from '../components/CookieConsent.astro';
 import Footer from '../components/Footer.astro';
 import Nav from '../components/Nav.astro';
 
@@ -26,6 +27,21 @@ const {
     <link rel="icon" href="/assets/cms-logo.png" />
     <title>{title}</title>
     <slot name="head" />
+    <!-- GoatCounter — privacy-friendly visit counter -->
+    <script is:inline data-goatcounter="https://vsht.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <!-- Google tag (gtag.js) — consent mode default: denied -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-CX1KBZ2KWM"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        wait_for_update: 500,
+      });
+      gtag('js', new Date());
+      gtag('config', 'G-CX1KBZ2KWM');
+    </script>
     <ClientRouter />
   </head>
   <body class={bodyClass}>
@@ -34,6 +50,7 @@ const {
       <slot />
     </main>
     <Footer />
+    <CookieConsent />
   </body>
 </html>
 
