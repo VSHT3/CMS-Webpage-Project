@@ -31,6 +31,10 @@ import Layout from '../layouts/Layout.astro';
             <dt>Core strength</dt>
             <dd>Research, collections, doctoral support</dd>
           </div>
+          <div>
+            <dt>Visitors</dt>
+            <dd id="visit-count">—</dd>
+          </div>
         </dl>
       </div>
 
@@ -164,7 +168,19 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
+  async function fetchVisitorCount() {
+    const el = document.getElementById('visit-count');
+    if (!el) return;
+    try {
+      const res = await fetch('https://vsht.goatcounter.com/counter/TOTAL.json');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data?.count) el.textContent = data.count;
+    } catch {}
+  }
+
   function init() {
+    fetchVisitorCount();
     const stage = document.querySelector('[data-model-stage]');
     const loadButton = document.querySelector('[data-load-model]') as HTMLButtonElement | null;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -414,7 +430,7 @@ import Layout from '../layouts/Layout.astro';
 
   .hero-facts {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0;
     margin: 2.5rem 0 0;
     padding-top: 1.5rem;
