@@ -49,4 +49,4 @@ Or push to GitHub and let Coolify build from the Dockerfile. Mount the PDF direc
 - Container path: `/usr/share/nginx/html/assets/pdfs`
 - Host path: `/data/coolify/applications/<app-id>/pdfs`
 
-See `CLAUDE.md` for full architecture notes.
+Live at: [cms.fedu.uniba.sk](https://cms.fedu.uniba.sk)
