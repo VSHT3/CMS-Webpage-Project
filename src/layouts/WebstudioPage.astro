@@ -504,6 +504,18 @@ const hasRealContent = bodyProse.length > 0 || MEDIA_CONTENT.test(cleanedBody);
   <section class="legacy-page-shell">
     <article class="legacy-page-content" data-page-slug={pageSlug}>
       <Fragment set:html={cleanedBody} />
+      {
+        !hasRealContent && (
+          <aside class="legacy-page-pending">
+            <p class="legacy-page-pending-lead">This section is being prepared.</p>
+            <p>
+              Its material has not been published on the site yet. For current work, see{' '}
+              <a href="/research">Research</a> or <a href="/publications">Publications</a>, or{' '}
+              <a href="/about-us-contacts">contact the Center</a>.
+            </p>
+          </aside>
+        )
+      }
     </article>
   </section>
 </Layout>
@@ -606,6 +618,39 @@ const hasRealContent = bodyProse.length > 0 || MEDIA_CONTENT.test(cleanedBody);
   .legacy-page-content > *:not(:first-child) {
     border-top: 1px solid var(--site-border);
     padding-top: clamp(1.1rem, 2.4vw, 1.8rem);
+  }
+
+  /* Shown on pages whose legacy source carries a heading and nothing else, so a
+     visitor who follows the nav there gets a straight answer instead of a blank
+     page. These pages are also `noindex` — see `hasRealContent` above. */
+  .legacy-page-pending {
+    display: grid;
+    gap: 0.6rem;
+    max-width: var(--site-measure);
+  }
+
+  .legacy-page-pending p {
+    margin: 0;
+    color: var(--site-text-dim);
+    line-height: 1.82;
+    text-wrap: pretty;
+  }
+
+  .legacy-page-pending-lead {
+    font-family: var(--site-font);
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    letter-spacing: 0.03em;
+    color: var(--site-text);
+  }
+
+  /* Inline links across the site reveal their underline only on hover. These
+     three are the sole way off an otherwise empty page, so they carry it at
+     rest — without changing that convention anywhere else. Scoped through
+     `.legacy-page-content` to outrank the equal-specificity `a` rule declared
+     further down this sheet. */
+  .legacy-page-content .legacy-page-pending a {
+    background-size: 100% 1px;
+    color: var(--site-text);
   }
 
   .legacy-page-content h1,
