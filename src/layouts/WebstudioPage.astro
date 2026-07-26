@@ -480,8 +480,25 @@ const cleanedBody = contentNodes
   )
   .replace(/\n{3,}/g, '\n\n')
   .trim();
+
+// 17 of the 31 migrated Webstudio pages were never written — their source
+// carries a heading and an `<hr>` and nothing else (all of Education and
+// Collections, the Ferdinand Anders Library, and four of the six PARU Uaxactun
+// pages). Publishing them as indexable thin content hurts the whole domain, so
+// emptiness is derived from the extracted body rather than a hardcoded list:
+// the moment real content is authored upstream, the page indexes itself again.
+//
+// Media counts as content — `paru-uaxactun-gallery` is four images and no prose,
+// which is a real page.
+const MEDIA_CONTENT = /<(img|picture|iframe|video|audio|table|li)\b/i;
+const bodyProse = cleanedBody
+  .replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, '')
+  .replace(/<hr\s*\/?>/gi, '')
+  .replace(/<[^>]+>/g, '')
+  .trim();
+const hasRealContent = bodyProse.length > 0 || MEDIA_CONTENT.test(cleanedBody);
 ---
-<Layout title={title} description={description} bodyClass="legacy-page">
+<Layout title={title} description={description} bodyClass="legacy-page" noindex={!hasRealContent}>
   <Fragment slot="head" set:html={preloadLinks} />
 
   <section class="legacy-page-shell">

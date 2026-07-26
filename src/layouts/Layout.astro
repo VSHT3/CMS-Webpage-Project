@@ -8,12 +8,15 @@ interface Props {
   title?: string;
   description?: string;
   bodyClass?: string;
+  /** Keep a page out of the index — used for legacy pages with no body content. */
+  noindex?: boolean;
 }
 
 const {
   title = 'Mesoamerica',
   description = 'Center for Mesoamerican Studies, Comenius University Bratislava',
   bodyClass = '',
+  noindex = false,
 } = Astro.props;
 ---
 <!doctype html>
@@ -24,6 +27,7 @@ const {
     <meta name="theme-color" content="#183138" />
     <meta name="color-scheme" content="dark" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
     <link rel="icon" href="/assets/cms-logo.png" />
     <title>{title}</title>
     <slot name="head" />
