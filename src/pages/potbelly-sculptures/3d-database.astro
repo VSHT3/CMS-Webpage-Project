@@ -12,29 +12,22 @@ interface ModelRecord {
   year: string;
   sequence: string;
   sourceFormat: 'OBJ' | 'GLB';
-  sourceFileName: string;
   modelUrl: string;
   posterUrl: string;
-  sourceUrl: string;
   vertices: number;
   triangles: number;
-  webBytes: number;
-  sourceBytes: number;
 }
 
 const models = modelData as ModelRecord[];
+const filterYears = [...new Set(models.map((model) => model.year))];
 const initialModel = models[0];
 const numberFormatter = new Intl.NumberFormat('en-US');
 const formatNumber = (value: number) => numberFormatter.format(value);
-const formatBytes = (value: number) => {
-  const megabytes = value / 1_048_576;
-  return megabytes >= 1 ? `${megabytes.toFixed(megabytes >= 10 ? 0 : 1)} MB` : `${Math.round(value / 1024)} KB`;
-};
 ---
 
 <Layout
   title="3D Database — Preclassic Maya Potbelly Sculptures — Center for Mesoamerican Studies"
-  description="Interactive 3D records and original source files for the Preclassic Maya Potbelly Sculptures research project."
+  description="Interactive 3D records for the Preclassic Maya Potbelly Sculptures research project."
   bodyClass="potbelly-database-page"
 >
   <div class="db-shell" data-potbelly-database>
@@ -52,10 +45,10 @@ const formatBytes = (value: number) => {
       </div>
       <div class="db-intro-copy">
         <p>
-          Browse {models.length} textured 3D records associated with the Preclassic Maya Potbelly Sculptures project. Select a record to inspect it, then download the web-ready model or its original source package.
+          This catalogue presents {models.length} digital models from the Preclassic Maya Potbelly Sculptures project. Select a record to examine the documented sculpture from multiple angles.
         </p>
         <p class="db-provenance-note">
-          Source files did not include object titles or catalogue numbers. Records are identified by the dates and sequence in the supplied filenames.
+          Record labels preserve the dates and sequence of the original project files.
         </p>
       </div>
     </header>
@@ -78,6 +71,33 @@ const formatBytes = (value: number) => {
           <button class="viewer-load" type="button" data-load-model>
             Open interactive 3D view
           </button>
+          <div class="viewer-actions" data-viewer-actions hidden>
+            <button
+              class="viewer-action"
+              type="button"
+              data-toggle-fullscreen
+              aria-label="Enter fullscreen"
+              title="Enter fullscreen"
+            >
+              <svg data-fullscreen-enter-icon aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path>
+              </svg>
+              <svg class="is-hidden" data-fullscreen-exit-icon aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M3 8h5V3M21 8h-5V3M3 16h5v5M21 16h-5v5"></path>
+              </svg>
+            </button>
+            <button
+              class="viewer-action viewer-close"
+              type="button"
+              data-close-viewer
+              aria-label="Close interactive 3D view"
+              title="Close interactive 3D view"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M5 5l14 14M19 5 5 19"></path>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="viewer-details">
@@ -106,16 +126,11 @@ const formatBytes = (value: number) => {
             </div>
           </dl>
 
-          <div class="model-downloads">
-            <a href={initialModel.modelUrl} download data-model-download>
-              <span>Download web GLB</span>
-              <small data-model-size>{formatBytes(initialModel.webBytes)}</small>
-            </a>
-            <a href={initialModel.sourceUrl} download data-source-download>
-              <span data-source-label>Original {initialModel.sourceFormat} package</span>
-              <small data-source-size>{formatBytes(initialModel.sourceBytes)}</small>
-            </a>
-          </div>
+          <ul class="viewer-guidance" aria-label="Interactive viewer controls">
+            <li>Drag to rotate</li>
+            <li>Pinch or scroll to zoom</li>
+            <li>Fullscreen for detail</li>
+          </ul>
         </div>
       </article>
 
@@ -125,9 +140,6 @@ const formatBytes = (value: number) => {
             <h3 id="catalog-title">Browse records</h3>
             <p>Choose a preview to load it in the study viewer.</p>
           </div>
-          <a href="/assets/models/potbelly/catalog.json" class="catalog-data-link" download>
-            Catalog JSON
-          </a>
         </header>
 
         <form class="catalog-controls" role="search" data-catalog-controls>
@@ -145,9 +157,9 @@ const formatBytes = (value: number) => {
             <legend>Filter by year</legend>
             <div class="year-filters">
               <button type="button" data-year-filter="all" aria-pressed="true">All</button>
-              <button type="button" data-year-filter="2026" aria-pressed="false">2026</button>
-              <button type="button" data-year-filter="2025" aria-pressed="false">2025</button>
-              <button type="button" data-year-filter="Undated" aria-pressed="false">Undated</button>
+              {filterYears.map((year) => (
+                <button type="button" data-year-filter={year} aria-pressed="false">{year}</button>
+              ))}
             </div>
           </fieldset>
         </form>
@@ -173,12 +185,9 @@ const formatBytes = (value: number) => {
                 data-title={model.title}
                 data-model-url={model.modelUrl}
                 data-poster-url={model.posterUrl}
-                data-source-url={model.sourceUrl}
                 data-source-format={model.sourceFormat}
                 data-vertices={formatNumber(model.vertices)}
                 data-triangles={formatNumber(model.triangles)}
-                data-model-size={formatBytes(model.webBytes)}
-                data-source-size={formatBytes(model.sourceBytes)}
               >
                 <span class="record-image">
                   <img
@@ -193,7 +202,7 @@ const formatBytes = (value: number) => {
                 <span class="record-copy">
                   <span class="record-code">{model.recordCode}</span>
                   <span class="record-title">{model.title}</span>
-                  <span class="record-meta">{formatNumber(model.triangles)} triangles · {model.sourceFormat} source</span>
+                  <span class="record-meta">{formatNumber(model.triangles)} triangles · 3D model</span>
                 </span>
                 <span class="record-action" aria-hidden="true">View</span>
               </button>
@@ -210,6 +219,7 @@ const formatBytes = (value: number) => {
 <script>
   type ModelViewerElement = HTMLElement & {
     dismissPoster?: () => void;
+    jumpCameraToGoal?: () => void;
   };
 
   function initPotbellyDatabase() {
@@ -221,16 +231,16 @@ const formatBytes = (value: number) => {
     const loadButton = root.querySelector<HTMLButtonElement>('[data-load-model]');
     const poster = root.querySelector<HTMLImageElement>('[data-model-poster]');
     const viewerStatus = root.querySelector<HTMLElement>('[data-viewer-status]');
+    const viewerActions = root.querySelector<HTMLElement>('[data-viewer-actions]');
+    const fullscreenButton = root.querySelector<HTMLButtonElement>('[data-toggle-fullscreen]');
+    const closeViewerButton = root.querySelector<HTMLButtonElement>('[data-close-viewer]');
+    const fullscreenEnterIcon = root.querySelector<SVGElement>('[data-fullscreen-enter-icon]');
+    const fullscreenExitIcon = root.querySelector<SVGElement>('[data-fullscreen-exit-icon]');
     const selectedCode = root.querySelector<HTMLElement>('[data-selected-code]');
     const selectedTitle = root.querySelector<HTMLElement>('[data-selected-title]');
     const selectedVertices = root.querySelector<HTMLElement>('[data-selected-vertices]');
     const selectedTriangles = root.querySelector<HTMLElement>('[data-selected-triangles]');
     const selectedFormat = root.querySelector<HTMLElement>('[data-selected-format]');
-    const modelDownload = root.querySelector<HTMLAnchorElement>('[data-model-download]');
-    const sourceDownload = root.querySelector<HTMLAnchorElement>('[data-source-download]');
-    const sourceLabel = root.querySelector<HTMLElement>('[data-source-label]');
-    const modelSize = root.querySelector<HTMLElement>('[data-model-size]');
-    const sourceSize = root.querySelector<HTMLElement>('[data-source-size]');
     const copyLinkButton = root.querySelector<HTMLButtonElement>('[data-copy-record-link]');
     const searchInput = root.querySelector<HTMLInputElement>('[data-model-search]');
     const resultsCount = root.querySelector<HTMLElement>('[data-results-count]');
@@ -254,6 +264,13 @@ const formatBytes = (value: number) => {
 
     const selectedData = () => selectedButton.dataset;
 
+    const frameViewer = (viewer: ModelViewerElement) => {
+      viewer.setAttribute('camera-target', 'auto auto auto');
+      viewer.setAttribute('camera-orbit', '25deg 72deg 150%');
+      viewer.setAttribute('field-of-view', '38deg');
+      viewer.jumpCameraToGoal?.();
+    };
+
     const applyModelToViewer = () => {
       const viewer = stage.querySelector<ModelViewerElement>('model-viewer');
       if (!viewer) return;
@@ -265,13 +282,15 @@ const formatBytes = (value: number) => {
       viewer.addEventListener('load', () => {
         if (token !== viewerLoadToken) return;
         setStatus('Interactive model ready');
+        frameViewer(viewer);
         viewer.dismissPoster?.();
       }, { once: true });
       viewer.addEventListener('error', () => {
         if (token !== viewerLoadToken) return;
-        setStatus('Interactive model unavailable — downloads remain available');
+        setStatus('Interactive model unavailable — preview remains available');
       }, { once: true });
 
+      frameViewer(viewer);
       viewer.setAttribute('poster', data.posterUrl || '');
       viewer.setAttribute('alt', `Interactive 3D view of ${data.title || 'selected record'}`);
       viewer.setAttribute('src', data.modelUrl || '');
@@ -289,14 +308,18 @@ const formatBytes = (value: number) => {
       viewer.setAttribute('exposure', '1.05');
       viewer.setAttribute('shadow-intensity', '0.7');
       viewer.setAttribute('shadow-softness', '0.9');
-      viewer.setAttribute('camera-orbit', '25deg 72deg 105%');
-      viewer.setAttribute('field-of-view', '38deg');
+      frameViewer(viewer);
       if (!reducedMotion.matches) {
         viewer.setAttribute('auto-rotate', '');
         viewer.setAttribute('auto-rotate-delay', '1200');
         viewer.setAttribute('rotation-per-second', '12deg');
       }
-      stage.replaceChildren(viewer);
+      if (viewerActions) {
+        viewerActions.hidden = false;
+        stage.replaceChildren(viewer, viewerActions);
+      } else {
+        stage.replaceChildren(viewer);
+      }
       applyModelToViewer();
     };
 
@@ -307,6 +330,56 @@ const formatBytes = (value: number) => {
         loadButton.textContent = 'Retry interactive 3D view';
       }
       setStatus(message);
+    };
+
+    const syncFullscreenState = () => {
+      const isFullscreen = document.fullscreenElement === stage;
+      fullscreenButton?.setAttribute('aria-label', isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
+      fullscreenButton?.setAttribute('title', isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
+      fullscreenEnterIcon?.classList.toggle('is-hidden', isFullscreen);
+      fullscreenExitIcon?.classList.toggle('is-hidden', !isFullscreen);
+    };
+
+    const toggleFullscreen = async () => {
+      try {
+        if (document.fullscreenElement === stage) {
+          await document.exitFullscreen();
+        } else if (stage.requestFullscreen) {
+          await stage.requestFullscreen();
+        } else {
+          setStatus('Fullscreen is not supported in this browser');
+        }
+      } catch {
+        setStatus('Fullscreen could not open');
+      }
+    };
+
+    const closeViewer = async () => {
+      viewerLoadToken += 1;
+      if (document.fullscreenElement === stage) {
+        try {
+          await document.exitFullscreen();
+        } catch {
+          // Continue restoring the poster if fullscreen exit is interrupted.
+        }
+      }
+
+      viewerRequested = false;
+      if (poster && loadButton) {
+        const data = selectedData();
+        poster.src = data.posterUrl || '';
+        poster.alt = `Rendered preview of ${data.title || 'selected record'}`;
+        loadButton.disabled = false;
+        loadButton.textContent = 'Open interactive 3D view';
+        if (viewerActions) {
+          viewerActions.hidden = true;
+          stage.replaceChildren(poster, loadButton, viewerActions);
+        } else {
+          stage.replaceChildren(poster, loadButton);
+        }
+      }
+      setStatus('Preview ready');
+      loadButton?.focus();
     };
 
     const requestViewer = () => {
@@ -366,11 +439,6 @@ const formatBytes = (value: number) => {
       if (selectedVertices) selectedVertices.textContent = data.vertices || '';
       if (selectedTriangles) selectedTriangles.textContent = data.triangles || '';
       if (selectedFormat) selectedFormat.textContent = data.sourceFormat || '';
-      if (modelSize) modelSize.textContent = data.modelSize || '';
-      if (sourceSize) sourceSize.textContent = data.sourceSize || '';
-      if (sourceLabel) sourceLabel.textContent = `Original ${data.sourceFormat || ''} package`;
-      if (modelDownload) modelDownload.href = data.modelUrl || '#';
-      if (sourceDownload) sourceDownload.href = data.sourceUrl || '#';
       if (poster) {
         poster.src = data.posterUrl || '';
         poster.alt = `Rendered preview of ${data.title || 'selected record'}`;
@@ -410,6 +478,10 @@ const formatBytes = (value: number) => {
       button.addEventListener('click', () => selectRecord(button, { scrollToViewer: true }));
     });
     loadButton?.addEventListener('click', requestViewer);
+    fullscreenButton?.addEventListener('click', toggleFullscreen);
+    closeViewerButton?.addEventListener('click', closeViewer);
+    stage.addEventListener('fullscreenchange', syncFullscreenState);
+    stage.addEventListener('fullscreenerror', () => setStatus('Fullscreen could not open'));
     searchInput?.addEventListener('input', filterRecords);
     yearButtons.forEach((button) => {
       button.addEventListener('click', () => {
@@ -564,20 +636,86 @@ const formatBytes = (value: number) => {
     border-bottom: 1px solid var(--site-border);
   }
 
-  .model-stage img,
-  .model-stage :global(model-viewer) {
+  .model-stage img {
     display: block;
     width: 100%;
     height: 100%;
-  }
-
-  .model-stage img {
     object-fit: cover;
   }
 
   .model-stage :global(model-viewer) {
+    position: absolute;
+    inset: clamp(0.75rem, 2.2vw, 1.5rem);
+    display: block;
+    width: auto;
+    height: auto;
     --poster-color: oklch(0.17 0.03 195);
     background: oklch(0.17 0.03 195);
+  }
+
+  .viewer-actions {
+    position: absolute;
+    z-index: 3;
+    top: 0.9rem;
+    right: 0.9rem;
+    display: flex;
+    gap: 0.45rem;
+  }
+
+  .viewer-actions[hidden] {
+    display: none;
+  }
+
+  .viewer-action {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1px solid oklch(0.76 0.08 92 / 0.45);
+    border-radius: 3px;
+    background: oklch(0.13 0.025 195 / 0.92);
+    color: var(--site-text-strong);
+    cursor: pointer;
+    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out), translate 180ms var(--site-ease-out);
+  }
+
+  .viewer-action svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+  }
+
+  .viewer-action svg.is-hidden {
+    display: none;
+  }
+
+  .viewer-action:hover,
+  .viewer-action:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-gold);
+  }
+
+  .viewer-action:active {
+    translate: 0 1px;
+  }
+
+  .model-stage:fullscreen,
+  .model-stage:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    aspect-ratio: auto;
+    border: 0;
+  }
+
+  .model-stage:fullscreen .viewer-actions,
+  .model-stage:-webkit-full-screen .viewer-actions {
+    top: max(1rem, env(safe-area-inset-top));
+    right: max(1rem, env(safe-area-inset-right));
   }
 
   .viewer-load {
@@ -694,39 +832,29 @@ const formatBytes = (value: number) => {
     font-variant-numeric: tabular-nums;
   }
 
-  .model-downloads {
-    display: grid;
-    gap: 0.7rem;
-  }
-
-  .model-downloads a {
+  .viewer-guidance {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    min-height: 3rem;
-    padding: 0.65rem 0.9rem;
-    border: 1px solid var(--site-border);
-    color: var(--site-text-strong);
-    text-decoration: none;
-    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
-  }
-
-  .model-downloads a:first-child {
-    border-color: oklch(0.76 0.08 92 / 0.65);
-    color: var(--site-gold);
-  }
-
-  .model-downloads a:hover,
-  .model-downloads a:focus-visible {
-    border-color: var(--site-gold);
-    color: var(--site-gold);
-  }
-
-  .model-downloads small {
+    flex-wrap: wrap;
+    gap: 0.45rem 1.15rem;
+    margin: 0;
+    padding: 0;
     color: var(--site-text-dim);
-    font-size: 0.78rem;
-    font-variant-numeric: tabular-nums;
+    font-size: 0.82rem;
+    list-style: none;
+  }
+
+  .viewer-guidance li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .viewer-guidance li::before {
+    width: 0.3rem;
+    height: 0.3rem;
+    background: var(--site-gold);
+    content: '';
+    rotate: 45deg;
   }
 
   .catalog-panel {
@@ -756,14 +884,6 @@ const formatBytes = (value: number) => {
     font-size: 0.9rem;
   }
 
-  .catalog-data-link {
-    flex: 0 0 auto;
-    min-height: 2.75rem;
-    padding: 0.55rem 0;
-    color: var(--site-teal);
-    font-size: 0.82rem;
-    text-underline-offset: 0.25em;
-  }
 
   .catalog-controls {
     display: grid;
@@ -994,9 +1114,6 @@ const formatBytes = (value: number) => {
       align-items: end;
     }
 
-    .model-downloads {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
 
   @media (min-width: 68rem) {
@@ -1031,6 +1148,7 @@ const formatBytes = (value: number) => {
 
   @media (prefers-reduced-motion: reduce) {
     .viewer-load,
+    .viewer-action,
     .record-button {
       transition: none;
     }
