@@ -10,6 +10,7 @@ interface Link {
 interface Project {
   id: string;
   title: string;
+  anchor?: string;
   researcher?: string;
   note?: string;
   links?: Link[];
@@ -18,10 +19,14 @@ interface Project {
 const projects: Project[] = [
   {
     id: '09I03-03-V04-00234',
+    anchor: 'potbelly-sculptures-project',
     title: 'Preclassic Maya Potbelly Sculptures in Peten, Guatemala and Their Connection to Ancestor Cult',
     researcher: 'prof. Milan Kováč, PhD.',
     links: [
       { label: 'Preliminary Database', href: '/assets/pdfs/grants/A1-Database-POTBELLY.pdf' },
+      { label: '3D Database', href: '/potbelly-sculptures/3d-database' },
+      { label: 'GIS Database', href: '/potbelly-sculptures/gis-database' },
+      { label: 'Final Report', href: '/potbelly-sculptures/final-report' },
     ],
   },
   {
@@ -78,7 +83,7 @@ const projects: Project[] = [
       <h2 class="grants-section-label">Funded Projects</h2>
       <ol class="grants-project-list">
         {projects.map((p) => (
-          <li class="grants-project-item">
+          <li class="grants-project-item" id={p.anchor}>
             <span class="grants-project-id">{p.id}</span>
             <div class="grants-project-body">
               <p class="grants-project-title">{p.title}</p>

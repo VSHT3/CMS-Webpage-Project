@@ -1,0 +1,91 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ResearchHeader from '../../components/ResearchHeader.astro';
+
+export function getStaticPaths() {
+  return [
+    { slug: '3d-database', title: '3D Database' },
+    { slug: 'gis-database', title: 'GIS Database' },
+    { slug: 'final-report', title: 'Final Report' },
+  ].map((resource) => ({
+    params: { resource: resource.slug },
+    props: { title: resource.title },
+  }));
+}
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<Layout
+  title={`${title} — Preclassic Maya Potbelly Sculptures — Center for Mesoamerican Studies`}
+  description={`${title} for the Preclassic Maya Potbelly Sculptures research project.`}
+  bodyClass="potbelly-resource-page"
+>
+  <div class="resource-shell">
+    <ResearchHeader currentHref="/grants-and-investigations" />
+
+    <section class="resource-content" aria-labelledby="resource-title">
+      <a class="resource-origin" href="/grants-and-investigations#potbelly-sculptures-project">
+        &larr; Back to original project
+      </a>
+      <p class="resource-project-id">09I03-03-V04-00234</p>
+      <h2 id="resource-title">{title}</h2>
+      <p class="resource-placeholder">Content coming soon.</p>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .resource-shell {
+    width: min(100%, 90rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .resource-content {
+    min-height: clamp(18rem, 45vh, 32rem);
+    padding-top: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .resource-origin {
+    display: inline-block;
+    color: var(--site-teal);
+    font-size: 0.92rem;
+    text-underline-offset: 0.25em;
+    margin-bottom: clamp(2rem, 5vw, 4rem);
+  }
+
+  .resource-origin:hover,
+  .resource-origin:focus-visible {
+    color: var(--site-text-strong);
+  }
+
+  .resource-project-id {
+    margin: 0 0 0.6rem;
+    color: var(--site-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-family: var(--site-font);
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    font-weight: 400;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .resource-placeholder {
+    margin: 1rem 0 0;
+    color: var(--site-text-dim);
+    font-style: italic;
+  }
+</style>
