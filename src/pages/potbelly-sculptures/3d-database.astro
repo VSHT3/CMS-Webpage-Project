@@ -1,0 +1,1038 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ResearchHeader from '../../components/ResearchHeader.astro';
+import modelData from '../../data/potbelly-models.json';
+
+interface ModelRecord {
+  id: string;
+  recordCode: string;
+  title: string;
+  date: string | null;
+  dateLabel: string;
+  year: string;
+  sequence: string;
+  sourceFormat: 'OBJ' | 'GLB';
+  sourceFileName: string;
+  modelUrl: string;
+  posterUrl: string;
+  sourceUrl: string;
+  vertices: number;
+  triangles: number;
+  webBytes: number;
+  sourceBytes: number;
+}
+
+const models = modelData as ModelRecord[];
+const initialModel = models[0];
+const numberFormatter = new Intl.NumberFormat('en-US');
+const formatNumber = (value: number) => numberFormatter.format(value);
+const formatBytes = (value: number) => {
+  const megabytes = value / 1_048_576;
+  return megabytes >= 1 ? `${megabytes.toFixed(megabytes >= 10 ? 0 : 1)} MB` : `${Math.round(value / 1024)} KB`;
+};
+---
+
+<Layout
+  title="3D Database — Preclassic Maya Potbelly Sculptures — Center for Mesoamerican Studies"
+  description="Interactive 3D records and original source files for the Preclassic Maya Potbelly Sculptures research project."
+  bodyClass="potbelly-database-page"
+>
+  <div class="db-shell" data-potbelly-database>
+    <ResearchHeader currentHref="/grants-and-investigations" />
+
+    <a class="db-origin" href="/grants-and-investigations#potbelly-sculptures-project">
+      <span aria-hidden="true">&larr;</span>
+      Back to original project
+    </a>
+
+    <header class="db-intro">
+      <div class="db-title-group">
+        <p class="db-project-id">09I03-03-V04-00234</p>
+        <h2>3D Database</h2>
+      </div>
+      <div class="db-intro-copy">
+        <p>
+          Browse {models.length} textured 3D records associated with the Preclassic Maya Potbelly Sculptures project. Select a record to inspect it, then download the web-ready model or its original source package.
+        </p>
+        <p class="db-provenance-note">
+          Source files did not include object titles or catalogue numbers. Records are identified by the dates and sequence in the supplied filenames.
+        </p>
+      </div>
+    </header>
+
+    <section class="db-workspace" aria-label="Interactive 3D record catalogue">
+      <article class="viewer-panel" id="potbelly-viewer" aria-labelledby="selected-model-title">
+        <div class="viewer-bar">
+          <span class="viewer-record-code" data-selected-code>{initialModel.recordCode}</span>
+          <span class="viewer-status" data-viewer-status role="status">Preview ready</span>
+        </div>
+
+        <div class="model-stage" data-model-stage>
+          <img
+            data-model-poster
+            src={initialModel.posterUrl}
+            alt={`Rendered preview of ${initialModel.title}`}
+            width="720"
+            height="540"
+          />
+          <button class="viewer-load" type="button" data-load-model>
+            Open interactive 3D view
+          </button>
+        </div>
+
+        <div class="viewer-details">
+          <div class="viewer-heading-row">
+            <div>
+              <p class="viewer-heading-label">Selected record</p>
+              <h3 id="selected-model-title" data-selected-title>{initialModel.title}</h3>
+            </div>
+            <button class="copy-record-link" type="button" data-copy-record-link>
+              Copy record link
+            </button>
+          </div>
+
+          <dl class="model-facts">
+            <div>
+              <dt>Vertices</dt>
+              <dd data-selected-vertices>{formatNumber(initialModel.vertices)}</dd>
+            </div>
+            <div>
+              <dt>Triangles</dt>
+              <dd data-selected-triangles>{formatNumber(initialModel.triangles)}</dd>
+            </div>
+            <div>
+              <dt>Source</dt>
+              <dd data-selected-format>{initialModel.sourceFormat}</dd>
+            </div>
+          </dl>
+
+          <div class="model-downloads">
+            <a href={initialModel.modelUrl} download data-model-download>
+              <span>Download web GLB</span>
+              <small data-model-size>{formatBytes(initialModel.webBytes)}</small>
+            </a>
+            <a href={initialModel.sourceUrl} download data-source-download>
+              <span data-source-label>Original {initialModel.sourceFormat} package</span>
+              <small data-source-size>{formatBytes(initialModel.sourceBytes)}</small>
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <section class="catalog-panel" aria-labelledby="catalog-title">
+        <header class="catalog-heading">
+          <div>
+            <h3 id="catalog-title">Browse records</h3>
+            <p>Choose a preview to load it in the study viewer.</p>
+          </div>
+          <a href="/assets/models/potbelly/catalog.json" class="catalog-data-link" download>
+            Catalog JSON
+          </a>
+        </header>
+
+        <form class="catalog-controls" role="search" data-catalog-controls>
+          <label for="model-search">Search records</label>
+          <input
+            id="model-search"
+            type="search"
+            name="model-search"
+            placeholder="Date, record, or format"
+            autocomplete="off"
+            data-model-search
+          />
+
+          <fieldset>
+            <legend>Filter by year</legend>
+            <div class="year-filters">
+              <button type="button" data-year-filter="all" aria-pressed="true">All</button>
+              <button type="button" data-year-filter="2026" aria-pressed="false">2026</button>
+              <button type="button" data-year-filter="2025" aria-pressed="false">2025</button>
+              <button type="button" data-year-filter="Undated" aria-pressed="false">Undated</button>
+            </div>
+          </fieldset>
+        </form>
+
+        <p class="catalog-count" data-results-count aria-live="polite">{models.length} records</p>
+
+        <ol class="record-list" data-record-list>
+          {models.map((model, index) => (
+            <li
+              data-record-item
+              data-year={model.year}
+              data-search={`${model.recordCode} ${model.title} ${model.year} ${model.sourceFormat}`.toLowerCase()}
+            >
+              <button
+                type="button"
+                class:list={['record-button', { 'is-selected': index === 0 }]}
+                aria-label={`View ${model.recordCode}: ${model.title}`}
+                aria-controls="potbelly-viewer"
+                aria-pressed={index === 0 ? 'true' : 'false'}
+                data-model-select
+                data-id={model.id}
+                data-code={model.recordCode}
+                data-title={model.title}
+                data-model-url={model.modelUrl}
+                data-poster-url={model.posterUrl}
+                data-source-url={model.sourceUrl}
+                data-source-format={model.sourceFormat}
+                data-vertices={formatNumber(model.vertices)}
+                data-triangles={formatNumber(model.triangles)}
+                data-model-size={formatBytes(model.webBytes)}
+                data-source-size={formatBytes(model.sourceBytes)}
+              >
+                <span class="record-image">
+                  <img
+                    src={model.posterUrl}
+                    alt=""
+                    width="720"
+                    height="540"
+                    loading={index < 4 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                </span>
+                <span class="record-copy">
+                  <span class="record-code">{model.recordCode}</span>
+                  <span class="record-title">{model.title}</span>
+                  <span class="record-meta">{formatNumber(model.triangles)} triangles · {model.sourceFormat} source</span>
+                </span>
+                <span class="record-action" aria-hidden="true">View</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+
+        <p class="catalog-empty" data-catalog-empty hidden>No records match this search and year filter.</p>
+      </section>
+    </section>
+  </div>
+</Layout>
+
+<script>
+  type ModelViewerElement = HTMLElement & {
+    dismissPoster?: () => void;
+  };
+
+  function initPotbellyDatabase() {
+    const root = document.querySelector<HTMLElement>('[data-potbelly-database]');
+    if (!root) return;
+
+    const stage = root.querySelector<HTMLElement>('[data-model-stage]');
+    const viewerPanel = root.querySelector<HTMLElement>('.viewer-panel');
+    const loadButton = root.querySelector<HTMLButtonElement>('[data-load-model]');
+    const poster = root.querySelector<HTMLImageElement>('[data-model-poster]');
+    const viewerStatus = root.querySelector<HTMLElement>('[data-viewer-status]');
+    const selectedCode = root.querySelector<HTMLElement>('[data-selected-code]');
+    const selectedTitle = root.querySelector<HTMLElement>('[data-selected-title]');
+    const selectedVertices = root.querySelector<HTMLElement>('[data-selected-vertices]');
+    const selectedTriangles = root.querySelector<HTMLElement>('[data-selected-triangles]');
+    const selectedFormat = root.querySelector<HTMLElement>('[data-selected-format]');
+    const modelDownload = root.querySelector<HTMLAnchorElement>('[data-model-download]');
+    const sourceDownload = root.querySelector<HTMLAnchorElement>('[data-source-download]');
+    const sourceLabel = root.querySelector<HTMLElement>('[data-source-label]');
+    const modelSize = root.querySelector<HTMLElement>('[data-model-size]');
+    const sourceSize = root.querySelector<HTMLElement>('[data-source-size]');
+    const copyLinkButton = root.querySelector<HTMLButtonElement>('[data-copy-record-link]');
+    const searchInput = root.querySelector<HTMLInputElement>('[data-model-search]');
+    const resultsCount = root.querySelector<HTMLElement>('[data-results-count]');
+    const emptyState = root.querySelector<HTMLElement>('[data-catalog-empty]');
+    const recordItems = Array.from(root.querySelectorAll<HTMLElement>('[data-record-item]'));
+    const recordButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-model-select]'));
+    const yearButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-year-filter]'));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const stackedLayout = window.matchMedia('(max-width: 67.99rem)');
+
+    if (!stage || recordButtons.length === 0) return;
+
+    let selectedButton = recordButtons[0];
+    let activeYear = 'all';
+    let viewerRequested = false;
+    let viewerLoadToken = 0;
+
+    const setStatus = (message: string) => {
+      if (viewerStatus) viewerStatus.textContent = message;
+    };
+
+    const selectedData = () => selectedButton.dataset;
+
+    const applyModelToViewer = () => {
+      const viewer = stage.querySelector<ModelViewerElement>('model-viewer');
+      if (!viewer) return;
+
+      const data = selectedData();
+      const token = ++viewerLoadToken;
+      setStatus('Loading interactive model');
+
+      viewer.addEventListener('load', () => {
+        if (token !== viewerLoadToken) return;
+        setStatus('Interactive model ready');
+        viewer.dismissPoster?.();
+      }, { once: true });
+      viewer.addEventListener('error', () => {
+        if (token !== viewerLoadToken) return;
+        setStatus('Interactive model unavailable — downloads remain available');
+      }, { once: true });
+
+      viewer.setAttribute('poster', data.posterUrl || '');
+      viewer.setAttribute('alt', `Interactive 3D view of ${data.title || 'selected record'}`);
+      viewer.setAttribute('src', data.modelUrl || '');
+    };
+
+    const createViewer = () => {
+      const data = selectedData();
+      const viewer = document.createElement('model-viewer') as ModelViewerElement;
+      viewer.setAttribute('poster', data.posterUrl || '');
+      viewer.setAttribute('alt', `Interactive 3D view of ${data.title || 'selected record'}`);
+      viewer.setAttribute('camera-controls', '');
+      viewer.setAttribute('interaction-prompt', 'auto');
+      viewer.setAttribute('touch-action', 'pan-y');
+      viewer.setAttribute('environment-image', 'neutral');
+      viewer.setAttribute('exposure', '1.05');
+      viewer.setAttribute('shadow-intensity', '0.7');
+      viewer.setAttribute('shadow-softness', '0.9');
+      viewer.setAttribute('camera-orbit', '25deg 72deg 105%');
+      viewer.setAttribute('field-of-view', '38deg');
+      if (!reducedMotion.matches) {
+        viewer.setAttribute('auto-rotate', '');
+        viewer.setAttribute('auto-rotate-delay', '1200');
+        viewer.setAttribute('rotation-per-second', '12deg');
+      }
+      stage.replaceChildren(viewer);
+      applyModelToViewer();
+    };
+
+    const restoreLoadButton = (message: string) => {
+      viewerRequested = false;
+      if (loadButton) {
+        loadButton.disabled = false;
+        loadButton.textContent = 'Retry interactive 3D view';
+      }
+      setStatus(message);
+    };
+
+    const requestViewer = () => {
+      if (viewerRequested) return;
+      viewerRequested = true;
+      if (loadButton) {
+        loadButton.disabled = true;
+        loadButton.textContent = 'Loading 3D viewer';
+      }
+      setStatus('Loading 3D viewer');
+
+      const registry = window.customElements;
+      if (!registry) {
+        restoreLoadButton('Interactive viewer is not supported in this browser');
+        return;
+      }
+      if (registry.get('model-viewer')) {
+        createViewer();
+        return;
+      }
+
+      const ready = () => {
+        if (registry.get('model-viewer')) createViewer();
+        else restoreLoadButton('Interactive viewer could not start');
+      };
+      const failed = () => restoreLoadButton('Interactive viewer could not load');
+      const existingScript = document.querySelector<HTMLScriptElement>('script[src="/assets/vendor/model-viewer.min.js"]');
+
+      if (existingScript) {
+        existingScript.addEventListener('load', ready, { once: true });
+        existingScript.addEventListener('error', failed, { once: true });
+        window.setTimeout(() => {
+          if (!registry.get('model-viewer') && viewerRequested) failed();
+        }, 8000);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = '/assets/vendor/model-viewer.min.js';
+      script.addEventListener('load', ready, { once: true });
+      script.addEventListener('error', failed, { once: true });
+      document.head.append(script);
+    };
+
+    const selectRecord = (button: HTMLButtonElement, options: { updateUrl?: boolean; scrollToViewer?: boolean } = {}) => {
+      selectedButton = button;
+      recordButtons.forEach((recordButton) => {
+        const selected = recordButton === button;
+        recordButton.classList.toggle('is-selected', selected);
+        recordButton.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      });
+
+      const data = button.dataset;
+      if (selectedCode) selectedCode.textContent = data.code || '';
+      if (selectedTitle) selectedTitle.textContent = data.title || '';
+      if (selectedVertices) selectedVertices.textContent = data.vertices || '';
+      if (selectedTriangles) selectedTriangles.textContent = data.triangles || '';
+      if (selectedFormat) selectedFormat.textContent = data.sourceFormat || '';
+      if (modelSize) modelSize.textContent = data.modelSize || '';
+      if (sourceSize) sourceSize.textContent = data.sourceSize || '';
+      if (sourceLabel) sourceLabel.textContent = `Original ${data.sourceFormat || ''} package`;
+      if (modelDownload) modelDownload.href = data.modelUrl || '#';
+      if (sourceDownload) sourceDownload.href = data.sourceUrl || '#';
+      if (poster) {
+        poster.src = data.posterUrl || '';
+        poster.alt = `Rendered preview of ${data.title || 'selected record'}`;
+      }
+
+      if (stage.querySelector('model-viewer')) applyModelToViewer();
+      else setStatus('Preview ready');
+
+      if (options.updateUrl !== false && data.id) {
+        const url = new URL(window.location.href);
+        url.hash = data.id;
+        window.history.replaceState(null, '', url);
+      }
+
+      if (options.scrollToViewer && stackedLayout.matches && viewerPanel) {
+        viewerPanel.scrollIntoView({
+          behavior: reducedMotion.matches ? 'auto' : 'smooth',
+          block: 'start',
+        });
+      }
+    };
+
+    const filterRecords = () => {
+      const query = searchInput?.value.trim().toLowerCase() || '';
+      let visible = 0;
+      recordItems.forEach((item) => {
+        const matchesYear = activeYear === 'all' || item.dataset.year === activeYear;
+        const matchesSearch = !query || (item.dataset.search || '').includes(query);
+        item.hidden = !(matchesYear && matchesSearch);
+        if (!item.hidden) visible += 1;
+      });
+      if (resultsCount) resultsCount.textContent = `${visible} ${visible === 1 ? 'record' : 'records'}`;
+      if (emptyState) emptyState.hidden = visible !== 0;
+    };
+
+    recordButtons.forEach((button) => {
+      button.addEventListener('click', () => selectRecord(button, { scrollToViewer: true }));
+    });
+    loadButton?.addEventListener('click', requestViewer);
+    searchInput?.addEventListener('input', filterRecords);
+    yearButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeYear = button.dataset.yearFilter || 'all';
+        yearButtons.forEach((yearButton) => {
+          yearButton.setAttribute('aria-pressed', yearButton === button ? 'true' : 'false');
+        });
+        filterRecords();
+      });
+    });
+
+    copyLinkButton?.addEventListener('click', async () => {
+      const id = selectedData().id;
+      if (!id) return;
+      const url = new URL(window.location.href);
+      url.hash = id;
+      try {
+        await navigator.clipboard.writeText(url.toString());
+        copyLinkButton.textContent = 'Link copied';
+        window.setTimeout(() => { copyLinkButton.textContent = 'Copy record link'; }, 1600);
+      } catch {
+        copyLinkButton.textContent = 'Copy unavailable';
+        window.setTimeout(() => { copyLinkButton.textContent = 'Copy record link'; }, 1600);
+      }
+    });
+
+    const requestedId = decodeURIComponent(window.location.hash.slice(1));
+    const requestedButton = requestedId
+      ? recordButtons.find((button) => button.dataset.id === requestedId)
+      : undefined;
+    selectRecord(requestedButton || recordButtons[0], { updateUrl: false });
+  }
+
+  document.addEventListener('astro:page-load', initPotbellyDatabase);
+</script>
+
+<style>
+  .db-shell {
+    width: min(100%, 90rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .db-origin {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.75rem;
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    color: var(--site-teal);
+    font-size: 0.92rem;
+    text-underline-offset: 0.25em;
+  }
+
+  .db-origin:hover,
+  .db-origin:focus-visible {
+    color: var(--site-text-strong);
+  }
+
+  .db-intro {
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(1.5rem, 4vw, 3.5rem) 0 clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .db-title-group,
+  .db-intro-copy {
+    display: grid;
+    align-content: start;
+    gap: 0.7rem;
+  }
+
+  .db-project-id {
+    margin: 0;
+    color: var(--site-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .db-intro h2 {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: clamp(2.25rem, 6vw, 4.75rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .db-intro-copy p {
+    max-width: 66ch;
+    margin: 0;
+    color: var(--site-text);
+    font-size: 1rem;
+    line-height: 1.75;
+    text-wrap: pretty;
+  }
+
+  .db-intro-copy .db-provenance-note {
+    color: var(--site-text-dim);
+    font-size: 0.92rem;
+    font-style: italic;
+  }
+
+  .db-workspace {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: start;
+    padding-top: clamp(2rem, 5vw, 4rem);
+    border-top: 1px solid var(--site-border);
+  }
+
+  .viewer-panel {
+    min-width: 0;
+    scroll-margin-top: 6rem;
+  }
+
+  .viewer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 2.75rem;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .viewer-record-code,
+  .viewer-status {
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .viewer-record-code {
+    color: var(--site-gold);
+    font-weight: 700;
+  }
+
+  .viewer-status {
+    color: var(--site-text-dim);
+    text-align: right;
+  }
+
+  .model-stage {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: oklch(0.17 0.03 195);
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .model-stage img,
+  .model-stage :global(model-viewer) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .model-stage img {
+    object-fit: cover;
+  }
+
+  .model-stage :global(model-viewer) {
+    --poster-color: oklch(0.17 0.03 195);
+    background: oklch(0.17 0.03 195);
+  }
+
+  .viewer-load {
+    position: absolute;
+    left: 50%;
+    bottom: 1.25rem;
+    translate: -50% 0;
+    min-width: min(18rem, calc(100% - 2rem));
+    min-height: 2.75rem;
+    padding: 0.7rem 1.25rem;
+    border: 1px solid var(--site-gold);
+    border-radius: 3px;
+    background: var(--site-gold);
+    color: var(--site-bg-deep);
+    cursor: pointer;
+    font: 600 0.82rem/1.2 var(--site-font);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    transition: background-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out), translate 180ms var(--site-ease-out);
+  }
+
+  .viewer-load:hover,
+  .viewer-load:focus-visible {
+    background: var(--site-text-strong);
+    border-color: var(--site-text-strong);
+  }
+
+  .viewer-load:active {
+    translate: -50% 1px;
+  }
+
+  .viewer-load:disabled {
+    cursor: wait;
+    opacity: 0.75;
+  }
+
+  .viewer-details {
+    display: grid;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+  }
+
+  .viewer-heading-row {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .viewer-heading-label {
+    margin: 0 0 0.35rem;
+    color: var(--site-text-dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .viewer-heading-row h3 {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: clamp(1.35rem, 3vw, 2rem);
+    font-weight: 400;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+
+  .copy-record-link {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--site-border);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--site-teal);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.82rem;
+  }
+
+  .copy-record-link:hover,
+  .copy-record-link:focus-visible {
+    border-color: var(--site-teal);
+    color: var(--site-text-strong);
+  }
+
+  .model-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    border-block: 1px solid var(--site-border);
+  }
+
+  .model-facts div {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.9rem 0.75rem;
+  }
+
+  .model-facts div + div {
+    border-left: 1px solid var(--site-border);
+  }
+
+  .model-facts dt {
+    color: var(--site-text-dim);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .model-facts dd {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: 0.96rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .model-downloads {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .model-downloads a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3rem;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--site-border);
+    color: var(--site-text-strong);
+    text-decoration: none;
+    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
+  }
+
+  .model-downloads a:first-child {
+    border-color: oklch(0.76 0.08 92 / 0.65);
+    color: var(--site-gold);
+  }
+
+  .model-downloads a:hover,
+  .model-downloads a:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-gold);
+  }
+
+  .model-downloads small {
+    color: var(--site-text-dim);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .catalog-panel {
+    min-width: 0;
+    container-type: inline-size;
+  }
+
+  .catalog-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .catalog-heading h3 {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 400;
+  }
+
+  .catalog-heading p {
+    margin: 0.35rem 0 0;
+    color: var(--site-text-dim);
+    font-size: 0.9rem;
+  }
+
+  .catalog-data-link {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+    padding: 0.55rem 0;
+    color: var(--site-teal);
+    font-size: 0.82rem;
+    text-underline-offset: 0.25em;
+  }
+
+  .catalog-controls {
+    display: grid;
+    gap: 0.7rem;
+    padding: 1.5rem 0 1rem;
+  }
+
+  .catalog-controls > label,
+  .catalog-controls legend {
+    color: var(--site-text-dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .catalog-controls input {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--site-border);
+    border-radius: 3px;
+    background: var(--site-bg-deep);
+    color: var(--site-text-strong);
+    font: inherit;
+    font-size: 1rem;
+  }
+
+  .catalog-controls input::placeholder {
+    color: var(--site-text-dim);
+    opacity: 1;
+  }
+
+  .catalog-controls input:focus-visible {
+    border-color: var(--site-gold);
+    outline: 2px solid var(--site-gold);
+    outline-offset: 2px;
+  }
+
+  .catalog-controls fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0.45rem 0 0;
+    border: 0;
+  }
+
+  .catalog-controls legend {
+    margin-bottom: 0.55rem;
+    padding: 0;
+  }
+
+  .year-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .year-filters button {
+    min-height: 2.75rem;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid var(--site-border);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--site-text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.84rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .year-filters button[aria-pressed='true'] {
+    border-color: var(--site-gold);
+    background: oklch(0.76 0.08 92 / 0.12);
+    color: var(--site-gold);
+  }
+
+  .year-filters button:hover,
+  .year-filters button:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-text-strong);
+  }
+
+  .catalog-count {
+    margin: 0 0 0.8rem;
+    color: var(--site-text-dim);
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .record-list {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .record-list li[hidden] {
+    display: none;
+  }
+
+  .record-button {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    width: 100%;
+    min-height: 6.2rem;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid oklch(0.43 0.04 190 / 0.65);
+    border-radius: 3px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 180ms var(--site-ease-out), background-color 180ms var(--site-ease-out), translate 180ms var(--site-ease-out);
+  }
+
+  .record-button:hover {
+    border-color: var(--site-teal);
+    background: oklch(0.28 0.03 194 / 0.35);
+  }
+
+  .record-button:active {
+    translate: 0 1px;
+  }
+
+  .record-button:focus-visible {
+    border-color: var(--site-gold);
+    outline: 2px solid var(--site-gold);
+    outline-offset: 2px;
+  }
+
+  .record-button.is-selected {
+    border-color: var(--site-gold);
+    background: oklch(0.76 0.08 92 / 0.08);
+  }
+
+  .record-image {
+    display: block;
+    align-self: stretch;
+    min-height: 6.2rem;
+    background: oklch(0.17 0.03 195);
+    border-right: 1px solid var(--site-border);
+  }
+
+  .record-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .record-copy {
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
+    padding: 0.75rem 0.9rem;
+  }
+
+  .record-code {
+    color: var(--site-gold);
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .record-title {
+    color: var(--site-text-strong);
+    font-size: 0.96rem;
+    line-height: 1.3;
+  }
+
+  .record-meta {
+    overflow: hidden;
+    color: var(--site-text-dim);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .record-action {
+    padding-right: 0.9rem;
+    color: var(--site-teal);
+    font-size: 0.78rem;
+  }
+
+  .catalog-empty {
+    margin: 0;
+    padding: 2.5rem 0;
+    color: var(--site-text-dim);
+    font-style: italic;
+    border-top: 1px solid var(--site-border);
+  }
+
+  @container (min-width: 42rem) {
+    .record-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .record-button {
+      grid-template-columns: 1fr;
+      align-content: start;
+    }
+
+    .record-image {
+      aspect-ratio: 4 / 3;
+      min-height: 0;
+      border-right: 0;
+      border-bottom: 1px solid var(--site-border);
+    }
+
+    .record-copy {
+      min-height: 6.6rem;
+    }
+
+    .record-action {
+      display: none;
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .db-intro {
+      grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 1.2fr);
+      gap: clamp(2rem, 6vw, 6rem);
+      align-items: end;
+    }
+
+    .model-downloads {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 68rem) {
+    .db-workspace {
+      grid-template-columns: minmax(0, 1.08fr) minmax(25rem, 0.92fr);
+      gap: clamp(2.5rem, 4vw, 4.5rem);
+    }
+
+    .viewer-panel {
+      position: sticky;
+      top: 6.5rem;
+    }
+  }
+
+  @media (max-width: 34rem) {
+    .viewer-heading-row {
+      display: grid;
+    }
+
+    .copy-record-link {
+      justify-self: start;
+    }
+
+    .record-button {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+    }
+
+    .record-action {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .viewer-load,
+    .record-button {
+      transition: none;
+    }
+  }
+</style>
