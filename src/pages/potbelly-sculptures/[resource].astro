@@ -4,7 +4,6 @@ import ResearchHeader from '../../components/ResearchHeader.astro';
 
 export function getStaticPaths() {
   return [
-    { slug: 'gis-database', title: 'GIS Database' },
     { slug: 'final-report', title: 'Final Report' },
   ].map((resource) => ({
     params: { resource: resource.slug },
