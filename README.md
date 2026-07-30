@@ -4,9 +4,10 @@ Website for the Center for Mesoamerican Studies, Faculty of Arts, Comenius Unive
 
 ## Stack
 
-- **Astro 6** — static site generation, View Transitions
-- **React 19** — islands only
+- **Astro 7** — static site generation, View Transitions
 - **Tailwind CSS 4** — via Vite plugin, no config file
+
+No UI framework. Every component is `.astro`; there are no client islands.
 
 ## Development
 
@@ -22,7 +23,9 @@ Requires Node ≥ 22.12.0 (see `.node-version`).
 
 ## Routing
 
-Two-tier: native Astro pages in `src/pages/` shadow the catch-all `[...slug].astro`, which serves 36 legacy Webstudio HTML pages from `legacy/source-html/`.
+Two-tier: native Astro pages in `src/pages/` shadow the catch-all `[...slug].astro`, which serves the remaining legacy Webstudio HTML pages from `legacy/source-html/`.
+
+Of the 32 legacy sources, 10 are already shadowed by native pages and only `/events` and `/publications` still carry real content. The other 19 are unwritten stubs — heading, `<hr>`, nothing else. Handling for those (an honest "being prepared" state plus `noindex`) lives on the unmerged `feat/mobile-nav-redesign` branch.
 
 ## PDFs
 
