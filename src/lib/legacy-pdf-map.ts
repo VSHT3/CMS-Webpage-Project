@@ -33,6 +33,10 @@ const PDF_MAP: Record<string, string> = {
   'Report_1_MayaCal.pdf':                                        '/assets/pdfs/grants/mayacal-report-1.pdf',
   'Report_2_MayaCal.pdf':                                        '/assets/pdfs/grants/mayacal-report-2.pdf',
   'Final_report_on_the_CU_grant_2025.pdf':                      '/assets/pdfs/grants/cu-grant-final-report-2025.pdf',
+  // Referenced from grants-and-investigations with spaces around the hyphen;
+  // `rewriteLegacyAssetUrl` decodes the URL before lookup, so the key carries
+  // the literal spaces while the file on disk is hyphenated.
+  'A1-Database - POTBELLY.pdf':                                  '/assets/pdfs/grants/A1-Database-POTBELLY.pdf',
   // Images referenced via old pdfs path
   'cmslogo.png':                                                 '/assets/pdfs/cmslogo.png',
 };
