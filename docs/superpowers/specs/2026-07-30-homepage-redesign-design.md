@@ -98,8 +98,23 @@ four-step tonal scale so the page reads as chapters.
 ```
 
 Hue stays in 198–205. `--site-gold` `oklch(0.76 0.08 92)` and `--site-teal`
-`oklch(0.68 0.075 178)` remain accents only. Body text on `--site-bg-abyss` must
-be verified at WCAG AA (4.5:1); dim text at AA Large minimum.
+`oklch(0.68 0.075 178)` remain accents only.
+
+Contrast was computed for this palette before planning, not deferred. Ratios
+against each background tier:
+
+| | abyss | deep | bg | raised |
+| --- | --- | --- | --- | --- |
+| `--site-text` | 15.05 | 14.56 | 13.63 | 12.11 |
+| `--site-text-strong` | 17.52 | 16.96 | 15.87 | 14.10 |
+| `--site-text-dim` | 8.89 | 8.61 | 8.05 | 7.16 |
+| `--site-gold` | 9.46 | 9.15 | 8.56 | 7.61 |
+| `--site-teal` | 7.29 | 7.06 | 6.61 | 5.87 |
+
+Every pair clears WCAG AA body text (4.5:1); all but teal-on-raised clear AAA
+(7:1). No combination in this palette requires a size or weight exception. The
+figures still get re-checked against the rendered page during verification, since
+`color-mix` compositing and image backdrops can differ from the flat values.
 
 The scale is **additive**. `--site-surface`, `--site-surface-raised` and
 `--site-bg-alt` keep their current values and are not removed — the other 36
