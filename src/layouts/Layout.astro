@@ -7,12 +7,15 @@ interface Props {
   title?: string;
   description?: string;
   bodyClass?: string;
+  /** Keep a page out of the index — used for legacy pages with no body content. */
+  noindex?: boolean;
 }
 
 const {
   title = 'Mesoamerica',
   description = 'Center for Mesoamerican Studies, Comenius University Bratislava',
   bodyClass = '',
+  noindex = false,
 } = Astro.props;
 ---
 <!doctype html>
@@ -23,19 +26,24 @@ const {
     <meta name="theme-color" content="#183138" />
     <meta name="color-scheme" content="dark" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
     <link rel="icon" href="/assets/cms-logo.png" />
     <title>{title}</title>
     <slot name="head" />
-    <!-- GoatCounter — privacy-friendly visit counter -->
+    {/* GoatCounter: privacy-friendly visit counter, cookieless. */}
     <script is:inline data-goatcounter="https://vsht.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-    <!-- Umami — self-hosted, cookieless. No consent banner required: the tracker
-         writes no cookies and no storage, it only reads its own `umami.disabled`
-         opt-out key. Pageviews on client-side navigation need no extra code
-         because the tracker hooks history.pushState/replaceState, which Astro's
-         ClientRouter calls. Do NOT add `data-astro-rerun` (Astro dedupes scripts
-         by src across swaps; forcing a re-run re-hooks pushState and double-counts)
-         and do NOT set `data-auto-track="false"` (that freezes the tracker's
-         internal currentUrl on the first page, so every event reports a stale URL). -->
+    {/*
+      Umami: self-hosted, cookieless. No consent banner required, the tracker
+      writes no cookies and no storage, it only reads its own `umami.disabled`
+      opt-out key. Pageviews on client-side navigation need no extra code
+      because the tracker hooks history.pushState/replaceState, which Astro's
+      ClientRouter calls. Do NOT add `data-astro-rerun` (Astro dedupes scripts
+      by src across swaps, so forcing a re-run re-hooks pushState and
+      double-counts) and do NOT set `data-auto-track="false"` (that freezes the
+      tracker's internal currentUrl on the first page, so every event reports a
+      stale URL). These comments are JSX-style on purpose: HTML comments would
+      ship this paragraph to every visitor on all 41 pages.
+    */}
     <script is:inline defer src="https://analytika.draxtonbrno.cz/script.js" data-website-id="caa68fdd-3442-4b89-9562-1196a4521a39"></script>
     <ClientRouter />
   </head>

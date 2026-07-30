@@ -6,7 +6,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
 ---
 <header class="site-nav-wrapper">
   <nav class="site-nav" role="navigation" aria-label="Main navigation">
-    <a href="/" class="nav-logo" aria-label="Center for Mesoamerican Studies — Home">
+    <a href="/" class="nav-logo" aria-label="Center for Mesoamerican Studies, Home">
       <img src="/navimg.png" alt="Center for Mesoamerican Studies" class="nav-logo-img" />
     </a>
 
@@ -25,11 +25,13 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           </svg>
           </button>
         </div>
-        <ul class="dropdown" role="list">
+        <div class="dropdown">
+          <ul class="dropdown-inner" role="list">
           <li><a href="/about-us">Overview</a></li>
           <li><a href="/abouts-us-members">Members</a></li>
           <li><a href="/about-us-contacts">Contacts</a></li>
-        </ul>
+          </ul>
+        </div>
       </li>
 
       <li class="nav-item has-dropdown">
@@ -41,11 +43,13 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           </svg>
           </button>
         </div>
-        <ul class="dropdown" role="list">
+        <div class="dropdown">
+          <ul class="dropdown-inner" role="list">
           <li><a href="/bratislava-maya-meetings-history">History</a></li>
           <li><a href="/bratislava-maya-meetings-news">News</a></li>
           <li><a href="/bratislava-maya-meetings-gallery">Gallery</a></li>
-        </ul>
+          </ul>
+        </div>
       </li>
 
       <li class="nav-item has-dropdown">
@@ -57,11 +61,13 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           </svg>
           </button>
         </div>
-        <ul class="dropdown" role="list">
+        <div class="dropdown">
+          <ul class="dropdown-inner" role="list">
           <li><a href="/ferdinand-anders-library">Ferdinand Anders Library</a></li>
           <li><a href="/ferdinand-anders-library-history">History</a></li>
           <li><a href="/ferdinand-anders-library-catalogue">Catalogue</a></li>
-        </ul>
+          </ul>
+        </div>
       </li>
 
       <li class="nav-item has-dropdown">
@@ -73,13 +79,15 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           </svg>
           </button>
         </div>
-        <ul class="dropdown" role="list">
+        <div class="dropdown">
+          <ul class="dropdown-inner" role="list">
           <li><a href="/research">Overview</a></li>
           <li><a href="/grants-and-investigations-grants">Grants</a></li>
           <li><a href="/grants-and-investigations">Project Reports</a></li>
           <li><a href="/grants-and-investigations-investigation-notes">Investigation Notes</a></li>
           <li><a href="/grants-and-investigations-gallery">Gallery</a></li>
-        </ul>
+          </ul>
+        </div>
       </li>
 
       <li class="nav-item has-dropdown">
@@ -91,12 +99,14 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           </svg>
           </button>
         </div>
-        <ul class="dropdown" role="list">
+        <div class="dropdown">
+          <ul class="dropdown-inner" role="list">
           <li><a href="/collection-archaeological-collection">Archaeological Collection</a></li>
           <li><a href="/collections-ethnographical-collection">Ethnographical Collection</a></li>
           <li><a href="/exhibitions">Exhibitions</a></li>
           <li><a href="/collections-gallery">Gallery</a></li>
-        </ul>
+          </ul>
+        </div>
       </li>
 
       <li class="nav-item">
@@ -112,14 +122,16 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           </svg>
           </button>
         </div>
-        <ul class="dropdown" role="list">
+        <div class="dropdown">
+          <ul class="dropdown-inner" role="list">
           <li><a href="/paru-uaxactun-history">History</a></li>
           <li><a href="/paru-uaxactun-maps">Maps</a></li>
           <li><a href="/paru-uaxactun-papers">Papers</a></li>
           <li><a href="/paru-uaxactun-gallery">Gallery</a></li>
           <li><a href="/paru-uaxactun-recent-investigations">Recent Investigations</a></li>
           <li><a href="/paru-uaxactun-archeological-artefacts">Archaeological Artefacts</a></li>
-        </ul>
+          </ul>
+        </div>
       </li>
 
       <li class="nav-item has-dropdown">
@@ -131,12 +143,14 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           </svg>
           </button>
         </div>
-        <ul class="dropdown" role="list">
+        <div class="dropdown">
+          <ul class="dropdown-inner" role="list">
           <li><a href="/education-phd-program">PhD Program</a></li>
           <li><a href="/education-published-thesis">Published Thesis</a></li>
           <li><a href="/education-work-in-progress">Work in Progress</a></li>
           <li><a href="/education-gallery">Gallery</a></li>
-        </ul>
+          </ul>
+        </div>
       </li>
 
     </ul>
@@ -386,6 +400,14 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       opacity 180ms ease,
       transform 220ms var(--nav-ease),
       visibility 0s linear;
+  }
+
+  /* .dropdown-inner: transparent passthrough on desktop, grid child on mobile */
+  .dropdown-inner {
+    display: contents;
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
   .dropdown li {
@@ -652,29 +674,30 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       overflow: hidden;
     }
 
+    /* ── Drawer panel ───────────────────── */
     .nav-links {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
       position: fixed;
       top: var(--nav-logo-h);
       left: 0;
       right: 0;
-      bottom: auto;
-      height: calc(100dvh - var(--nav-logo-h));
+      bottom: 0;
+      height: auto;
       z-index: var(--site-z-nav-panel, 39);
-      padding: 12px 0 max(24px, env(safe-area-inset-bottom));
+      padding: 0;
       background: var(--nav-bg-dark);
       overflow-y: auto;
       overflow-x: hidden;
       opacity: 0;
       pointer-events: none;
       visibility: hidden;
-      transform: translateY(-14px);
+      transform: translateY(-10px);
       transition:
-        opacity 220ms ease,
-        transform 260ms var(--nav-ease),
-        visibility 0s linear 260ms;
+        opacity 200ms ease,
+        transform 280ms var(--nav-ease),
+        visibility 0s linear 280ms;
     }
 
     .site-nav {
@@ -684,6 +707,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       padding-right: max(0.75rem, env(safe-area-inset-right));
     }
 
+    /* ── Hamburger button ───────────────── */
     .nav-mobile-toggle {
       display: flex;
       align-items: center;
@@ -698,9 +722,32 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       border-radius: 0;
       color: var(--nav-text);
       cursor: pointer;
-      transition: color 180ms ease, opacity 180ms ease;
+      transition: color 200ms ease;
     }
 
+    .nav-mobile-toggle:hover,
+    .nav-mobile-toggle:focus-visible {
+      color: var(--nav-gold);
+    }
+
+    .nav-mobile-toggle[aria-expanded='true'] {
+      color: var(--nav-gold);
+    }
+
+    .nav-mobile-toggle[aria-expanded='true'] .hamburger-line:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-mobile-toggle[aria-expanded='true'] .hamburger-line:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0.15);
+    }
+
+    .nav-mobile-toggle[aria-expanded='true'] .hamburger-line:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* ── Search: icon-only in mobile nav bar ── */
     .pdf-search {
       margin-left: auto;
     }
@@ -731,122 +778,214 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       transform: translateY(-0.55rem);
     }
 
-    .nav-mobile-toggle:hover,
-    .nav-mobile-toggle:focus-visible {
-      color: var(--nav-gold);
-      opacity: 0.92;
-    }
-
-    .nav-mobile-toggle[aria-expanded='true'] .hamburger-line:nth-child(1) {
-      transform: translateY(7px) rotate(45deg);
-    }
-
-    .nav-mobile-toggle[aria-expanded='true'] .hamburger-line:nth-child(2) {
-      opacity: 0;
-      transform: scaleX(0.2);
-    }
-
-    .nav-mobile-toggle[aria-expanded='true'] .hamburger-line:nth-child(3) {
-      transform: translateY(-7px) rotate(-45deg);
-    }
-
+    /* ── Open drawer state ──────────────── */
     .nav-links.open {
       opacity: 1;
       pointer-events: auto;
       visibility: visible;
       transform: translateY(0);
+      counter-reset: nav-item;
       transition:
-        opacity 220ms ease,
-        transform 260ms var(--nav-ease),
+        opacity 200ms ease,
+        transform 280ms var(--nav-ease),
         visibility 0s linear;
     }
+
+    /* ── Nav items: full-width rows ─────── */
 
     .nav-links.open .nav-item {
       width: 100%;
       flex: 0 0 auto;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
+      position: relative;
+      counter-increment: nav-item;
     }
 
+    /* Roman numeral accent — positioned left of each row */
+    .nav-links.open .nav-item::before {
+      content: counter(nav-item, upper-roman);
+      position: absolute;
+      left: clamp(0.6rem, 2.5vw, 1rem);
+      top: 0;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      font-family: var(--nav-font);
+      font-size: 0.52rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--nav-gold);
+      opacity: 0.45;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    /* Link group: link + chevron toggle */
     .nav-links.open .nav-link-group {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 3.5rem;
+      grid-template-columns: minmax(0, 1fr) 3.25rem;
       width: 100%;
-      min-height: 52px;
+      min-height: 58px;
+      align-items: stretch;
     }
 
     .nav-links.open .nav-link,
     .nav-links.open .nav-dropdown-toggle {
       width: 100%;
-      min-height: 50px;
-      padding: 15px clamp(1.1rem, 5vw, 2rem);
-      font-size: 14px;
-      border-bottom: 1px solid var(--nav-border);
+      min-height: 58px;
+      padding: 0 clamp(1rem, 4vw, 1.5rem);
+      padding-left: clamp(2.5rem, 8vw, 3.25rem);
+      font-family: var(--nav-font);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.055em;
+      text-transform: uppercase;
+      line-height: 1.2;
+      color: var(--nav-text) !important;
+      text-decoration: none !important;
+      border: none;
+      border-bottom: 1px solid oklch(0.52 0.04 190 / 0.28);
+      background: transparent;
       justify-content: flex-start;
       white-space: normal;
+      cursor: pointer;
+      transition: color 160ms ease, background 160ms ease;
     }
 
+    .nav-links.open .nav-link:hover,
+    .nav-links.open .nav-link:focus-visible {
+      color: var(--nav-gold) !important;
+      background: oklch(0.84 0.075 88 / 0.05);
+    }
+
+    /* Standalone nav-item (no dropdown): no index pseudo-element offset needed */
+    .nav-links.open .nav-item:not(.has-dropdown) .nav-link {
+      grid-column: 1 / -1;
+    }
+
+    /* Chevron toggle column */
     .nav-links.open .nav-dropdown-toggle {
+      padding: 0;
+      padding-left: 0;
       justify-content: center;
-      padding: 0;
-      border-left: 1px solid var(--nav-border);
+      align-items: center;
+      min-width: 3.25rem;
+      border-bottom: 1px solid oklch(0.52 0.04 190 / 0.28);
+      color: var(--nav-text-dim) !important;
+      transition: color 160ms ease, background 160ms ease;
     }
 
-    .nav-links.open .dropdown {
-      display: block;
-      position: static;
-      transform: none;
-      border: none;
-      border-top: none;
-      box-shadow: none;
-      background: oklch(0.2 0.03 198 / 0.72);
-      width: 100%;
-      padding: 0;
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      visibility: hidden;
-      transition:
-        grid-template-rows 260ms var(--nav-ease),
-        max-height 260ms var(--nav-ease),
-        opacity 180ms ease,
-        visibility 0s linear 260ms;
+    .nav-links.open .nav-dropdown-toggle:hover,
+    .nav-links.open .nav-dropdown-toggle:focus-visible {
+      color: var(--nav-gold) !important;
+      background: oklch(0.84 0.075 88 / 0.05);
     }
 
+    /* Disable desktop hover chevron rotation inside mobile */
     .nav-links.open .nav-item:hover .chevron,
     .nav-links.open .nav-item:focus-within .chevron {
       transform: none;
       opacity: 0.65;
     }
 
-    .nav-links.open .has-dropdown.is-expanded > .dropdown {
-      max-height: none;
-      opacity: 1;
-      visibility: visible;
-      transition:
-        opacity 180ms ease,
-        visibility 0s linear;
-    }
-
+    /* Rotate on explicit expand */
     .nav-links.open .has-dropdown.is-expanded > .nav-link-group .chevron {
       transform: rotate(180deg);
       opacity: 1;
     }
 
-    .nav-links.open .dropdown li:first-child {
-      padding-top: 6px;
+    /* ── Accordion sub-nav ──────────────── */
+    /* grid-template-rows trick: no max-height hack, animates cleanly */
+    .nav-links.open .dropdown {
+      display: grid;
+      grid-template-rows: 0fr;
+      /* `.nav-item` is a column flex container whose height resolves to the sum
+         of its two children, and `.nav-link-group` grows into any space this
+         element gives up. Without this, the default `flex-shrink: 1` let the
+         group take 118px of a 202px row and squeezed the expanded sub-menu from
+         its 144px of content down to 84px, clipping the last item so it could
+         not be reached. The drawer already has `overflow-y: auto`, so refusing
+         to shrink here scrolls the drawer instead of hiding a nav link. */
+      flex-shrink: 0;
+      position: static;
+      transform: none;
+      border: none;
+      border-top: none;
+      box-shadow: none;
+      background: oklch(0.19 0.028 200 / 0.8);
+      width: 100%;
+      padding: 0;
+      opacity: 0;
+      visibility: hidden;
+      overflow: hidden;
+      transition:
+        grid-template-rows 280ms var(--nav-ease),
+        opacity 220ms ease,
+        visibility 0s linear 280ms;
     }
 
-    .nav-links.open .dropdown li:last-child {
-      padding-bottom: 6px;
+    /* .dropdown-inner is the single grid child — overflow:hidden clips content during animation */
+    .nav-links.open .dropdown-inner {
+      display: block;
+      overflow: hidden;
+    }
+
+    .nav-links.open .has-dropdown.is-expanded > .dropdown {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      visibility: visible;
+      /* The base `.dropdown` rule sets `pointer-events: none` and only
+         `.has-dropdown:hover` restores it. Hover never fires on a touch device,
+         so without this every sub-menu link in the drawer rendered normally and
+         silently swallowed taps, making 22 pages unreachable on mobile. */
+      pointer-events: auto;
+      transition:
+        grid-template-rows 280ms var(--nav-ease),
+        opacity 200ms ease 40ms,
+        visibility 0s linear;
+    }
+
+    .nav-links.open .dropdown li {
+      padding: 0;
     }
 
     .nav-links.open .dropdown a {
-      min-height: 44px;
-      padding: 12px clamp(2rem, 9vw, 3.25rem);
-      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      min-height: 48px;
+      padding: 0 clamp(1.5rem, 6vw, 2.5rem);
+      padding-left: clamp(2.5rem, 8vw, 3.25rem);
+      font-family: var(--nav-font);
+      font-size: 0.82rem;
+      font-weight: 400;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
       line-height: 1.35;
       white-space: normal;
+      color: var(--nav-text-dim) !important;
+      text-decoration: none !important;
+      border-bottom: 1px solid oklch(0.52 0.04 190 / 0.18);
+      transition: color 150ms ease, background 150ms ease, padding-left 150ms ease;
+    }
+
+    .nav-links.open .dropdown a:hover,
+    .nav-links.open .dropdown a:focus-visible {
+      color: var(--nav-gold-light) !important;
+      background: oklch(0.84 0.075 88 / 0.07);
+      padding-left: calc(clamp(2.5rem, 8vw, 3.25rem) + 0.4rem);
+    }
+
+    .nav-links.open .dropdown li:last-child a {
+      border-bottom: none;
+    }
+
+    /* ── Bottom safe-area spacer ────────── */
+    .nav-links.open::after {
+      content: '';
+      display: block;
+      flex-shrink: 0;
+      height: max(1.5rem, env(safe-area-inset-bottom));
     }
   }
 
@@ -859,10 +998,6 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       width: auto;
       max-width: none;
       object-position: left center;
-    }
-
-    .nav-links.open {
-      top: var(--nav-logo-h);
     }
   }
 
