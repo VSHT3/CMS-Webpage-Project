@@ -1,14 +1,80 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ResearchHeader from '../../components/ResearchHeader.astro';
+import siteData from '../../data/potbelly-sites.json';
+import 'leaflet/dist/leaflet.css';
+
+type PotbellyCountry = 'El Salvador' | 'Guatemala' | 'Honduras' | 'Mexico';
+
+interface PotbellySiteProperties {
+  fid: string;
+  site_id: string;
+  site_name: string;
+  country: PotbellyCountry;
+  n_monuments: string;
+  location_precision: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface PotbellySiteFeature {
+  type: 'Feature';
+  properties: PotbellySiteProperties;
+  geometry: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+}
+
+interface PotbellySiteCollection {
+  type: 'FeatureCollection';
+  features: PotbellySiteFeature[];
+}
+
+const siteCollection = siteData as unknown as PotbellySiteCollection;
+const sites = siteCollection.features;
+const validCountries = new Set<PotbellyCountry>(['El Salvador', 'Guatemala', 'Honduras', 'Mexico']);
+const seenSiteIds = new Set<string>();
+
+sites.forEach((feature, index) => {
+  const site = feature.properties;
+  const invalid =
+    feature.type !== 'Feature' ||
+    feature.geometry.type !== 'Point' ||
+    feature.geometry.coordinates.length !== 2 ||
+    !site.site_id ||
+    !site.site_name ||
+    !site.location_precision ||
+    !validCountries.has(site.country) ||
+    !Number.isFinite(Number(site.n_monuments)) ||
+    !Number.isFinite(site.latitude) ||
+    !Number.isFinite(site.longitude) ||
+    !Number.isFinite(feature.geometry.coordinates[0]) ||
+    !Number.isFinite(feature.geometry.coordinates[1]) ||
+    seenSiteIds.has(site.site_id);
+
+  if (invalid) {
+    throw new Error(`Invalid Potbelly GIS record: ${site.site_id || index}`);
+  }
+  seenSiteIds.add(site.site_id);
+});
+
+const initialSite = sites[0].properties;
+const numberFormatter = new Intl.NumberFormat('en-US');
+const totalMonuments = sites.reduce((total, feature) => total + Number(feature.properties.n_monuments), 0);
+const countryCount = new Set(sites.map((feature) => feature.properties.country)).size;
+const formatNumber = (value: number) => numberFormatter.format(value);
+const formatCoordinates = (site: PotbellySiteProperties) => `${site.latitude.toFixed(4)}, ${site.longitude.toFixed(4)}`;
+const countrySlug = (country: PotbellyCountry) => country.toLowerCase().replaceAll(' ', '-');
+const monumentLabel = (count: number) => `${formatNumber(count)} ${count === 1 ? 'monument' : 'monuments'}`;
 ---
 
 <Layout
   title="GIS Database — Preclassic Maya Potbelly Sculptures — Center for Mesoamerican Studies"
-  description="Geographic distribution of recorded Preclassic Maya potbelly sculpture sites across Mesoamerica."
+  description="Search and explore 43 recorded Preclassic Maya potbelly sculpture sites across Mesoamerica."
   bodyClass="potbelly-gis-page"
 >
-  <div class="gis-shell">
+  <div class="gis-shell" data-potbelly-gis>
     <ResearchHeader currentHref="/grants-and-investigations" />
 
     <a class="gis-origin" href="/grants-and-investigations#potbelly-sculptures-project">
@@ -21,44 +87,669 @@ import ResearchHeader from '../../components/ResearchHeader.astro';
         <p class="gis-project-id">09I03-03-V04-00234</p>
         <h2>GIS Database</h2>
       </div>
-      <p class="gis-intro-copy">
-        Geographic distribution of recorded potbelly sculpture sites across Mesoamerica. Marker size represents the number of monuments documented at each location.
-      </p>
+
+      <div class="gis-intro-copy">
+        <p>
+          Explore {sites.length} recorded sites documenting {formatNumber(totalMonuments)} potbelly monuments across Mexico, Guatemala, El Salvador, and Honduras. Search the catalogue or select a marker to inspect each location and the precision of its coordinates.
+        </p>
+
+        <dl class="gis-summary" aria-label="Database summary">
+          <div>
+            <dt>Sites</dt>
+            <dd>{formatNumber(sites.length)}</dd>
+          </div>
+          <div>
+            <dt>Recorded monuments</dt>
+            <dd>{formatNumber(totalMonuments)}</dd>
+          </div>
+          <div>
+            <dt>Countries</dt>
+            <dd>{formatNumber(countryCount)}</dd>
+          </div>
+        </dl>
+      </div>
     </header>
 
-    <section class="gis-map-section" aria-labelledby="gis-map-title">
-      <header class="gis-map-heading">
-        <div>
-          <p>Interactive map</p>
-          <h3 id="gis-map-title">Recorded sites across Mesoamerica</h3>
+    <section class="gis-workspace" aria-label="Potbelly sculpture site database">
+      <article class="gis-map-panel" data-map-panel aria-labelledby="gis-map-title">
+        <header class="gis-map-bar">
+          <div>
+            <p>Geographic catalogue</p>
+            <h3 id="gis-map-title">Explore recorded sites</h3>
+          </div>
+
+          <div class="gis-map-actions">
+            <button type="button" data-reset-extent>
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 9V4h5M20 15v5h-5M20 9V4h-5M4 15v5h5"></path>
+              </svg>
+              <span>Reset extent</span>
+            </button>
+            <button type="button" data-toggle-fullscreen aria-label="Enter fullscreen">
+              <svg data-fullscreen-enter-icon aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path>
+              </svg>
+              <svg class="is-hidden" data-fullscreen-exit-icon aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M3 8h5V3M21 8h-5V3M3 16h5v5M21 16h-5v5"></path>
+              </svg>
+              <span data-fullscreen-label>Fullscreen</span>
+            </button>
+          </div>
+        </header>
+
+        <p class="gis-map-instructions" id="gis-map-instructions">
+          Drag to pan, scroll or use the controls to zoom, and select a marker for its record.
+        </p>
+
+        <div
+          class="gis-map"
+          id="potbelly-map"
+          data-gis-map
+          aria-label="Interactive map of recorded potbelly sculpture sites"
+          aria-describedby="gis-map-instructions"
+        ></div>
+
+        <footer class="gis-map-footer">
+          <div class="gis-legend" aria-label="Recorded monument marker scale">
+            <span class="gis-legend-title">Recorded monuments</span>
+            <ol>
+              <li><span class="gis-legend-dot marker-bin-1" aria-hidden="true"></span><span>1</span></li>
+              <li><span class="gis-legend-dot marker-bin-2" aria-hidden="true"></span><span>2–3</span></li>
+              <li><span class="gis-legend-dot marker-bin-3" aria-hidden="true"></span><span>4–6</span></li>
+              <li><span class="gis-legend-dot marker-bin-4" aria-hidden="true"></span><span>7–11</span></li>
+              <li><span class="gis-legend-dot marker-bin-5" aria-hidden="true"></span><span>12–17</span></li>
+            </ol>
+            <span class="gis-legend-note">Circle size and tone represent recorded monuments.</span>
+          </div>
+          <p class="gis-map-status" data-map-status role="status">Loading geographic context…</p>
+        </footer>
+      </article>
+
+      <aside class="gis-catalogue" aria-label="Browse site records">
+        <section class="gis-selected-site" id="potbelly-site-details" aria-labelledby="selected-site-title">
+          <div class="gis-selected-heading">
+            <div>
+              <p>Selected site</p>
+              <span class="gis-selected-code" data-selected-id>{initialSite.site_id}</span>
+              <h3 id="selected-site-title" data-selected-name>{initialSite.site_name}</h3>
+            </div>
+            <div class="gis-selected-actions">
+              <button type="button" data-copy-site-link>Copy site link</button>
+              <button type="button" data-center-site>Center on map</button>
+            </div>
+          </div>
+
+          <dl class="gis-site-facts">
+            <div>
+              <dt>Country</dt>
+              <dd data-selected-country>{initialSite.country}</dd>
+            </div>
+            <div>
+              <dt>Recorded monuments</dt>
+              <dd data-selected-monuments>{formatNumber(Number(initialSite.n_monuments))}</dd>
+            </div>
+            <div class="gis-fact-wide">
+              <dt>Location precision</dt>
+              <dd data-selected-precision>{initialSite.location_precision}</dd>
+            </div>
+            <div class="gis-fact-wide">
+              <dt>Coordinates</dt>
+              <dd data-selected-coordinates>{formatCoordinates(initialSite)}</dd>
+            </div>
+          </dl>
+          <p class="visually-hidden" data-selection-status role="status"></p>
+        </section>
+
+        <form class="gis-catalogue-controls" role="search" data-catalogue-controls>
+          <div class="gis-control gis-control-search">
+            <label for="gis-site-search">Search sites</label>
+            <input
+              id="gis-site-search"
+              type="search"
+              name="q"
+              placeholder="Site, country, or record ID…"
+              autocomplete="off"
+              spellcheck="false"
+              data-site-search
+            />
+          </div>
+
+          <div class="gis-control">
+            <label for="gis-country-filter">Country</label>
+            <select id="gis-country-filter" name="country" autocomplete="off" data-country-filter>
+              <option value="all">All countries</option>
+              <option value="mexico">Mexico</option>
+              <option value="guatemala">Guatemala</option>
+              <option value="el-salvador">El Salvador</option>
+              <option value="honduras">Honduras</option>
+            </select>
+          </div>
+        </form>
+
+        <p class="gis-results-count" data-results-count aria-live="polite">{sites.length} sites</p>
+
+        <div class="gis-site-list-scroll">
+          <ol class="gis-site-list" data-site-list>
+            {sites.map((feature, index) => {
+              const site = feature.properties;
+              const count = Number(site.n_monuments);
+              return (
+                <li
+                  data-site-item
+                  data-site-id={site.site_id}
+                  data-country={countrySlug(site.country)}
+                  data-search={`${site.site_id} ${site.site_name} ${site.country} ${site.location_precision}`.toLowerCase()}
+                >
+                  <button
+                    type="button"
+                    class:list={['gis-site-button', { 'is-selected': index === 0 }]}
+                    aria-label={`View ${site.site_id}: ${site.site_name}`}
+                    aria-controls="potbelly-site-details"
+                    aria-pressed={index === 0 ? 'true' : 'false'}
+                    data-select-site
+                    data-site-id={site.site_id}
+                  >
+                    <span class="gis-site-copy">
+                      <span class="gis-site-code">{site.site_id}</span>
+                      <span class="gis-site-name">{site.site_name}</span>
+                      <span class="gis-site-meta">{site.country} · {monumentLabel(count)}</span>
+                    </span>
+                    <span class="gis-site-action" aria-hidden="true">View</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+
+          <div class="gis-empty-state" data-empty-state hidden>
+            <p>No sites match this search and country filter.</p>
+            <button type="button" data-clear-filters>Clear filters</button>
+          </div>
         </div>
-        <a
-          class="gis-full-map-link"
-          href="/assets/gis/potbellies/index.html"
-          target="_blank"
-          rel="noopener"
-          aria-label="Open the GIS map in a new tab"
-        >
-          Open full map <span aria-hidden="true">&nearr;</span>
-        </a>
-      </header>
+      </aside>
+    </section>
 
-      <div class="gis-map-frame">
-        <iframe
-          src="/assets/gis/potbellies/index.html"
-          title="Interactive map of recorded potbelly sculpture sites"
-          loading="eager"
-          referrerpolicy="strict-origin-when-cross-origin"
-        ></iframe>
-      </div>
-
-      <div class="gis-map-notes" aria-label="Map guidance">
-        <p><strong>Map key</strong> Larger circles indicate more recorded monuments.</p>
-        <p>Select a site marker to view its record.</p>
-      </div>
+    <section class="gis-about" aria-labelledby="gis-about-title">
+      <p>Database scope</p>
+      <h3 id="gis-about-title">About the records</h3>
+      <p>
+        This map reproduces the site names, coordinates, monument counts, and location-precision notes supplied by the Preclassic Maya Potbelly Sculptures project. Circle size represents recorded monuments; country boundaries provide geographic context only.
+      </p>
     </section>
   </div>
 </Layout>
+
+<script>
+  import * as L from 'leaflet';
+  import siteData from '../../data/potbelly-sites.json';
+
+  type PotbellyCountry = 'El Salvador' | 'Guatemala' | 'Honduras' | 'Mexico';
+
+  interface PotbellySiteProperties {
+    fid: string;
+    site_id: string;
+    site_name: string;
+    country: PotbellyCountry;
+    n_monuments: string;
+    location_precision: string;
+    latitude: number;
+    longitude: number;
+  }
+
+  interface PotbellySiteFeature {
+    type: 'Feature';
+    properties: PotbellySiteProperties;
+    geometry: {
+      type: 'Point';
+      coordinates: [number, number];
+    };
+  }
+
+  interface PotbellySiteCollection {
+    type: 'FeatureCollection';
+    features: PotbellySiteFeature[];
+  }
+
+  const clientSites = (siteData as unknown as PotbellySiteCollection).features;
+  const clientSiteById = new Map(clientSites.map((feature) => [feature.properties.site_id, feature]));
+  let activeGisMap: L.Map | null = null;
+
+  const countryBySlug: Record<string, PotbellyCountry> = {
+    mexico: 'Mexico',
+    guatemala: 'Guatemala',
+    'el-salvador': 'El Salvador',
+    honduras: 'Honduras',
+  };
+
+  const markerBin = (count: number) => {
+    if (count <= 1) return 1;
+    if (count <= 3) return 2;
+    if (count <= 6) return 3;
+    if (count <= 11) return 4;
+    return 5;
+  };
+
+  const formatCoordinates = (site: PotbellySiteProperties) => `${site.latitude.toFixed(4)}, ${site.longitude.toFixed(4)}`;
+  const pluralizedMonuments = (count: number) => `${count} recorded ${count === 1 ? 'monument' : 'monuments'}`;
+  const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;',
+  })[character] || character);
+
+  async function initPotbellyGisDatabase(): Promise<void> {
+    const root = document.querySelector<HTMLElement>('[data-potbelly-gis]');
+    if (!root || root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+
+    const mapElement = root.querySelector<HTMLElement>('[data-gis-map]');
+    const mapPanel = root.querySelector<HTMLElement>('[data-map-panel]');
+    const mapStatus = root.querySelector<HTMLElement>('[data-map-status]');
+    const resetExtentButton = root.querySelector<HTMLButtonElement>('[data-reset-extent]');
+    const fullscreenButton = root.querySelector<HTMLButtonElement>('[data-toggle-fullscreen]');
+    const fullscreenLabel = root.querySelector<HTMLElement>('[data-fullscreen-label]');
+    const fullscreenEnterIcon = root.querySelector<SVGElement>('[data-fullscreen-enter-icon]');
+    const fullscreenExitIcon = root.querySelector<SVGElement>('[data-fullscreen-exit-icon]');
+    const selectedPanel = root.querySelector<HTMLElement>('.gis-selected-site');
+    const selectedId = root.querySelector<HTMLElement>('[data-selected-id]');
+    const selectedName = root.querySelector<HTMLElement>('[data-selected-name]');
+    const selectedCountry = root.querySelector<HTMLElement>('[data-selected-country]');
+    const selectedMonuments = root.querySelector<HTMLElement>('[data-selected-monuments]');
+    const selectedPrecision = root.querySelector<HTMLElement>('[data-selected-precision]');
+    const selectedCoordinates = root.querySelector<HTMLElement>('[data-selected-coordinates]');
+    const selectionStatus = root.querySelector<HTMLElement>('[data-selection-status]');
+    const copySiteLinkButton = root.querySelector<HTMLButtonElement>('[data-copy-site-link]');
+    const centerSiteButton = root.querySelector<HTMLButtonElement>('[data-center-site]');
+    const searchInput = root.querySelector<HTMLInputElement>('[data-site-search]');
+    const countrySelect = root.querySelector<HTMLSelectElement>('[data-country-filter]');
+    const resultsCount = root.querySelector<HTMLElement>('[data-results-count]');
+    const emptyState = root.querySelector<HTMLElement>('[data-empty-state]');
+    const clearFiltersButton = root.querySelector<HTMLButtonElement>('[data-clear-filters]');
+    const siteItems = Array.from(root.querySelectorAll<HTMLElement>('[data-site-item]'));
+    const siteButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-select-site]'));
+
+    if (
+      !mapElement ||
+      !mapPanel ||
+      !mapStatus ||
+      !resetExtentButton ||
+      !fullscreenButton ||
+      !searchInput ||
+      !countrySelect ||
+      !resultsCount ||
+      !emptyState ||
+      !clearFiltersButton ||
+      siteButtons.length === 0
+    ) return;
+
+    activeGisMap?.remove();
+    const map = L.map(mapElement, {
+      minZoom: 4,
+      maxZoom: 10,
+      zoomControl: true,
+      attributionControl: true,
+    });
+    activeGisMap = map;
+    L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const stackedLayout = window.matchMedia('(max-width: 67.99rem)');
+    const siteLayer = L.layerGroup().addTo(map);
+    const markerById = new Map<string, L.Marker>();
+    const itemById = new Map<string, HTMLElement>();
+    const buttonById = new Map<string, HTMLButtonElement>();
+    const visibleSiteIds = new Set<string>();
+    const countryLabels: L.Marker[] = [];
+    let selectedSiteId: string | null = null;
+    let initializing = true;
+
+    siteItems.forEach((item) => {
+      if (item.dataset.siteId) itemById.set(item.dataset.siteId, item);
+    });
+    siteButtons.forEach((button) => {
+      if (button.dataset.siteId) buttonById.set(button.dataset.siteId, button);
+    });
+
+    const setMapStatus = (message: string) => {
+      mapStatus.textContent = message;
+    };
+
+    const updateMarkerElement = (siteId: string) => {
+      const marker = markerById.get(siteId);
+      const feature = clientSiteById.get(siteId);
+      const element = marker?.getElement();
+      if (!marker || !feature || !element) return;
+      const site = feature.properties;
+      const count = Number(site.n_monuments);
+      const selected = selectedSiteId === siteId;
+
+      element.dataset.siteId = siteId;
+      element.setAttribute('role', 'button');
+      element.setAttribute('tabindex', '0');
+      element.setAttribute('aria-label', `${site.site_name}, ${site.country}, ${pluralizedMonuments(count)}`);
+      element.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      element.classList.toggle('is-selected', selected);
+      marker.setZIndexOffset(selected ? 1000 : 0);
+
+      if (element.dataset.gisEventsBound !== 'true') {
+        element.dataset.gisEventsBound = 'true';
+        element.addEventListener('keydown', (event) => {
+          if (event.key !== ' ') return;
+          event.preventDefault();
+          selectSite(siteId, { moveMap: true, focusDetails: true });
+        });
+        element.addEventListener('focus', () => marker.openTooltip());
+        element.addEventListener('blur', () => marker.closeTooltip());
+      }
+    };
+
+    clientSites.forEach((feature) => {
+      const site = feature.properties;
+      const count = Number(site.n_monuments);
+      const bin = markerBin(count);
+      const marker = L.marker([site.latitude, site.longitude], {
+        keyboard: true,
+        riseOnHover: true,
+        icon: L.divIcon({
+          className: 'gis-site-marker-shell',
+          html: `<span class="gis-site-marker-dot marker-bin-${bin}" aria-hidden="true"></span>`,
+          iconSize: [44, 44],
+          iconAnchor: [22, 22],
+        }),
+      });
+
+      marker.bindTooltip(`${escapeHtml(site.site_name)} · ${count} ${count === 1 ? 'monument' : 'monuments'}`, {
+        className: 'gis-site-tooltip',
+        direction: 'top',
+        offset: [0, -18],
+        opacity: 1,
+      });
+      marker.on('add', () => updateMarkerElement(site.site_id));
+      marker.on('click', () => selectSite(site.site_id, { moveMap: true, focusDetails: true }));
+      markerById.set(site.site_id, marker);
+      visibleSiteIds.add(site.site_id);
+      siteLayer.addLayer(marker);
+    });
+
+    const syncUrl = () => {
+      if (initializing) return;
+      const url = new URL(window.location.href);
+      const query = searchInput.value.trim();
+      const country = countrySelect.value;
+
+      if (query) url.searchParams.set('q', query);
+      else url.searchParams.delete('q');
+      if (country !== 'all') url.searchParams.set('country', country);
+      else url.searchParams.delete('country');
+      url.hash = selectedSiteId || '';
+      window.history.replaceState(null, '', url);
+    };
+
+    const clearSelection = () => {
+      selectedSiteId = null;
+      siteButtons.forEach((button) => {
+        button.classList.remove('is-selected');
+        button.setAttribute('aria-pressed', 'false');
+      });
+      markerById.forEach((_, siteId) => updateMarkerElement(siteId));
+      if (selectedPanel) selectedPanel.classList.add('has-no-selection');
+      if (selectedId) selectedId.textContent = 'No site selected';
+      if (selectedName) selectedName.textContent = 'Select a site';
+      if (selectedCountry) selectedCountry.textContent = '—';
+      if (selectedMonuments) selectedMonuments.textContent = '—';
+      if (selectedPrecision) selectedPrecision.textContent = 'Select one of the matching sites.';
+      if (selectedCoordinates) selectedCoordinates.textContent = '—';
+      if (copySiteLinkButton) copySiteLinkButton.disabled = true;
+      if (centerSiteButton) centerSiteButton.disabled = true;
+      syncUrl();
+    };
+
+    const selectSite = (
+      siteId: string,
+      options: { updateUrl?: boolean; moveMap?: boolean; focusDetails?: boolean } = {},
+    ) => {
+      const feature = clientSiteById.get(siteId);
+      if (!feature || !visibleSiteIds.has(siteId)) return;
+      const site = feature.properties;
+      const count = Number(site.n_monuments);
+      const updateUrl = options.updateUrl !== false;
+      const moveMap = options.moveMap !== false;
+      const focusDetails = options.focusDetails === true;
+      selectedSiteId = siteId;
+
+      siteButtons.forEach((button) => {
+        const selected = button.dataset.siteId === siteId;
+        button.classList.toggle('is-selected', selected);
+        button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      });
+      markerById.forEach((_, markerSiteId) => updateMarkerElement(markerSiteId));
+
+      if (selectedPanel) selectedPanel.classList.remove('has-no-selection');
+      if (selectedId) selectedId.textContent = site.site_id;
+      if (selectedName) selectedName.textContent = site.site_name;
+      if (selectedCountry) selectedCountry.textContent = site.country;
+      if (selectedMonuments) selectedMonuments.textContent = String(count);
+      if (selectedPrecision) selectedPrecision.textContent = site.location_precision;
+      if (selectedCoordinates) selectedCoordinates.textContent = formatCoordinates(site);
+      if (selectionStatus) selectionStatus.textContent = `${site.site_name} selected`;
+      if (copySiteLinkButton) copySiteLinkButton.disabled = false;
+      if (centerSiteButton) centerSiteButton.disabled = false;
+
+      if (moveMap) {
+        const target: L.LatLngExpression = [site.latitude, site.longitude];
+        const zoom = Math.max(map.getZoom(), 7);
+        if (reducedMotion.matches) map.setView(target, zoom, { animate: false });
+        else map.flyTo(target, zoom, { animate: true, duration: 0.45 });
+      }
+
+      if (focusDetails && stackedLayout.matches && selectedPanel) {
+        selectedPanel.scrollIntoView({
+          behavior: reducedMotion.matches ? 'auto' : 'smooth',
+          block: 'start',
+        });
+      }
+      if (updateUrl) syncUrl();
+    };
+
+    const fitVisibleSites = () => {
+      const visibleFeatures = clientSites.filter((feature) => visibleSiteIds.has(feature.properties.site_id));
+      if (visibleFeatures.length === 0) return;
+      if (visibleFeatures.length === 1) {
+        const site = visibleFeatures[0].properties;
+        map.setView([site.latitude, site.longitude], 8, { animate: !reducedMotion.matches });
+        return;
+      }
+
+      const bounds = L.latLngBounds(
+        visibleFeatures.map((feature) => [feature.properties.latitude, feature.properties.longitude] as L.LatLngTuple),
+      );
+      map.fitBounds(bounds, {
+        padding: [32, 32],
+        maxZoom: 7,
+        animate: !reducedMotion.matches,
+      });
+    };
+
+    const applyFilters = () => {
+      const query = searchInput.value.trim().toLowerCase();
+      const country = countrySelect.value;
+      visibleSiteIds.clear();
+
+      clientSites.forEach((feature) => {
+        const site = feature.properties;
+        const item = itemById.get(site.site_id);
+        const marker = markerById.get(site.site_id);
+        const searchText = item?.dataset.search || '';
+        const matchesSearch = !query || searchText.includes(query);
+        const matchesCountry = country === 'all' || item?.dataset.country === country;
+        const visible = matchesSearch && matchesCountry;
+
+        if (item) item.hidden = !visible;
+        if (marker) {
+          if (visible && !siteLayer.hasLayer(marker)) siteLayer.addLayer(marker);
+          if (!visible && siteLayer.hasLayer(marker)) siteLayer.removeLayer(marker);
+        }
+        if (visible) visibleSiteIds.add(site.site_id);
+      });
+
+      const visibleCount = visibleSiteIds.size;
+      resultsCount.textContent = `${visibleCount} ${visibleCount === 1 ? 'site' : 'sites'}`;
+      emptyState.hidden = visibleCount !== 0;
+      if (selectedSiteId && !visibleSiteIds.has(selectedSiteId)) clearSelection();
+      syncUrl();
+    };
+
+    siteButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const siteId = button.dataset.siteId;
+        if (siteId) selectSite(siteId, { moveMap: true, focusDetails: true });
+      });
+    });
+
+    searchInput.addEventListener('input', () => {
+      applyFilters();
+      fitVisibleSites();
+    });
+    countrySelect.addEventListener('change', () => {
+      applyFilters();
+      fitVisibleSites();
+    });
+    clearFiltersButton.addEventListener('click', () => {
+      searchInput.value = '';
+      countrySelect.value = 'all';
+      applyFilters();
+      selectSite('S001', { updateUrl: false, moveMap: false, focusDetails: false });
+      fitVisibleSites();
+      syncUrl();
+      searchInput.focus();
+    });
+    resetExtentButton.addEventListener('click', fitVisibleSites);
+    centerSiteButton?.addEventListener('click', () => {
+      if (selectedSiteId) selectSite(selectedSiteId, { updateUrl: false, moveMap: true, focusDetails: false });
+    });
+    copySiteLinkButton?.addEventListener('click', async () => {
+      if (!selectedSiteId) return;
+      const url = new URL(window.location.pathname, window.location.origin);
+      url.hash = selectedSiteId;
+      try {
+        await navigator.clipboard.writeText(url.toString());
+        copySiteLinkButton.textContent = 'Link copied';
+      } catch {
+        copySiteLinkButton.textContent = 'Copy unavailable';
+      }
+      window.setTimeout(() => { copySiteLinkButton.textContent = 'Copy site link'; }, 1600);
+    });
+
+    const syncCountryLabels = () => {
+      const hidden = map.getZoom() > 6;
+      countryLabels.forEach((label) => label.getElement()?.classList.toggle('is-hidden', hidden));
+    };
+
+    const loadBoundaryContext = async () => {
+      try {
+        const response = await fetch('/assets/gis/potbellies/context-boundaries.geojson');
+        if (!response.ok) throw new Error(`Boundary request returned ${response.status}`);
+        const boundaries = await response.json() as Parameters<typeof L.geoJSON>[0];
+        if (!document.contains(root) || activeGisMap !== map) return;
+
+        map.createPane('gis-country-labels');
+        const labelPane = map.getPane('gis-country-labels');
+        if (labelPane) {
+          labelPane.style.zIndex = '425';
+          labelPane.style.pointerEvents = 'none';
+        }
+
+        L.geoJSON(boundaries, {
+          interactive: false,
+          style: {
+            color: '#365c5f',
+            weight: 1,
+            opacity: 0.55,
+            fillOpacity: 0,
+          },
+          onEachFeature(feature, layer) {
+            const name = typeof feature.properties?.shapeName === 'string' ? feature.properties.shapeName : '';
+            if (!name || !('getBounds' in layer)) return;
+            const center = (layer as L.Polygon).getBounds().getCenter();
+            const label = L.marker(center, {
+              pane: 'gis-country-labels',
+              interactive: false,
+              keyboard: false,
+              icon: L.divIcon({
+                className: 'gis-country-label',
+                html: `<span>${escapeHtml(name)}</span>`,
+                iconSize: [0, 0],
+              }),
+            }).addTo(map);
+            countryLabels.push(label);
+          },
+        }).addTo(map);
+
+        syncCountryLabels();
+        setMapStatus('Map ready');
+      } catch {
+        if (document.contains(root)) {
+          setMapStatus('Geographic context unavailable — site records remain available.');
+        }
+      }
+    };
+
+    map.on('zoomend', syncCountryLabels);
+
+    const syncFullscreenState = () => {
+      const fullscreen = document.fullscreenElement === mapPanel;
+      fullscreenButton.setAttribute('aria-label', fullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
+      if (fullscreenLabel) fullscreenLabel.textContent = fullscreen ? 'Exit fullscreen' : 'Fullscreen';
+      fullscreenEnterIcon?.classList.toggle('is-hidden', fullscreen);
+      fullscreenExitIcon?.classList.toggle('is-hidden', !fullscreen);
+      window.requestAnimationFrame(() => map.invalidateSize({ pan: false }));
+    };
+
+    if (!mapPanel.requestFullscreen) {
+      fullscreenButton.hidden = true;
+    } else {
+      fullscreenButton.addEventListener('click', async () => {
+        try {
+          if (document.fullscreenElement === mapPanel) await document.exitFullscreen();
+          else await mapPanel.requestFullscreen();
+        } catch {
+          setMapStatus('Fullscreen could not open');
+        }
+      });
+      mapPanel.addEventListener('fullscreenchange', syncFullscreenState);
+      mapPanel.addEventListener('fullscreenerror', () => setMapStatus('Fullscreen could not open'));
+    }
+
+    const url = new URL(window.location.href);
+    const requestedQuery = url.searchParams.get('q') || '';
+    const requestedCountry = url.searchParams.get('country') || 'all';
+    searchInput.value = requestedQuery;
+    countrySelect.value = requestedCountry === 'all' || countryBySlug[requestedCountry] ? requestedCountry : 'all';
+    applyFilters();
+    fitVisibleSites();
+
+    const requestedSiteId = decodeURIComponent(url.hash.slice(1));
+    if (requestedSiteId && visibleSiteIds.has(requestedSiteId)) {
+      selectSite(requestedSiteId, { updateUrl: false, moveMap: true, focusDetails: false });
+    } else if (visibleSiteIds.has('S001')) {
+      selectSite('S001', { updateUrl: false, moveMap: false, focusDetails: false });
+    } else {
+      clearSelection();
+    }
+
+    initializing = false;
+    syncUrl();
+    void loadBoundaryContext();
+  }
+
+  document.addEventListener('astro:page-load', () => { void initPotbellyGisDatabase(); });
+  document.addEventListener('astro:before-swap', () => {
+    activeGisMap?.remove();
+    activeGisMap = null;
+  });
+</script>
 
 <style>
   .gis-shell {
@@ -71,8 +762,8 @@ import ResearchHeader from '../../components/ResearchHeader.astro';
     display: inline-flex;
     align-items: center;
     gap: 0.55rem;
-    min-height: 2.75rem;
-    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    min-height: 2.25rem;
+    margin-top: 0.5rem;
     color: var(--site-teal);
     font-size: 0.92rem;
     text-underline-offset: 0.25em;
@@ -86,13 +777,14 @@ import ResearchHeader from '../../components/ResearchHeader.astro';
   .gis-intro {
     display: grid;
     gap: 1.5rem;
-    padding: clamp(1.5rem, 4vw, 3.5rem) 0 clamp(2.5rem, 6vw, 5rem);
+    padding: clamp(1rem, 2vw, 1.75rem) 0;
   }
 
-  .gis-title-group {
+  .gis-title-group,
+  .gis-intro-copy {
     display: grid;
     align-content: start;
-    gap: 0.7rem;
+    gap: 0.8rem;
   }
 
   .gis-project-id {
@@ -107,134 +799,879 @@ import ResearchHeader from '../../components/ResearchHeader.astro';
   .gis-intro h2 {
     margin: 0;
     color: var(--site-text-strong);
-    font-size: clamp(2.25rem, 6vw, 4.75rem);
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
     font-weight: 400;
     letter-spacing: -0.02em;
     line-height: 1.05;
     text-wrap: balance;
   }
 
-  .gis-intro-copy {
-    max-width: 66ch;
+  .gis-intro-copy > p {
+    max-width: 68ch;
     margin: 0;
     color: var(--site-text);
     font-size: 1rem;
-    line-height: 1.75;
+    line-height: 1.7;
     text-wrap: pretty;
   }
 
-  .gis-map-section {
-    padding-top: clamp(2rem, 5vw, 4rem);
-    border-top: 1px solid var(--site-border);
+  .gis-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    border-block: 1px solid var(--site-border);
   }
 
-  .gis-map-heading {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 1.5rem;
-    padding-bottom: 1.25rem;
+  .gis-summary div {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.75rem 0.85rem;
   }
 
-  .gis-map-heading p {
-    margin: 0 0 0.35rem;
-    color: var(--site-gold);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
+  .gis-summary div + div {
+    border-left: 1px solid var(--site-border);
+  }
+
+  .gis-summary dt {
+    color: var(--site-text-dim);
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
   }
 
-  .gis-map-heading h3 {
+  .gis-summary dd {
+    order: -1;
     margin: 0;
     color: var(--site-text-strong);
-    font-size: clamp(1.5rem, 3vw, 2.15rem);
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gis-workspace {
+    display: grid;
+    gap: 1rem;
+    align-items: start;
+    margin-top: clamp(1.25rem, 3vw, 2rem);
+    padding-top: clamp(1.25rem, 3vw, 2rem);
+    border-top: 1px solid var(--site-border);
+  }
+
+  .gis-map-panel,
+  .gis-catalogue {
+    min-width: 0;
+    border: 1px solid var(--site-border);
+    border-radius: 3px;
+  }
+
+  .gis-map-panel {
+    display: grid;
+    overflow: hidden;
+    background: #e8e1d2;
+    scroll-margin-top: 5rem;
+  }
+
+  .gis-map-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4.5rem;
+    padding: 0.75rem 0.9rem;
+    background: var(--site-bg-deep);
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .gis-map-bar p,
+  .gis-about > p:first-child,
+  .gis-selected-heading p {
+    margin: 0 0 0.25rem;
+    color: var(--site-gold);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .gis-map-bar h3,
+  .gis-selected-heading h3,
+  .gis-about h3 {
+    margin: 0;
+    color: var(--site-text-strong);
     font-weight: 400;
     line-height: 1.2;
     text-wrap: balance;
   }
 
-  .gis-full-map-link {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    min-height: 2.75rem;
-    padding: 0.6rem 0.9rem;
-    border: 1px solid var(--site-border);
-    border-radius: 3px;
-    color: var(--site-teal);
-    font-size: 0.84rem;
-    text-decoration: none;
-    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
+  .gis-map-bar h3 {
+    font-size: clamp(1.25rem, 2.5vw, 1.65rem);
   }
 
-  .gis-full-map-link:hover,
-  .gis-full-map-link:focus-visible {
+  .gis-map-actions,
+  .gis-selected-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+  }
+
+  .gis-map-actions button,
+  .gis-selected-actions button,
+  .gis-empty-state button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--site-border);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--site-teal);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.78rem;
+    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out), background-color 180ms var(--site-ease-out), translate 180ms var(--site-ease-out);
+  }
+
+  .gis-map-actions button:hover,
+  .gis-map-actions button:focus-visible,
+  .gis-selected-actions button:hover,
+  .gis-selected-actions button:focus-visible,
+  .gis-empty-state button:hover,
+  .gis-empty-state button:focus-visible {
     border-color: var(--site-gold);
     color: var(--site-gold);
   }
 
-  .gis-map-frame {
-    overflow: hidden;
-    border: 1px solid var(--site-border);
-    background: #e8e1d2;
+  .gis-map-actions button:active,
+  .gis-selected-actions button:active,
+  .gis-empty-state button:active {
+    translate: 0 1px;
   }
 
-  .gis-map-frame iframe {
-    display: block;
+  .gis-map-actions button:disabled,
+  .gis-selected-actions button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .gis-map-actions svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+  }
+
+  .gis-map-actions svg.is-hidden {
+    display: none;
+  }
+
+  .gis-map-instructions {
+    margin: 0;
+    padding: 0.55rem 0.9rem;
+    background: #dcd4c3;
+    color: #4f493f;
+    font: 0.76rem/1.4 var(--site-font);
+    border-bottom: 1px solid rgb(24 49 56 / 0.22);
+  }
+
+  .gis-map {
     width: 100%;
-    height: clamp(34rem, 72svh, 52rem);
-    border: 0;
+    height: clamp(34rem, 68svh, 48rem);
     background: #e8e1d2;
   }
 
-  .gis-map-notes {
+  .gis-map-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem 1.5rem;
+    min-height: 4.5rem;
+    padding: 0.65rem 0.9rem;
+    background: var(--site-bg-deep);
+    border-top: 1px solid var(--site-border);
+  }
+
+  .gis-legend {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.5rem 2rem;
-    padding: 0.9rem 0;
-    border-bottom: 1px solid var(--site-border);
+    align-items: center;
+    gap: 0.45rem 0.8rem;
+    min-width: 0;
   }
 
-  .gis-map-notes p {
-    margin: 0;
+  .gis-legend-title,
+  .gis-legend-note,
+  .gis-map-status {
     color: var(--site-text-dim);
-    font-size: 0.82rem;
-    line-height: 1.5;
+    font-size: 0.7rem;
+    line-height: 1.35;
   }
 
-  .gis-map-notes strong {
-    margin-right: 0.35rem;
+  .gis-legend-title {
     color: var(--site-gold);
-    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .gis-legend ol {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gis-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--site-text);
+    font-size: 0.7rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gis-legend-dot {
+    display: inline-block;
+    flex: 0 0 auto;
+    border: 1px solid #5a3524;
+    border-radius: 50%;
+    opacity: 0.9;
+  }
+
+  .gis-legend-dot.marker-bin-1 { width: 0.5rem; height: 0.5rem; }
+  .gis-legend-dot.marker-bin-2 { width: 0.65rem; height: 0.65rem; }
+  .gis-legend-dot.marker-bin-3 { width: 0.8rem; height: 0.8rem; }
+  .gis-legend-dot.marker-bin-4 { width: 0.95rem; height: 0.95rem; }
+  .gis-legend-dot.marker-bin-5 { width: 1.1rem; height: 1.1rem; }
+
+  .gis-map-status {
+    flex: 0 0 auto;
+    margin: 0;
+    text-align: right;
+  }
+
+  .gis-catalogue {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: oklch(0.17 0.025 195 / 0.45);
+  }
+
+  .gis-selected-site {
+    padding: 1rem;
+    border-bottom: 1px solid var(--site-border);
+    scroll-margin-top: 6rem;
+  }
+
+  .gis-selected-site.has-no-selection {
+    background: oklch(0.17 0.025 195 / 0.35);
+  }
+
+  .gis-selected-heading {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .gis-selected-code {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--site-gold);
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
+  .gis-selected-heading h3 {
+    font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+    overflow-wrap: anywhere;
+  }
+
+  .gis-selected-actions {
+    justify-content: flex-start;
+  }
+
+  .gis-site-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 1rem 0 0;
+    border-top: 1px solid var(--site-border);
+  }
+
+  .gis-site-facts > div {
+    display: grid;
+    align-content: start;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .gis-site-facts > div:nth-child(odd):not(.gis-fact-wide) {
+    padding-right: 0.75rem;
+    border-right: 1px solid var(--site-border);
+  }
+
+  .gis-site-facts > div:nth-child(even):not(.gis-fact-wide) {
+    padding-left: 0.75rem;
+  }
+
+  .gis-site-facts .gis-fact-wide {
+    grid-column: 1 / -1;
+  }
+
+  .gis-site-facts dt {
+    color: var(--site-text-dim);
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .gis-site-facts dd {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .gis-catalogue-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 0.58fr);
+    gap: 0.7rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .gis-control {
+    display: grid;
+    align-content: start;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+
+  .gis-control label {
+    color: var(--site-text-dim);
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .gis-control input,
+  .gis-control select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--site-border);
+    border-radius: 3px;
+    background: var(--site-bg-deep);
+    color: var(--site-text-strong);
+    font: inherit;
+    font-size: 0.88rem;
+  }
+
+  .gis-control input::placeholder {
+    color: var(--site-text-dim);
+    opacity: 1;
+  }
+
+  .gis-control input:focus-visible,
+  .gis-control select:focus-visible,
+  .gis-map-actions button:focus-visible,
+  .gis-selected-actions button:focus-visible,
+  .gis-empty-state button:focus-visible {
+    outline: 2px solid var(--site-gold);
+    outline-offset: 2px;
+  }
+
+  .gis-results-count {
+    margin: 0;
+    padding: 0.65rem 1rem;
+    color: var(--site-text-dim);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .gis-site-list-scroll {
+    min-height: 0;
+    max-height: 34rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.7rem;
+  }
+
+  .gis-site-list {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gis-site-list li[hidden],
+  .gis-empty-state[hidden] {
+    display: none;
+  }
+
+  .gis-site-button {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    width: 100%;
+    min-height: 4.75rem;
+    padding: 0;
+    border: 1px solid oklch(0.43 0.04 190 / 0.65);
+    border-radius: 3px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 180ms var(--site-ease-out), background-color 180ms var(--site-ease-out), translate 180ms var(--site-ease-out);
+  }
+
+  .gis-site-button:hover {
+    border-color: var(--site-teal);
+    background: oklch(0.28 0.03 194 / 0.35);
+  }
+
+  .gis-site-button:active {
+    translate: 0 1px;
+  }
+
+  .gis-site-button:focus-visible {
+    border-color: var(--site-gold);
+    outline: 2px solid var(--site-gold);
+    outline-offset: 2px;
+  }
+
+  .gis-site-button.is-selected {
+    border-color: var(--site-gold);
+    background: oklch(0.76 0.08 92 / 0.08);
+  }
+
+  .gis-site-copy {
+    display: grid;
+    gap: 0.16rem;
+    min-width: 0;
+    padding: 0.7rem 0.8rem;
+  }
+
+  .gis-site-code {
+    color: var(--site-gold);
+    font-size: 0.66rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .gis-site-name {
+    color: var(--site-text-strong);
+    font-size: 0.92rem;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+
+  .gis-site-meta {
+    color: var(--site-text-dim);
+    font-size: 0.73rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .gis-site-action {
+    padding-right: 0.8rem;
+    color: var(--site-teal);
+    font-size: 0.72rem;
+  }
+
+  .gis-empty-state {
+    display: grid;
+    justify-items: start;
+    gap: 0.8rem;
+    padding: 1.5rem 0.25rem;
+    color: var(--site-text-dim);
+  }
+
+  .gis-empty-state p {
+    margin: 0;
+    font-size: 0.88rem;
+    font-style: italic;
+  }
+
+  .gis-about {
+    display: grid;
+    grid-template-columns: minmax(10rem, 0.5fr) minmax(0, 1.5fr);
+    gap: 0.5rem clamp(2rem, 6vw, 6rem);
+    margin-top: clamp(2.5rem, 6vw, 5rem);
+    padding-top: clamp(1.5rem, 3vw, 2.5rem);
+    border-top: 1px solid var(--site-border);
+  }
+
+  .gis-about > p:first-child {
+    grid-column: 1;
+  }
+
+  .gis-about h3 {
+    grid-column: 1;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+  }
+
+  .gis-about > p:last-child {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    max-width: 70ch;
+    margin: 0;
+    color: var(--site-text);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  :global(.potbelly-gis-page .leaflet-container) {
+    background: #e8e1d2;
+    color: #183138;
+    font-family: var(--site-font);
+  }
+
+  :global(.potbelly-gis-page .leaflet-control-zoom) {
+    overflow: hidden;
+    border: 1px solid rgb(24 49 56 / 0.35) !important;
+    border-radius: 3px;
+    box-shadow: none !important;
+  }
+
+  :global(.potbelly-gis-page .leaflet-control-zoom a) {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: #183138;
+    color: #f4eddf;
+    font: 700 1.2rem/1 Arial, sans-serif;
+  }
+
+  :global(.potbelly-gis-page .leaflet-control-zoom a:hover),
+  :global(.potbelly-gis-page .leaflet-control-zoom a:focus-visible) {
+    background: #28545b;
+    color: #e0c882;
+  }
+
+  :global(.potbelly-gis-page .leaflet-control-zoom a:focus-visible) {
+    outline: 2px solid #9b763f;
+    outline-offset: -3px;
+  }
+
+  :global(.potbelly-gis-page .leaflet-control-scale-line) {
+    border-color: #183138;
+    background: rgb(244 237 223 / 0.86);
+    color: #183138;
+    font: 0.65rem/1.2 Arial, sans-serif;
+  }
+
+  :global(.potbelly-gis-page .leaflet-control-attribution) {
+    padding: 0.2rem 0.35rem;
+    background: rgb(244 237 223 / 0.88);
+    color: #4b4942;
+    font: 0.64rem/1.2 Arial, sans-serif;
+  }
+
+  :global(.potbelly-gis-page .leaflet-control-attribution a) {
+    color: #28545b;
+  }
+
+  :global(.gis-site-marker-shell) {
+    display: grid !important;
+    place-items: center;
+    width: 44px !important;
+    height: 44px !important;
+    margin: 0 !important;
+    background: transparent;
+    border: 0;
+  }
+
+  :global(.gis-site-marker-shell:focus-visible) {
+    outline: 2px solid #183138;
+    outline-offset: 2px;
+    border-radius: 50%;
+  }
+
+  :global(.gis-site-marker-dot) {
+    display: block;
+    border: 2px solid #5a3524;
+    border-radius: 50%;
+    opacity: 0.78;
+    transition: scale 160ms var(--site-ease-out), opacity 160ms var(--site-ease-out), box-shadow 160ms var(--site-ease-out);
+  }
+
+  :global(.gis-site-marker-shell:hover .gis-site-marker-dot),
+  :global(.gis-site-marker-shell:focus-visible .gis-site-marker-dot) {
+    opacity: 1;
+    scale: 1.08;
+  }
+
+  :global(.gis-site-marker-shell.is-selected .gis-site-marker-dot) {
+    opacity: 1;
+    box-shadow: 0 0 0 3px #e0c882;
+  }
+
+  :global(.gis-site-marker-dot.marker-bin-1),
+  .gis-legend-dot.marker-bin-1 { width: 14px; height: 14px; background: #e7d4b2; }
+  :global(.gis-site-marker-dot.marker-bin-2),
+  .gis-legend-dot.marker-bin-2 { width: 20px; height: 20px; background: #d8a974; }
+  :global(.gis-site-marker-dot.marker-bin-3),
+  .gis-legend-dot.marker-bin-3 { width: 26px; height: 26px; background: #c4834c; }
+  :global(.gis-site-marker-dot.marker-bin-4),
+  .gis-legend-dot.marker-bin-4 { width: 34px; height: 34px; background: #a8592d; }
+  :global(.gis-site-marker-dot.marker-bin-5),
+  .gis-legend-dot.marker-bin-5 { width: 42px; height: 42px; background: #80371e; }
+
+  :global(.gis-site-tooltip) {
+    padding: 0.45rem 0.6rem;
+    border: 1px solid rgb(224 200 130 / 0.45);
+    border-radius: 3px;
+    background: #183138;
+    color: #f4eddf;
+    box-shadow: none;
+    font: 0.78rem/1.3 var(--site-font);
+  }
+
+  :global(.gis-site-tooltip::before) {
+    border-top-color: #183138;
+  }
+
+  :global(.gis-country-label) {
+    pointer-events: none !important;
+  }
+
+  :global(.gis-country-label span) {
+    display: block;
+    translate: -50% -50%;
+    color: rgb(24 49 56 / 0.62);
+    font: 700 0.66rem/1 Arial, sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 #f4eddf;
+    white-space: nowrap;
+  }
+
+  :global(.gis-country-label.is-hidden) {
+    display: none;
+  }
+
+  .gis-map-panel:fullscreen {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    width: 100vw;
+    height: 100dvh;
+    padding: max(0px, env(safe-area-inset-top)) max(0px, env(safe-area-inset-right)) max(0px, env(safe-area-inset-bottom)) max(0px, env(safe-area-inset-left));
+    border: 0;
+    border-radius: 0;
+  }
+  .gis-map-panel:fullscreen .gis-map-bar {
+    grid-row: 1;
+  }
+
+  .gis-map-panel:fullscreen .gis-map-instructions {
+    grid-row: 2;
+  }
+
+  .gis-map-panel:fullscreen .gis-map {
+    grid-row: 3;
+  }
+
+  .gis-map-panel:fullscreen .gis-map-footer {
+    grid-row: 4;
+  }
+
+
+  .gis-map-panel:fullscreen .gis-map {
+    height: 100%;
+    min-height: 0;
+  }
+
   @media (min-width: 48rem) {
     .gis-intro {
-      grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 1.2fr);
+      grid-template-columns: minmax(15rem, 0.78fr) minmax(0, 1.22fr);
       gap: clamp(2rem, 6vw, 6rem);
       align-items: end;
     }
   }
 
-  @media (max-width: 36rem) {
-    .gis-map-heading {
-      display: grid;
-      align-items: start;
+  @media (min-width: 68rem) {
+    .gis-intro {
+      gap: clamp(1.5rem, 4vw, 4rem);
+      padding: 0.5rem 0 0.75rem;
     }
 
-    .gis-full-map-link {
-      justify-self: start;
+    .gis-title-group {
+      gap: 0.5rem;
+    }
+
+    .gis-intro h2 {
+      font-size: clamp(2.6rem, 4vw, 3.5rem);
+    }
+
+    .gis-intro-copy {
+      grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 0.85fr);
+      align-items: end;
+      gap: clamp(1rem, 3vw, 2.5rem);
+    }
+
+    .gis-intro-copy > p {
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .gis-summary div {
+      padding: 0.55rem 0.65rem;
+    }
+
+    .gis-summary dd {
+      font-size: 1.35rem;
+    }
+
+    .gis-workspace {
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+    }
+
+    .gis-map-bar {
+      min-height: 3.75rem;
+      padding: 0.5rem 0.8rem;
+    }
+
+    .gis-map-instructions {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .gis-workspace {
+      grid-template-columns: minmax(0, 1.55fr) minmax(22rem, 0.75fr);
+    }
+
+    .gis-catalogue {
+      height: calc(clamp(34rem, 68svh, 48rem) + 10.25rem);
+    }
+
+    .gis-site-list-scroll {
+      flex: 1;
+      max-height: none;
+    }
+  }
+
+  @media (max-width: 47.99rem) {
+    .gis-map-bar,
+    .gis-map-footer {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .gis-map-actions,
+    .gis-selected-actions {
+      justify-content: flex-start;
+    }
+
+    .gis-map-status {
+      text-align: left;
+    }
+
+    .gis-about {
+      grid-template-columns: 1fr;
+    }
+
+    .gis-about > p:first-child,
+    .gis-about h3,
+    .gis-about > p:last-child {
+      grid-column: 1;
+      grid-row: auto;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .gis-map {
+      height: clamp(24rem, 52svh, 34rem);
+    }
+    :global(.gis-country-label) {
+      display: none;
+    }
+
+
+    .gis-summary {
+      grid-template-columns: 1fr;
+    }
+
+    .gis-summary div {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+
+    .gis-summary div + div {
+      border-top: 1px solid var(--site-border);
+      border-left: 0;
+    }
+
+    .gis-summary dd {
+      order: 0;
+    }
+
+    .gis-catalogue-controls {
+      grid-template-columns: 1fr;
+    }
+
+    .gis-site-facts {
+      grid-template-columns: 1fr;
+    }
+
+    .gis-site-facts .gis-fact-wide {
+      grid-column: 1;
+    }
+
+    .gis-site-facts > div:nth-child(odd):not(.gis-fact-wide),
+    .gis-site-facts > div:nth-child(even):not(.gis-fact-wide) {
+      padding-inline: 0;
+      border-right: 0;
+    }
+
+    .gis-legend ol {
+      flex-wrap: wrap;
+    }
+
+    .gis-legend-note {
+      width: 100%;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .gis-full-map-link {
+    .gis-map-actions button,
+    .gis-selected-actions button,
+    .gis-empty-state button,
+    .gis-site-button,
+    :global(.gis-site-marker-dot) {
       transition: none;
     }
   }
