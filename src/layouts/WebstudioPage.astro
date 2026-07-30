@@ -564,7 +564,14 @@ const hasRealContent = bodyProse.length > 0 || MEDIA_CONTENT.test(cleanedBody);
           }
         });
       },
-      { rootMargin: '0px 0px -12% 0px', threshold: 0.12 },
+      /*
+        threshold must stay 0. Legacy sections can be many viewports tall — the
+        publications page has one 7131px section — and a tall element can never
+        reach a fractional threshold: the most of it that can ever intersect is
+        rootHeight / elementHeight. At 0.12 anything taller than ~6970px stayed
+        at opacity 0 forever, blanking the whole page.
+      */
+      { rootMargin: '0px 0px -12% 0px', threshold: 0 },
     );
 
     revealTargets.forEach((target) => {
