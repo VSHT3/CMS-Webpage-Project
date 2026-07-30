@@ -1,0 +1,61 @@
+---
+interface Props {
+  notice: { label: string; text: string; href?: string } | null;
+}
+
+const { notice } = Astro.props;
+---
+{notice && (
+  <section class="notice">
+    <div class="h-track notice-row">
+      <span class="h-meta notice-label">{notice.label}</span>
+      <span class="notice-rule" aria-hidden="true"></span>
+      <p class="notice-text">{notice.text}</p>
+      {notice.href && <a class="h-link" href={notice.href}>Read more</a>}
+    </div>
+  </section>
+)}
+
+<style>
+  /*
+    Deliberately not `.h-band` — this is a strip between chapters, not a chapter.
+  */
+  .notice {
+    padding: 1.1rem 0;
+    border-top: 1px solid var(--site-border);
+    border-bottom: 1px solid var(--site-border);
+    background: var(--site-bg-deep);
+  }
+
+  .notice-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .notice-label {
+    color: var(--site-gold);
+  }
+
+  .notice-rule {
+    width: 1px;
+    height: 1.1rem;
+    flex: none;
+    background: color-mix(in oklab, var(--site-gold) 55%, transparent);
+  }
+
+  .notice-text {
+    margin: 0;
+    flex: 1 1 22rem;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: var(--site-text);
+  }
+
+  @media (max-width: 660px) {
+    .notice-rule {
+      display: none;
+    }
+  }
+</style>

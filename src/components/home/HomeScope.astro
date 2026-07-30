@@ -1,0 +1,45 @@
+---
+---
+<section class="scope h-band h-band--deep h-band--ruled">
+  <div class="h-track scope-grid h-reveal" style="--h-i:0">
+    <p class="scope-text">
+      Focused on the Maya and Nahua regions, across archaeology, epigraphy, astronomy, manuscripts,
+      iconography, religion, historical thought, collections, and teaching.
+    </p>
+    <a class="h-link" href="/about-us">Read the history</a>
+  </div>
+</section>
+
+<style>
+  /* Connective band, not a full chapter — roughly 60% of chapter padding. */
+  .scope {
+    padding: clamp(2.5rem, 5vw, 4.5rem) 0;
+  }
+
+  .scope-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) auto;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+  }
+
+  .scope-text {
+    margin: 0;
+    max-width: 62ch;
+    font-family: var(--site-font-body);
+    font-size: 1.15rem;
+    line-height: 1.75;
+    color: var(--site-text-dim);
+  }
+
+  @media (max-width: 860px) {
+    .scope-grid {
+      grid-template-columns: 1fr;
+      justify-items: start;
+    }
+
+    .scope-text {
+      font-size: 1.05rem;
+    }
+  }
+</style>

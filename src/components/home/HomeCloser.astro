@@ -1,0 +1,88 @@
+---
+---
+<section class="closer h-band h-band--abyss">
+  <div class="h-track closer-grid">
+    <div class="h-reveal" style="--h-i:0">
+      <p class="h-eyebrow h-eyebrow--gold">Visit</p>
+      <h2 class="h-title closer-title">Center for Mesoamerican Studies, Štúrova 9, Bratislava.</h2>
+      <p class="closer-text">
+        Faculty of Arts, Comenius University in Bratislava. The center is open to researchers,
+        students, and institutional partners.
+      </p>
+    </div>
+
+    <dl class="closer-facts h-reveal" style="--h-i:1">
+      <div>
+        <dt class="h-meta">Address</dt>
+        <dd>Štúrova 9, 811 02 Bratislava, Slovakia</dd>
+      </div>
+      <div>
+        <dt class="h-meta">Faculty</dt>
+        <dd>Faculty of Arts, Comenius University</dd>
+      </div>
+      <div>
+        <dt class="h-meta">Contact</dt>
+        <dd><a class="h-link" href="/about-us-contacts">Contact details</a></dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<style>
+  .closer {
+    padding: clamp(3.5rem, 7vw, 6rem) 0;
+  }
+
+  .closer-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+  }
+
+  .closer-title {
+    max-width: 22ch;
+    font-size: clamp(1.7rem, 3vw, 2.6rem);
+  }
+
+  .closer-text {
+    margin: 1.25rem 0 0;
+    max-width: 52ch;
+    font-size: 0.98rem;
+    line-height: 1.8;
+    color: var(--site-text-dim);
+  }
+
+  .closer-facts {
+    margin: 0;
+  }
+
+  .closer-facts div {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--site-border);
+  }
+
+  .closer-facts div:last-child {
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .closer-facts dt {
+    color: var(--site-teal);
+  }
+
+  .closer-facts dd {
+    margin: 0;
+    font-family: var(--site-font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--site-text);
+  }
+
+  @media (max-width: 860px) {
+    .closer-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

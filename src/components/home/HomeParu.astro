@@ -1,0 +1,102 @@
+---
+const rows = [
+  {
+    href: '/paru-uaxactun-history',
+    title: 'History',
+    text: 'Project background, fieldwork context, and institutional timeline.',
+  },
+  {
+    href: '/paru-uaxactun-maps',
+    title: 'Maps and papers',
+    text: 'Location material, reference papers, and field documentation.',
+  },
+  {
+    href: '/paru-uaxactun-recent-investigations',
+    title: 'Investigations',
+    text: 'Recent field reports and notes on current archaeological work.',
+  },
+  {
+    href: '/paru-uaxactun-archeological-artefacts',
+    title: 'Artefacts',
+    text: 'Archaeological artefacts and the related gallery pages.',
+  },
+];
+---
+<section class="paru h-band h-band--base">
+  <div class="h-track paru-grid">
+    <div class="paru-copy">
+      <p class="h-eyebrow h-reveal" style="--h-i:0">PARU Uaxactun</p>
+      <h2 class="h-title h-reveal" style="--h-i:1">Fieldwork, mapped and published since 2016.</h2>
+      <p class="h-lead h-reveal" style="--h-i:2">
+        CMS has overseen the Uaxactun Regional Archaeological Project since 2016. The section gathers
+        the project's history, maps, papers, recent investigations, archaeological artefacts,
+        galleries, and reports.
+      </p>
+
+      <div class="paru-rows">
+        {rows.map((row, i) => (
+          <a class="h-row h-reveal" style={`--h-i:${i}`} href={row.href}>
+            <h3>{row.title}</h3>
+            <p>{row.text}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="paru-visual">
+      <div class="h-mount">
+        <div class="h-mount__core">
+          <picture>
+            <source
+              type="image/webp"
+              srcset="/assets/optimized/Image3_001_3rkHXPjTVctvRGNIwGZvP-720.webp 720w, /assets/optimized/Image3_001_3rkHXPjTVctvRGNIwGZvP-1200.webp 1200w, /assets/optimized/Image3_001_3rkHXPjTVctvRGNIwGZvP-1800.webp 1800w"
+              sizes="(max-width: 1080px) calc(100vw - 2rem), 34vw"
+            />
+            <img
+              src="/assets/optimized/Image3_001_3rkHXPjTVctvRGNIwGZvP-1200.webp"
+              width="1200"
+              height="675"
+              loading="lazy"
+              decoding="async"
+              alt="Three-dimensional reconstruction of an excavated structure group at Uaxactun"
+            />
+          </picture>
+          <div class="h-mount__bar">
+            <span class="h-meta">Site reconstruction</span>
+            <span class="h-meta">PARU Uaxactun</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .paru-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.85fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+  }
+
+  .paru-rows {
+    margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  }
+
+  /* The image holds while the four rows scroll past it. */
+  .paru-visual {
+    position: sticky;
+    top: 6rem;
+  }
+
+  @media (max-width: 1080px) {
+    .paru-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .paru-visual {
+      position: static;
+      top: auto;
+    }
+  }
+</style>

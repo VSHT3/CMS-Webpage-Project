@@ -1,0 +1,315 @@
+---
+import { totalRecords, newest } from '../../lib/potbelly';
+
+/*
+  The hero model is the site's own statue asset, not a catalogue record — it has
+  been the homepage object since before the potbelly database existed. The
+  caption borrows the newest catalogue record's code so the visual is tied to
+  live work rather than labelled with a generic "Collection object".
+*/
+const featured = newest(1)[0];
+---
+<section class="hero h-band h-band--deep">
+  <div class="h-track hero-grid">
+    <div class="hero-copy">
+      <p class="h-eyebrow h-reveal" style="--h-i:0">Faculty of Arts &middot; Comenius University Bratislava</p>
+
+      <h1 class="hero-title h-reveal" style="--h-i:1">Center for Mesoamerican Studies</h1>
+
+      <p class="h-lead h-reveal" style="--h-i:2">
+        Founded in 2015 at the Faculty of Arts, Comenius University in Bratislava, CMS brings together
+        research, teaching, collections, publications, and public scholarship connected with Mesoamerica.
+      </p>
+
+      <div class="hero-actions h-reveal" style="--h-i:3">
+        <a href="/grants-and-investigations" class="h-btn h-btn--primary">
+          Research
+          <span class="h-btn__icon" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" stroke-linecap="square" />
+            </svg>
+          </span>
+        </a>
+        <a href="/about-us" class="h-btn">
+          About CMS
+          <span class="h-btn__icon" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" stroke-linecap="square" />
+            </svg>
+          </span>
+        </a>
+        <a href="/publications" class="h-btn">
+          Publications
+          <span class="h-btn__icon" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" stroke-linecap="square" />
+            </svg>
+          </span>
+        </a>
+      </div>
+
+      <dl class="hero-facts h-reveal" style="--h-i:4">
+        <div>
+          <dt class="h-meta">Founded</dt>
+          <dd>2015</dd>
+        </div>
+        <div>
+          <dt class="h-meta">Flagship fieldwork</dt>
+          <dd>PARU Uaxactun, since 2016</dd>
+        </div>
+        <div>
+          <dt class="h-meta">Digitised records</dt>
+          <dd>{totalRecords} 3D models</dd>
+        </div>
+        <div>
+          <dt class="h-meta">Visitors</dt>
+          <dd class="hero-live">
+            <span class="hero-live-dot" aria-hidden="true"></span>
+            <span id="visit-count">&hellip;</span>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <aside class="hero-visual h-reveal" style="--h-i:5" aria-label="Interactive artefact model">
+      <div class="h-mount hero-mount">
+        <div class="h-mount__core hero-stage-core">
+          <div class="hero-stage" data-model-stage>
+            <img
+              src="/assets/optimized/model-poster.webp"
+              width="720"
+              height="720"
+              decoding="async"
+              fetchpriority="high"
+              alt="Mesoamerican stone artefact from the center's collection"
+              data-model-poster
+            />
+          </div>
+          <button type="button" class="hero-model-retry" data-load-model hidden>
+            Load interactive view
+          </button>
+          <div class="h-mount__bar">
+            <span class="h-meta">Collection object</span>
+            <span class="h-meta">{featured.recordCode} &middot; latest scan</span>
+          </div>
+        </div>
+      </div>
+      <p class="hero-note">
+        An interactive object view, used here as a reference point for the center's collections and
+        documentation work.
+      </p>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-top: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.66fr);
+    gap: clamp(2rem, 4vw, 4.5rem);
+    align-items: center;
+  }
+
+  .hero-title {
+    max-width: 15ch;
+    margin: 0;
+    font-family: var(--site-font-display);
+    font-weight: 400;
+    font-size: clamp(2.6rem, 5.6vw, 5.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.018em;
+    color: var(--site-text-strong);
+    text-wrap: balance;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+  }
+
+  .hero-facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: 2.75rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--site-border);
+  }
+
+  .hero-facts div {
+    display: grid;
+    gap: 0.45rem;
+    align-content: start;
+    padding-right: 1.25rem;
+    border-right: 1px solid var(--site-border);
+  }
+
+  .hero-facts div:last-child {
+    border-right: none;
+  }
+
+  .hero-facts div + div {
+    padding-left: 1.25rem;
+  }
+
+  .hero-facts dt {
+    color: var(--site-teal);
+  }
+
+  .hero-facts dd {
+    margin: 0;
+    font-family: var(--site-font-body);
+    font-size: 0.98rem;
+    line-height: 1.45;
+    color: var(--site-text);
+    text-wrap: balance;
+  }
+
+  /*
+    The visitor count is a live, externally-sourced value. Marking it keeps it
+    from reading as a historical fact peer to "Founded 2015".
+  */
+  .hero-live {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hero-live-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    flex: none;
+    border-radius: 50%;
+    background: var(--site-teal);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--site-teal) 22%, transparent);
+  }
+
+  .hero-visual {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .hero-stage-core {
+    display: grid;
+  }
+
+  .hero-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-height: clamp(320px, 40vw, 520px);
+  }
+
+  .hero-stage img[data-model-poster] {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .hero-stage :global(model-viewer) {
+    --poster-color: transparent;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /*
+    Only surfaces when the automatic load failed. The previous design showed a
+    prominent "Load view" button that the page then triggered itself.
+  */
+  .hero-model-retry {
+    position: absolute;
+    left: 0.85rem;
+    bottom: 3.25rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid color-mix(in oklab, var(--site-gold) 60%, transparent);
+    border-radius: 6px;
+    background: color-mix(in oklab, var(--site-bg-abyss) 82%, transparent);
+    color: var(--site-gold);
+    font-family: var(--site-font-ui);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      transform 320ms var(--site-ease-out),
+      color 220ms var(--site-ease-out);
+  }
+
+  .hero-model-retry[hidden] {
+    display: none;
+  }
+
+  .hero-model-retry:hover,
+  .hero-model-retry:focus-visible {
+    transform: translateY(-2px);
+    color: var(--site-text-strong);
+  }
+
+  .hero-model-retry:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--site-gold) 76%, var(--site-text-strong));
+    outline-offset: 3px;
+  }
+
+  .hero-note {
+    margin: 0;
+    max-width: 44ch;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: var(--site-text-dim);
+  }
+
+  @media (max-width: 1080px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-stage {
+      max-height: clamp(300px, 58vw, 460px);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .hero-title {
+      max-width: none;
+      font-size: clamp(2.4rem, 11vw, 3.8rem);
+    }
+
+    .hero-facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 1.4rem;
+    }
+
+    .hero-facts div:nth-child(2n) {
+      border-right: none;
+    }
+
+    .hero-facts div:nth-child(2n + 1) {
+      padding-left: 0;
+    }
+
+    .hero-actions .h-btn {
+      flex: 1 1 100%;
+      justify-content: space-between;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-model-retry {
+      transition: none;
+    }
+
+    .hero-model-retry:hover,
+    .hero-model-retry:focus-visible {
+      transform: none;
+    }
+  }
+</style>

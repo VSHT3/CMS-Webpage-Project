@@ -1,170 +1,31 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import HomeNotice from '../components/home/HomeNotice.astro';
+import HomeScope from '../components/home/HomeScope.astro';
+import HomePotbelly from '../components/home/HomePotbelly.astro';
+import HomeRecent from '../components/home/HomeRecent.astro';
+import HomeParu from '../components/home/HomeParu.astro';
+import HomeWayfinding from '../components/home/HomeWayfinding.astro';
+import HomeCloser from '../components/home/HomeCloser.astro';
+import '../styles/home.css';
+
+/*
+  Current announcement. Set to null when there is nothing to announce — the band
+  then renders no markup at all. This is the only hand-maintained value on the
+  homepage; everything else derives from the repository.
+*/
+const notice: { label: string; text: string; href?: string } | null = null;
 ---
 <Layout title="Home — Center for Mesoamerican Studies">
-  <section class="hero-shell">
-    <div class="page-grid hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow">Faculty of Arts • Comenius University Bratislava</p>
-        <h1>Center for Mesoamerican Studies</h1>
-        <p class="hero-lead">
-          Founded in 2015 at the Faculty of Arts, Comenius University in Bratislava, CMS brings together
-          research, teaching, collections, publications, and public scholarship connected with Mesoamerica.
-        </p>
-
-        <div class="hero-actions">
-          <a href="/about-us" class="button button-primary">About CMS</a>
-          <a href="/grants-and-investigations" class="button button-secondary">Research</a>
-          <a href="/publications" class="button button-secondary">Publications</a>
-        </div>
-
-        <dl class="hero-facts">
-          <div>
-            <dt>Founded</dt>
-            <dd>2015</dd>
-          </div>
-          <div>
-            <dt>Flagship fieldwork</dt>
-            <dd>PARU Uaxactun since 2016</dd>
-          </div>
-          <div>
-            <dt>Core strength</dt>
-            <dd>Research, collections, doctoral support</dd>
-          </div>
-          <div>
-            <dt>Visitors</dt>
-            <dd id="visit-count">…</dd>
-          </div>
-        </dl>
-      </div>
-
-      <aside class="hero-visual" aria-label="Interactive artefact visual">
-        <div class="hero-panel hero-panel-model">
-          <div class="panel-topline">Collection object</div>
-          <div class="model-stage" data-model-stage>
-            <div class="model-placeholder">
-              <span>3D artefact model</span>
-              <button type="button" class="model-load-button" data-load-model>Load view</button>
-            </div>
-          </div>
-        </div>
-        <p class="panel-note">An interactive object view used here as a visual reference for the center's collections and documentation work.</p>
-      </aside>
-    </div>
-  </section>
-
-  <section class="page-grid intro-ribbon" aria-label="Institute summary">
-    <div>
-      <p>
-        CMS focuses on the Maya and Nahua regions and supports work across archaeology, epigraphy,
-        astronomy, manuscripts, iconography, religion, historical thought, collections, and teaching.
-      </p>
-      <p>
-        The site gathers the center's institutional information, research activity, publications,
-        collections, education, conferences, and contact details.
-      </p>
-    </div>
-    <a href="/about-us">Read the history</a>
-  </section>
-
-  <section class="page-grid domains-section">
-    <div class="section-heading">
-      <p class="eyebrow">Use the site</p>
-      <h2>Start with the section that matches your visit.</h2>
-    </div>
-
-    <div class="resource-grid">
-      <a href="/grants-and-investigations">
-        <span>Research</span>
-        <h3>Projects, grants, and investigation notes</h3>
-        <p>Research activity and project material connected with the center.</p>
-      </a>
-      <a href="/publications">
-        <span>Publications</span>
-        <h3>Reports, books, catalogues, and PDF material</h3>
-        <p>Publication records and downloadable research material gathered for visitors and researchers.</p>
-      </a>
-      <a href="/ferdinand-anders-library">
-        <span>Library</span>
-        <h3>Ferdinand Anders Library</h3>
-        <p>Library history and catalogue access for users looking for the center's library resources.</p>
-      </a>
-      <a href="/education-phd-program">
-        <span>Education</span>
-        <h3>PhD program, theses, and work in progress</h3>
-        <p>Education pages for doctoral study, published thesis work, and current research in progress.</p>
-      </a>
-    </div>
-  </section>
-
-  <section class="page-grid feature-band">
-    <div class="feature-copy">
-      <p class="eyebrow">PARU Uaxactun</p>
-      <h2>Fieldwork material is organized as a project archive, not a vague feature block.</h2>
-      <p>
-        CMS has overseen the Uaxactun Regional Archaeological Project since 2016. The PARU Uaxactun
-        section brings together the project's history, maps, papers, recent investigations,
-        archaeological artefacts, galleries, and reports.
-      </p>
-      <a href="/paru-uaxactun-history" class="text-link">Enter PARU Uaxactun</a>
-    </div>
-
-    <div class="feature-aside">
-      <a href="/paru-uaxactun-history" class="aside-item">
-        <span>History</span>
-        <p>Project background, fieldwork context, and institutional timeline.</p>
-      </a>
-      <a href="/paru-uaxactun-maps" class="aside-item">
-        <span>Maps and papers</span>
-        <p>Location material, reference papers, and field documentation.</p>
-      </a>
-      <a href="/paru-uaxactun-recent-investigations" class="aside-item">
-        <span>Investigations</span>
-        <p>Recent field reports and notes on current archaeological work.</p>
-      </a>
-      <a href="/paru-uaxactun-archeological-artefacts" class="aside-item">
-        <span>Artefacts</span>
-        <p>Archaeological artefacts and the related gallery pages.</p>
-      </a>
-    </div>
-  </section>
-
-  <section class="page-grid institute-section">
-    <div class="section-heading section-heading-wide">
-      <p class="eyebrow">Access the faculty</p>
-      <h2>Find the part of the center you actually need.</h2>
-    </div>
-
-    <div class="institute-columns">
-      <div class="institute-text">
-        <p>
-          Based at Štúrova 9 within the Faculty of Arts, the center gives visitors direct access to
-          institutional history, contacts, members, research projects, publications, collections,
-          education, and conference material.
-        </p>
-      </div>
-
-      <div class="institute-stack">
-        <a href="/about-us" class="institute-card">
-          <h3>Collections</h3>
-          <p>Archaeological holdings, ethnographical holdings, exhibitions, and collection galleries.</p>
-        </a>
-        <a href="/grants-and-investigations" class="institute-card">
-          <h3>Research</h3>
-          <p>Projects, grants, investigations, and reports connected with center activity.</p>
-        </a>
-        <a href="/publications" class="institute-card">
-          <h3>Publications</h3>
-          <p>Books, reports, catalogues, and downloadable PDF records.</p>
-        </a>
-        <a href="/about-us-contacts" class="institute-card">
-          <h3>Contact</h3>
-          <p>Location, email, and institutional contact details for visitors and partners.</p>
-        </a>
-      </div>
-    </div>
-  </section>
-
+  <HomeHero />
+  <HomeNotice notice={notice} />
+  <HomeScope />
+  <HomePotbelly />
+  <HomeRecent />
+  <HomeParu />
+  <HomeWayfinding />
+  <HomeCloser />
 </Layout>
 
 <script>
@@ -175,19 +36,23 @@ import Layout from '../layouts/Layout.astro';
       const res = await fetch('https://vsht.goatcounter.com/counter/TOTAL.json', { cache: 'no-store' });
       if (!res.ok) return;
       const data = await res.json();
+      /*
+        `count` is a preformatted string using U+202F as its thousands separator.
+        Assign it, never parse it — parseInt() silently truncates past 999.
+      */
       if (data?.count) el.textContent = data.count;
     } catch {}
   }
 
-  function init() {
-    fetchVisitorCount();
+  function initModel() {
     const stage = document.querySelector('[data-model-stage]');
-    const loadButton = document.querySelector('[data-load-model]') as HTMLButtonElement | null;
+    const retry = document.querySelector('[data-load-model]') as HTMLButtonElement | null;
+    if (!stage) return;
+
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let modelRequested = false;
+    let requested = false;
 
     const createViewer = () => {
-      if (!stage) return;
       const viewer = document.createElement('model-viewer');
       viewer.setAttribute('src', '/assets/models/statue-compressed.glb');
       viewer.setAttribute('poster', '/assets/optimized/model-poster.webp');
@@ -207,13 +72,20 @@ import Layout from '../layouts/Layout.astro';
         viewer.setAttribute('rotation-per-second', '18deg');
       }
       stage.replaceChildren(viewer);
+      retry?.setAttribute('hidden', '');
     };
 
-    const appendModelViewer = () => {
-      if (!stage || modelRequested) return;
-      modelRequested = true;
-      loadButton?.setAttribute('disabled', '');
-      if (loadButton) loadButton.textContent = 'Loading interactive view';
+    /* The button only ever appears once this has failed. */
+    const failed = () => {
+      requested = false;
+      retry?.removeAttribute('hidden');
+      if (retry) retry.textContent = 'Load interactive view';
+    };
+
+    const appendViewer = () => {
+      if (requested) return;
+      requested = true;
+      if (retry) retry.textContent = 'Loading';
 
       if (customElements.get('model-viewer')) {
         createViewer();
@@ -224,24 +96,20 @@ import Layout from '../layouts/Layout.astro';
       script.type = 'module';
       script.src = '/assets/vendor/model-viewer.min.js';
       script.addEventListener('load', createViewer);
-      script.addEventListener('error', () => {
-        loadButton?.removeAttribute('disabled');
-        if (loadButton) loadButton.textContent = 'Retry interactive view';
-        modelRequested = false;
-      });
+      script.addEventListener('error', failed);
       document.head.append(script);
     };
 
-    loadButton?.addEventListener('click', appendModelViewer);
+    retry?.addEventListener('click', appendViewer);
 
-    const scheduleModelLoad = () => {
-      if (!stage || modelRequested) return;
+    const schedule = () => {
+      if (requested) return;
       if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver(
           (entries) => {
             if (entries.some((entry) => entry.isIntersecting)) {
               observer.disconnect();
-              appendModelViewer();
+              appendViewer();
             }
           },
           { rootMargin: '360px 0px' },
@@ -249,698 +117,50 @@ import Layout from '../layouts/Layout.astro';
         observer.observe(stage);
         return;
       }
-      globalThis.setTimeout(appendModelViewer, 800);
+      globalThis.setTimeout(appendViewer, 800);
     };
 
     const idleWindow = window as Window & {
       requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
     };
     if (idleWindow.requestIdleCallback) {
-      idleWindow.requestIdleCallback(scheduleModelLoad, { timeout: 1400 });
+      idleWindow.requestIdleCallback(schedule, { timeout: 1400 });
     } else {
-      globalThis.setTimeout(scheduleModelLoad, 450);
+      globalThis.setTimeout(schedule, 450);
+    }
+  }
+
+  function initReveal() {
+    const targets = document.querySelectorAll<HTMLElement>('.h-reveal');
+    if (targets.length === 0) return;
+
+    if (
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      !('IntersectionObserver' in window)
+    ) {
+      targets.forEach((target) => target.classList.add('is-visible'));
+      return;
     }
 
-    const revealSections = document.querySelectorAll<HTMLElement>(
-      '.intro-ribbon, .domains-section, .feature-band, .institute-section',
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
     );
-    if (!reducedMotion.matches && revealSections.length > 0 && 'IntersectionObserver' in window) {
-      const revealObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              revealObserver.unobserve(entry.target);
-            }
-          });
-        },
-        { rootMargin: '0px 0px -10% 0px', threshold: 0.08 },
-      );
-      revealSections.forEach((section) => {
-        section.classList.add('home-scroll-reveal');
-        revealObserver.observe(section);
-      });
-    }
+
+    targets.forEach((target) => observer.observe(target));
+  }
+
+  function init() {
+    fetchVisitorCount();
+    initModel();
+    initReveal();
   }
 
   document.addEventListener('astro:page-load', init);
 </script>
-
-<style>
-  :global(:root) {
-    --home-bg-1: var(--site-bg);
-    --home-bg-2: oklch(0.16 0.026 205);
-    --home-panel: var(--site-surface);
-    --home-panel-soft: color-mix(in oklab, var(--site-surface) 72%, transparent);
-    --home-text: var(--site-text);
-    --home-text-dim: var(--site-text-dim);
-    --home-line: var(--site-border);
-    --home-accent: var(--site-teal);
-    --home-accent-2: oklch(0.58 0.07 158);
-    --home-gold: var(--site-gold);
-    --home-shadow: var(--site-shadow);
-  }
-
-  :global(html),
-  :global(body) {
-    color: var(--home-text);
-    font-family: var(--site-font);
-  }
-
-  :global(main) {
-    overflow: clip;
-  }
-
-  .page-grid {
-    width: min(1180px, calc(100% - 2rem));
-    margin: 0 auto;
-  }
-
-  .hero-shell {
-    padding: clamp(2rem, 5vw, 4.5rem) 0 clamp(2.5rem, 6vw, 5rem);
-  }
-
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 0.94fr) minmax(20rem, 0.62fr);
-    gap: clamp(2rem, 4vw, 4rem);
-    align-items: center;
-  }
-
-  .hero-copy {
-    padding: clamp(0.75rem, 2vw, 1.5rem) 0;
-  }
-
-  .eyebrow {
-    margin: 0 0 1rem;
-    font-size: 0.8rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--home-accent);
-    white-space: nowrap;
-  }
-
-  h1,
-  h2,
-  h3 {
-    font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
-  }
-
-  h1 {
-    max-width: 14ch;
-    margin: 0;
-    font-size: clamp(2.6rem, 5.8vw, 5.8rem);
-    font-weight: 400;
-    line-height: 1.06;
-    letter-spacing: -0.01em;
-    color: var(--site-text-strong);
-    text-wrap: balance;
-  }
-
-  .hero-lead,
-  .intro-ribbon p,
-  .feature-copy p,
-  .institute-text p,
-  .institute-stack p,
-  .resource-grid p,
-  .aside-item p {
-    max-width: 66ch;
-    font-size: 1.03rem;
-    line-height: 1.85;
-    color: var(--home-text-dim);
-  }
-
-  .hero-lead {
-    margin: 1.5rem 0 0;
-  }
-
-  .hero-actions {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.9rem;
-    margin-top: 2rem;
-  }
-
-  .button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 3rem;
-    padding: 0.85rem 1.25rem;
-    border: 1px solid var(--home-line);
-    border-radius: 0;
-    font-size: 0.9rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition:
-      transform 180ms var(--site-ease-out),
-      border-color 180ms ease,
-      background-color 180ms ease,
-      color 180ms ease;
-  }
-
-  .button:hover {
-    transform: translateY(-2px);
-  }
-
-  .button:active,
-  .model-load-button:active {
-    transform: translateY(0);
-  }
-
-  .button:focus-visible,
-  .model-load-button:focus-visible,
-  .resource-grid a:focus-visible,
-  .intro-ribbon a:focus-visible,
-  .text-link:focus-visible {
-    outline: 2px solid color-mix(in oklab, var(--home-gold) 76%, var(--site-text-strong));
-    outline-offset: 4px;
-  }
-
-  .button-primary {
-    background: color-mix(in oklab, var(--home-accent-2) 76%, oklch(0.18 0.025 200));
-    color: oklch(0.97 0.008 120);
-    border-color: color-mix(in oklab, var(--home-accent) 55%, oklch(0.18 0.025 200));
-  }
-
-  .button-secondary {
-    color: var(--home-text);
-    background: oklch(0.18 0.025 200 / 0.42);
-  }
-
-  .hero-facts {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0;
-    margin: 2.5rem 0 0;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--home-line);
-  }
-
-  .hero-facts div {
-    display: grid;
-    gap: 0.35rem;
-    justify-items: center;
-    text-align: center;
-    padding: 0.5rem 1rem;
-    border-right: 1px solid var(--home-line);
-  }
-
-  .hero-facts div:last-child {
-    border-right: none;
-  }
-
-  .hero-facts dt {
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--home-accent);
-  }
-
-  .hero-facts dd {
-    margin: 0;
-    color: var(--home-text);
-    line-height: 1.5;
-  }
-
-  .hero-panel {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--home-line);
-    background: color-mix(in oklab, var(--home-panel) 82%, transparent);
-  }
-
-  .hero-visual {
-    display: grid;
-    gap: 0.75rem;
-  }
-
-  .hero-panel-model {
-    --model-h: clamp(360px, 42vw, 560px);
-    position: relative;
-    padding: clamp(0.8rem, 1.8vw, 1.25rem);
-  }
-
-  .panel-topline {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    z-index: 2;
-    font-size: 0.76rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--home-gold);
-  }
-
-  .model-stage {
-    width: 100%;
-    height: var(--model-h);
-    padding-top: 2.5rem;
-    box-sizing: border-box;
-    display: block;
-  }
-
-  :global(.hero-panel-model model-viewer) {
-    --poster-color: transparent;
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  .model-placeholder {
-    width: 100%;
-    height: 100%;
-    min-height: 280px;
-    display: grid;
-    align-content: center;
-    justify-items: start;
-    gap: 1rem;
-    padding: clamp(1rem, 4vw, 2rem);
-    background:
-      linear-gradient(135deg, oklch(0.24 0.03 190 / 0.32), oklch(0.18 0.026 202 / 0.54)),
-      url('/assets/optimized/model-poster.webp') center / min(82%, 44rem) no-repeat;
-  }
-
-  .model-placeholder span {
-    max-width: 18ch;
-    font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
-    font-size: clamp(1.8rem, 4vw, 3rem);
-    line-height: 1;
-    color: var(--home-text);
-  }
-
-  .model-load-button {
-    min-height: 2.75rem;
-    padding: 0.75rem 1rem;
-    border: 1px solid color-mix(in oklab, var(--home-gold) 60%, transparent);
-    border-radius: 0;
-    background: oklch(0.18 0.026 202 / 0.72);
-    color: var(--home-gold);
-    font: inherit;
-    font-size: 0.82rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition:
-      transform 180ms var(--site-ease-out),
-      border-color 180ms ease,
-      color 180ms ease,
-      opacity 180ms ease;
-  }
-
-  .model-load-button:hover,
-  .model-load-button:focus-visible {
-    color: var(--home-text);
-    border-color: var(--home-gold);
-    transform: translateY(-2px);
-  }
-
-  .panel-note {
-    margin: 0;
-    max-width: 46ch;
-    font-size: 0.9rem;
-    line-height: 1.7;
-    color: var(--home-text-dim);
-  }
-
-  .intro-ribbon,
-  .domains-section,
-  .feature-band,
-  .institute-section {
-    padding: clamp(2.5rem, 6vw, 5rem) 0;
-  }
-
-  .domains-section,
-  .feature-band,
-  .institute-section {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 620px;
-  }
-
-  .intro-ribbon {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) auto;
-    gap: 1rem 2rem;
-    align-items: center;
-    border-top: 1px solid var(--home-line);
-    border-bottom: 1px solid var(--home-line);
-  }
-
-  .intro-ribbon div {
-    display: grid;
-    gap: 0.8rem;
-  }
-
-  .intro-ribbon a,
-  .text-link {
-    color: var(--home-gold);
-    font-size: 0.92rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    background-image: linear-gradient(currentColor, currentColor);
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    background-size: 0 1px;
-    transition:
-      background-size 220ms var(--site-ease-out),
-      color 180ms ease;
-  }
-
-  .intro-ribbon a:hover,
-  .intro-ribbon a:focus-visible,
-  .text-link:hover,
-  .text-link:focus-visible {
-    color: var(--home-text);
-    background-size: 100% 1px;
-  }
-
-  .section-heading {
-    display: grid;
-    gap: 0.8rem;
-    margin-bottom: clamp(1.75rem, 3vw, 3rem);
-  }
-
-  .section-heading h2,
-  .feature-copy h2 {
-    max-width: 16ch;
-    margin: 0;
-    font-size: clamp(2rem, 5vw, 4.3rem);
-    line-height: 1;
-    letter-spacing: 0.01em;
-  }
-
-  .section-heading-wide h2 {
-    max-width: 20ch;
-  }
-
-  .resource-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: clamp(1rem, 2vw, 1.25rem);
-    border-top: 1px solid var(--home-line);
-  }
-
-  .resource-grid a {
-    display: grid;
-    align-content: start;
-    gap: 0.8rem;
-    min-height: 13rem;
-    padding: clamp(1.05rem, 2vw, 1.35rem) 0;
-    border-bottom: 1px solid var(--home-line);
-    background: transparent;
-    transition:
-      color 180ms ease,
-      transform 220ms var(--site-ease-out);
-  }
-
-  .resource-grid a:hover,
-  .resource-grid a:focus-visible {
-    transform: translateY(-0.2rem);
-  }
-
-  .resource-grid span {
-    color: var(--home-accent);
-    font-size: 0.78rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
-
-  .resource-grid h3,
-  .institute-stack h3 {
-    margin: 0;
-    font-size: clamp(1.15rem, 2vw, 1.45rem);
-    line-height: 1.15;
-    transition: color 180ms ease;
-  }
-
-  .resource-grid p,
-  .institute-stack p {
-    margin: 0;
-  }
-
-  .resource-grid a:hover h3,
-  .resource-grid a:focus-visible h3 {
-    color: var(--home-gold);
-  }
-
-  .feature-band {
-    display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(18rem, 0.68fr);
-    gap: clamp(1.5rem, 4vw, 4rem);
-    align-items: start;
-  }
-
-  .feature-aside {
-    display: grid;
-    gap: 0.85rem;
-  }
-
-  .aside-item {
-    display: grid;
-    gap: 0.45rem;
-    padding: 1rem 1.1rem 1rem 0;
-    border-top: 1px solid var(--home-line);
-    background: transparent;
-    transition:
-      transform 220ms var(--site-ease-out),
-      color 180ms ease;
-  }
-
-  .aside-item span {
-    display: block;
-    color: var(--home-accent);
-    font-size: 0.78rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
-
-  .aside-item p {
-    margin: 0;
-    max-width: 32ch;
-    font-size: 0.96rem;
-    line-height: 1.68;
-    color: var(--home-text-dim);
-  }
-
-  .aside-item:hover,
-  .aside-item:focus-visible {
-    transform: translateX(0.25rem);
-  }
-
-  .aside-item:hover h3,
-  .aside-item:focus-visible h3,
-  .aside-item:hover p,
-  .aside-item:focus-visible p {
-    color: var(--home-gold);
-  }
-
-  .institute-columns {
-    display: grid;
-    grid-template-columns: minmax(0, 0.92fr) minmax(18rem, 1.08fr);
-    gap: clamp(1.5rem, 4vw, 4rem);
-  }
-
-  .institute-stack {
-    display: grid;
-    gap: 0.85rem;
-  }
-
-  .institute-card {
-    display: grid;
-    gap: 0.4rem;
-    padding: 1rem 1.1rem;
-    border-top: 1px solid var(--home-line);
-    background: color-mix(in oklab, var(--home-panel) 20%, transparent);
-    transition:
-      transform 220ms var(--site-ease-out),
-      background-color 180ms ease;
-  }
-
-  .institute-card:hover,
-  .institute-card:focus-visible {
-    transform: translateX(0.25rem);
-    background: color-mix(in oklab, var(--home-panel) 34%, transparent);
-  }
-
-  .institute-card p {
-    margin: 0;
-    max-width: 30ch;
-    line-height: 1.68;
-    color: var(--home-text-dim);
-  }
-
-  .institute-card:hover h3,
-  .institute-card:focus-visible h3,
-  .institute-card:hover p,
-  .institute-card:focus-visible p {
-    color: var(--home-text);
-  }
-
-  .hero-copy > *,
-  .hero-visual {
-    animation: home-rise 520ms var(--site-ease-out) both;
-  }
-
-  .home-scroll-reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition:
-      opacity 520ms var(--site-ease-out),
-      transform 620ms var(--site-ease-out);
-    will-change: opacity, transform;
-  }
-
-  .home-scroll-reveal.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .hero-lead {
-    animation-delay: 70ms;
-  }
-
-  .hero-actions {
-    animation-delay: 120ms;
-  }
-
-  .hero-facts {
-    animation-delay: 170ms;
-  }
-
-  .hero-visual {
-    animation-delay: 220ms;
-  }
-
-  @keyframes home-rise {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @media (max-width: 1080px) {
-    .hero-grid,
-    .feature-band,
-    .institute-columns {
-      grid-template-columns: 1fr;
-    }
-
-    .resource-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .feature-aside,
-    .institute-stack {
-      gap: 0.7rem;
-    }
-
-    .hero-panel-model {
-      --model-h: clamp(360px, 62vw, 520px);
-    }
-  }
-
-  @media (max-width: 760px) {
-    h1 {
-      max-width: none;
-      font-size: clamp(2.45rem, 12vw, 4rem);
-    }
-
-    .hero-facts,
-    .intro-ribbon {
-      grid-template-columns: 1fr;
-    }
-
-    .section-heading h2,
-    .feature-copy h2 {
-      max-width: none;
-      font-size: clamp(1.9rem, 9vw, 3rem);
-    }
-
-    .hero-actions {
-      grid-template-columns: 1fr;
-    }
-
-    .hero-actions {
-      gap: 0.65rem;
-    }
-
-    .hero-panel-model {
-      padding: 0.7rem;
-      --model-h: clamp(330px, 92vw, 500px);
-    }
-
-    .resource-grid {
-      grid-template-columns: 1fr;
-      gap: 0.75rem;
-    }
-  }
-
-  @media (max-width: 420px) {
-    .hero-shell {
-      padding-top: 1.5rem;
-    }
-
-    .eyebrow {
-      font-size: 0.72rem;
-      letter-spacing: 0.16em;
-    }
-
-    .hero-lead,
-    .intro-ribbon p,
-    .feature-copy p,
-    .institute-text p,
-    .institute-stack p,
-    .resource-grid p,
-    .aside-item p {
-      font-size: 1rem;
-      line-height: 1.72;
-    }
-
-    .hero-facts {
-      gap: 0.8rem;
-    }
-
-    .resource-grid a,
-    .aside-item,
-    .institute-card {
-      padding: 1rem 0;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .button,
-    .model-load-button,
-    .resource-grid a,
-    .intro-ribbon a,
-    .text-link,
-    .resource-grid h3,
-    .aside-item,
-    .institute-card,
-    .home-scroll-reveal {
-      transition: none;
-    }
-
-    .button:hover,
-    .model-load-button:hover,
-    .model-load-button:focus-visible,
-    .resource-grid a:hover,
-    .resource-grid a:focus-visible {
-      transform: none;
-    }
-
-    .hero-copy > *,
-    .hero-visual {
-      animation: none;
-    }
-
-    .home-scroll-reveal {
-      opacity: 1;
-      transform: none;
-    }
-  }
-</style>

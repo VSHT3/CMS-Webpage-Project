@@ -1,0 +1,115 @@
+---
+import { newest, recordHref } from '../../lib/potbelly';
+
+const recent = newest(6);
+---
+<section class="recent h-band h-band--deep">
+  <div class="h-track">
+    <div class="recent-head">
+      <div>
+        <p class="h-eyebrow h-reveal" style="--h-i:0">Activity</p>
+        <h2 class="h-title h-reveal" style="--h-i:1">Recently digitised</h2>
+      </div>
+      <a class="h-link recent-head-link h-reveal" style="--h-i:2" href="/potbelly-sculptures/3d-database">
+        Open the 3D database
+      </a>
+    </div>
+
+    <ul class="recent-strip">
+      {recent.map((record, i) => (
+        <li>
+          <a class="h-mount h-reveal" style={`--h-i:${i}`} href={recordHref(record)}>
+            <div class="h-mount__core">
+              <img
+                src={record.posterUrl}
+                width="720"
+                height="540"
+                loading="lazy"
+                decoding="async"
+                alt={`Photogrammetric model ${record.recordCode}`}
+              />
+              <div class="h-mount__bar">
+                <span class="h-meta">{record.recordCode}</span>
+                <span class="h-meta">{record.date === null ? 'Undated' : record.dateLabel}</span>
+              </div>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .recent-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: clamp(1.75rem, 3vw, 2.75rem);
+  }
+
+  .recent-strip {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(0.6rem, 1.1vw, 1rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .recent-strip li {
+    display: grid;
+    min-width: 0;
+  }
+
+  /* Tiles are ~170px wide at six-up; crop into the subject. */
+  .recent-strip :global(.h-mount) {
+    --h-img-scale: 1.22;
+  }
+
+  /* Code and date cannot share one line at this width. */
+  .recent-strip :global(.h-mount__bar) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+
+  @media (max-width: 1180px) {
+    .recent-strip {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 860px) {
+    .recent-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recent-head-link {
+      flex-basis: 100%;
+    }
+  }
+
+  /* Scroll-snap carousel on phones — six tiles never fit as a grid. */
+  @media (max-width: 760px) {
+    .recent-strip {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 0.25rem;
+    }
+
+    .recent-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .recent-strip li {
+      flex: 0 0 68%;
+      scroll-snap-align: start;
+    }
+  }
+</style>

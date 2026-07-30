@@ -1,24 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ResearchHeader from '../../components/ResearchHeader.astro';
-import modelData from '../../data/potbelly-models.json';
+import { records as models } from '../../lib/potbelly';
 
-interface ModelRecord {
-  id: string;
-  recordCode: string;
-  title: string;
-  date: string | null;
-  dateLabel: string;
-  year: string;
-  sequence: string;
-  sourceFormat: 'OBJ' | 'GLB';
-  modelUrl: string;
-  posterUrl: string;
-  vertices: number;
-  triangles: number;
-}
-
-const models = modelData as ModelRecord[];
 const filterYears = [...new Set(models.map((model) => model.year))];
 const initialModel = models[0];
 const numberFormatter = new Intl.NumberFormat('en-US');

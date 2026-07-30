@@ -658,7 +658,7 @@ const hasRealContent = bodyProse.length > 0 || MEDIA_CONTENT.test(cleanedBody);
   .legacy-page-content h3,
   .legacy-page-content h4 {
     margin: 0;
-    font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    font-family: var(--site-font-display);
     color: var(--site-text);
     text-wrap: balance;
   }
@@ -912,7 +912,7 @@ const hasRealContent = bodyProse.length > 0 || MEDIA_CONTENT.test(cleanedBody);
   .legacy-embed strong {
     display: block;
     margin-bottom: 0.35rem;
-    font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    font-family: var(--site-font-display);
     font-size: clamp(1.05rem, 2vw, 1.35rem);
   }
 

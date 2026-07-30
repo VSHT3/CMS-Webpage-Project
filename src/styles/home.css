@@ -1,0 +1,339 @@
+/*
+  Homepage visual primitives.
+
+  Global on purpose. The spec assigned scoped styles to each band component, but
+  eight components independently authoring mounts, eyebrows and buttons drift
+  apart within a single edit session. Primitives live here; per-band layout stays
+  scoped inside each component.
+*/
+
+.h-band {
+  padding: clamp(4.5rem, 9vw, 9rem) 0;
+}
+
+.h-band--deep {
+  background: var(--site-bg-deep);
+}
+
+.h-band--base {
+  background: var(--site-bg);
+}
+
+.h-band--raised {
+  background: var(--site-bg-raised);
+}
+
+.h-band--abyss {
+  background: var(--site-bg-abyss);
+}
+
+/* Hairline chapter separator. Square — only media gets radius. */
+.h-band--ruled {
+  border-top: 1px solid var(--site-border);
+}
+
+.h-track {
+  width: min(1180px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.h-track--wide {
+  width: min(1440px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+/* ---- Type ---- */
+
+.h-eyebrow {
+  margin: 0 0 1rem;
+  font-family: var(--site-font-ui);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--site-teal);
+}
+
+.h-eyebrow--gold {
+  color: var(--site-gold);
+}
+
+.h-title {
+  margin: 0;
+  font-family: var(--site-font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4.4vw, 3.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--site-text-strong);
+  text-wrap: balance;
+}
+
+.h-lead {
+  margin: 1.25rem 0 0;
+  max-width: 62ch;
+  font-family: var(--site-font-body);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--site-text-dim);
+}
+
+/* Small uppercase metadata: record codes, dates, counts. */
+.h-meta {
+  font-family: var(--site-font-ui);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--site-text-dim);
+  font-variant-numeric: tabular-nums;
+  /* Record codes must never break as "3D-" / "025". */
+  white-space: nowrap;
+}
+
+/* ---- Media mount: 10px shell, 6px core ---- */
+
+.h-mount {
+  display: block;
+  padding: 6px;
+  border: 1px solid var(--site-border);
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--site-bg-raised) 55%, transparent);
+  transition: border-color 320ms var(--site-ease-out);
+}
+
+.h-mount__core {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--site-bg-abyss);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.07);
+}
+
+/*
+  Posters are 720x540 renders with the subject small and centred inside wide
+  empty margins. At tile sizes that reads as a blank teal square, so callers set
+  --h-img-scale to crop into the subject. Hover adds to that base rather than
+  replacing it.
+*/
+.h-mount__core img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform: scale(var(--h-img-scale, 1));
+  transition: transform 620ms var(--site-ease-out);
+}
+
+a.h-mount:hover,
+a.h-mount:focus-visible {
+  border-color: color-mix(in oklab, var(--site-gold) 58%, var(--site-border));
+}
+
+a.h-mount:hover .h-mount__core img,
+a.h-mount:focus-visible .h-mount__core img {
+  transform: scale(calc(var(--h-img-scale, 1) + 0.04));
+}
+
+/*
+  Caption bar inside a mount core. Opaque and stacked above the image on
+  purpose: a cropped poster (--h-img-scale > 1) overflows its grid row, and a
+  transparent bar would let it paint over the record code.
+*/
+.h-mount__bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--site-bg-abyss);
+  border-top: 1px solid color-mix(in oklab, var(--site-border) 70%, transparent);
+}
+
+/* ---- Buttons ---- */
+
+.h-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 3rem;
+  padding: 0.8rem 0.8rem 0.8rem 1.4rem;
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
+  font-family: var(--site-font-ui);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--site-text-strong);
+  background: color-mix(in oklab, var(--site-bg-raised) 45%, transparent);
+  transition:
+    transform 320ms var(--site-ease-out),
+    border-color 320ms var(--site-ease-out),
+    background-color 320ms var(--site-ease-out);
+}
+
+.h-btn--primary {
+  color: oklch(0.97 0.008 120);
+  border-color: color-mix(in oklab, var(--site-teal) 55%, transparent);
+  background: color-mix(in oklab, oklch(0.58 0.07 158) 72%, var(--site-bg-abyss));
+}
+
+.h-btn__icon {
+  display: grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 6px;
+  background: oklch(1 0 0 / 0.08);
+  color: currentColor;
+  transition: transform 320ms var(--site-ease-out);
+}
+
+.h-btn:hover,
+.h-btn:focus-visible {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--site-gold) 60%, var(--site-border));
+}
+
+.h-btn:hover .h-btn__icon,
+.h-btn:focus-visible .h-btn__icon {
+  transform: translate(2px, -2px);
+}
+
+.h-btn:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* ---- Links ---- */
+
+.h-link {
+  display: inline-block;
+  font-family: var(--site-font-ui);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--site-gold);
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  transition:
+    background-size 420ms var(--site-ease-out),
+    color 220ms var(--site-ease-out);
+}
+
+.h-link:hover,
+.h-link:focus-visible {
+  color: var(--site-text-strong);
+  background-size: 100% 1px;
+}
+
+/* ---- Ruled rows ---- */
+
+.h-row {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1.15rem 0;
+  border-top: 1px solid var(--site-border);
+  transition: transform 380ms var(--site-ease-out);
+}
+
+.h-row:last-child {
+  border-bottom: 1px solid var(--site-border);
+}
+
+.h-row h3 {
+  margin: 0;
+  font-family: var(--site-font-display);
+  font-weight: 400;
+  font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+  line-height: 1.2;
+  color: var(--site-text-strong);
+  transition: color 220ms var(--site-ease-out);
+}
+
+.h-row p {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--site-text-dim);
+}
+
+a.h-row:hover,
+a.h-row:focus-visible {
+  transform: translateX(0.3rem);
+}
+
+a.h-row:hover h3,
+a.h-row:focus-visible h3 {
+  color: var(--site-gold);
+}
+
+/* ---- Focus ---- */
+
+.h-btn:focus-visible,
+.h-link:focus-visible,
+.h-row:focus-visible,
+.h-mount:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--site-gold) 76%, var(--site-text-strong));
+  outline-offset: 4px;
+}
+
+/* ---- Scroll reveal ---- */
+
+.h-reveal {
+  opacity: 0;
+  transform: translateY(1.5rem);
+  transition:
+    opacity 720ms var(--site-ease-out),
+    transform 820ms var(--site-ease-out);
+  transition-delay: calc(var(--h-i, 0) * 70ms);
+}
+
+.h-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .h-reveal,
+  .h-btn,
+  .h-btn__icon,
+  .h-row,
+  .h-link,
+  .h-mount,
+  .h-mount__core img {
+    transition: none;
+  }
+
+  .h-reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .h-btn:hover,
+  .h-btn:focus-visible,
+  .h-btn:active,
+  a.h-row:hover,
+  a.h-row:focus-visible {
+    transform: none;
+  }
+
+  .h-btn:hover .h-btn__icon,
+  .h-btn:focus-visible .h-btn__icon {
+    transform: none;
+  }
+
+  /*
+    Not `none` — that would snap the poster back out of its base crop on hover.
+    Hold the base scale instead so nothing moves.
+  */
+  a.h-mount:hover .h-mount__core img,
+  a.h-mount:focus-visible .h-mount__core img {
+    transform: scale(var(--h-img-scale, 1));
+  }
+}

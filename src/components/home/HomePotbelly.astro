@@ -1,0 +1,229 @@
+---
+import { evenlySampled, recordHref, totalRecords } from '../../lib/potbelly';
+
+/*
+  Sampled across the whole catalogue rather than from the newest end: HomeRecent
+  renders newest(6) further down the same page, and drawing both from the same
+  end would print the same posters twice.
+*/
+const mosaic = evenlySampled(5);
+---
+<section class="potbelly h-band h-band--abyss">
+  <div class="h-track--wide potbelly-grid">
+    <div class="potbelly-copy">
+      <p class="h-eyebrow h-eyebrow--gold h-reveal" style="--h-i:0">Digital collections</p>
+
+      <h2 class="h-title h-reveal" style="--h-i:1">Preclassic Maya potbelly sculptures, documented in three dimensions.</h2>
+
+      <p class="h-lead h-reveal" style="--h-i:2">
+        The project records potbelly sculptures as photogrammetric models, published with their source
+        meshes rather than as screenshots. A companion GIS database places each documented sculpture in
+        its landscape.
+      </p>
+
+      <dl class="potbelly-metrics h-reveal" style="--h-i:3">
+        <div>
+          <dt class="h-meta">Records</dt>
+          <dd>{totalRecords}</dd>
+        </div>
+        <div>
+          <dt class="h-meta">Source meshes</dt>
+          <dd>Downloadable</dd>
+        </div>
+        <div>
+          <dt class="h-meta">Spatial data</dt>
+          <dd>GIS layers</dd>
+        </div>
+      </dl>
+
+      <div class="potbelly-actions h-reveal" style="--h-i:4">
+        <a href="/potbelly-sculptures/3d-database" class="h-btn h-btn--primary">
+          3D database
+          <span class="h-btn__icon" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" stroke-linecap="square" />
+            </svg>
+          </span>
+        </a>
+        <a href="/potbelly-sculptures/gis-database" class="h-btn">
+          GIS database
+          <span class="h-btn__icon" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M4.5 11.5 11.5 4.5M6 4.5h5.5V10" stroke-linecap="square" />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <ul class="potbelly-mosaic">
+      {mosaic.map((record, i) => (
+        <li class={`mosaic-cell mosaic-cell-${i + 1}`}>
+          <a class="h-mount h-reveal" style={`--h-i:${i}`} href={recordHref(record)}>
+            <div class="h-mount__core">
+              <img
+                src={record.posterUrl}
+                width="720"
+                height="540"
+                loading="lazy"
+                decoding="async"
+                alt={`Photogrammetric model ${record.recordCode}`}
+              />
+              <div class="h-mount__bar">
+                <span class="h-meta">{record.recordCode}</span>
+                <span class="h-meta">{record.date === null ? 'Undated' : record.year}</span>
+              </div>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .potbelly-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 5vw, 5.5rem);
+    align-items: center;
+  }
+
+  .potbelly-copy .h-title {
+    max-width: 18ch;
+  }
+
+  .potbelly-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 2.25rem 0 0;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--site-border);
+  }
+
+  .potbelly-metrics div {
+    display: grid;
+    gap: 0.4rem;
+    padding-right: 1.6rem;
+  }
+
+  .potbelly-metrics div + div {
+    padding-left: 1.6rem;
+    border-left: 1px solid var(--site-border);
+  }
+
+  .potbelly-metrics dt {
+    color: var(--site-gold);
+  }
+
+  .potbelly-metrics dd {
+    margin: 0;
+    font-family: var(--site-font-display);
+    font-size: 1.35rem;
+    line-height: 1.2;
+    color: var(--site-text-strong);
+  }
+
+  .potbelly-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+  }
+
+  /*
+    Asymmetric mosaic: one tall lead cell, four supporting cells. This is the one
+    place the page borrows bento density, because the content here is 26 sibling
+    records of equal weight — which is exactly where a grid works.
+  */
+  .potbelly-mosaic {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(0.6rem, 1.1vw, 1rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mosaic-cell {
+    display: grid;
+  }
+
+  .mosaic-cell-1 {
+    grid-column: span 4;
+    grid-row: span 2;
+  }
+
+  .mosaic-cell-2 {
+    grid-column: span 2;
+  }
+
+  .mosaic-cell-3 {
+    grid-column: span 2;
+  }
+
+  .mosaic-cell-4 {
+    grid-column: span 3;
+  }
+
+  .mosaic-cell-5 {
+    grid-column: span 3;
+  }
+
+  .potbelly-mosaic .h-mount {
+    height: 100%;
+    /* Supporting cells are small; crop into the subject. */
+    --h-img-scale: 1.14;
+  }
+
+  /* The lead cell is large enough to show the record uncropped. */
+  .mosaic-cell-1 .h-mount {
+    --h-img-scale: 1;
+  }
+
+  .potbelly-mosaic .h-mount__core {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+  }
+
+  .potbelly-mosaic img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 1080px) {
+    .potbelly-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .potbelly-mosaic {
+      grid-template-columns: 1fr;
+    }
+
+    .mosaic-cell-1,
+    .mosaic-cell-2,
+    .mosaic-cell-3,
+    .mosaic-cell-4,
+    .mosaic-cell-5 {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+
+    .potbelly-metrics div + div {
+      padding-left: 1.1rem;
+    }
+
+    .potbelly-metrics div {
+      padding-right: 1.1rem;
+    }
+
+    .potbelly-actions .h-btn {
+      flex: 1 1 100%;
+      justify-content: space-between;
+    }
+  }
+</style>
