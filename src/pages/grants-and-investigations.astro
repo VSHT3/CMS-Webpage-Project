@@ -98,7 +98,7 @@ const projects: Project[] = [
               {p.links && p.links.length > 0 && (
                 <div class="grants-project-links">
                   {p.links.map((l) => (
-                    <a href={l.href} class="grants-project-link" target={l.href.startsWith('http') ? '_blank' : undefined} rel={l.href.startsWith('http') ? 'noopener noreferrer' : undefined}>{l.label}</a>
+                    <a href={l.href} class="grants-project-link" target={l.href.startsWith('http') ? '_blank' : undefined} rel={l.href.startsWith('http') ? 'noopener noreferrer' : undefined} data-umami-event={l.href.endsWith('.pdf') ? 'pdf-download' : undefined} data-umami-event-doc={l.href.endsWith('.pdf') ? l.href.split('/').pop()?.replace(/\.pdf$/i, '') : undefined}>{l.label}</a>
                   ))}
                 </div>
               )}

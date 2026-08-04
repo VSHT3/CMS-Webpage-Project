@@ -45,14 +45,14 @@ import Layout from '../layouts/Layout.astro';
       <section class="contacts-block reveal-target" style="--reveal-delay: 175ms">
         <h3 class="contacts-label">Phone</h3>
         <ul class="contacts-phones">
-          <li><a href="tel:+421911623174">T: (+421) 911 623 174</a></li>
-          <li><a href="tel:+420723928022">T: (+420) 723 928 022</a></li>
+          <li><a href="tel:+421911623174" data-umami-event="tel-click">T: (+421) 911 623 174</a></li>
+          <li><a href="tel:+420723928022" data-umami-event="tel-click">T: (+420) 723 928 022</a></li>
         </ul>
       </section>
 
       <section class="contacts-block reveal-target" style="--reveal-delay: 230ms">
         <h3 class="contacts-label">Email</h3>
-        <a href="mailto:jakub.spotak@uniba.sk" class="contacts-email">jakub.spotak@uniba.sk</a>
+        <a href="mailto:jakub.spotak@uniba.sk" class="contacts-email" data-umami-event="mail-click">jakub.spotak@uniba.sk</a>
       </section>
 
       <div class="contacts-map reveal-target" style="--reveal-delay: 285ms" aria-label="Location map">

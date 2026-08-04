@@ -70,6 +70,16 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
 
+  const docSlug = (href: string) =>
+    (href.split(/[?#]/)[0].split('/').pop() ?? '')
+      .replace(/\.pdf$/i, '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 60);
+
   let previewObserver: IntersectionObserver | null = null;
 
   const ensurePreviewObserver = () => {
@@ -191,6 +201,8 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
         openBtn.rel = 'noopener noreferrer';
         openBtn.className = 'search-result-btn search-result-btn--primary';
         openBtn.textContent = 'Open document';
+        openBtn.setAttribute('data-umami-event', 'pdf-download');
+        openBtn.setAttribute('data-umami-event-doc', docSlug(item.href));
 
         const pageBtn = document.createElement('a');
         const slug = slugify(item.title);
