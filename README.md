@@ -23,9 +23,9 @@ Requires Node ≥ 22.12.0 (see `.node-version`).
 
 ## Routing
 
-Two-tier: native Astro pages in `src/pages/` shadow the catch-all `[...slug].astro`, which serves the remaining legacy Webstudio HTML pages from `legacy/source-html/`.
+Native Astro pages in `src/pages/` own matching routes and shadow any same-path source in `legacy/source-html/`. Publications (`/publications`) and the PARU archaeological reports catalogue (`/paru-uaxactun-papers`) are native pages.
 
-Of the 32 legacy sources, 10 are already shadowed by native pages and only `/events` and `/publications` still carry real content. The other 19 are unwritten stubs — heading, `<hr>`, nothing else. Handling for those (an honest "being prepared" state plus `noindex`) lives on the unmerged `feat/mobile-nav-redesign` branch.
+The catch-all `[...slug].astro` still serves the remaining legacy sources through `WebstudioPage.astro`. `WebstudioPage.astro` renders substantive legacy content and gives heading-only stubs an honest pending state with `noindex`, so search engines do not index them.
 
 ## PDFs
 

@@ -24,14 +24,17 @@ const subnav = [
   </div>
   <hr class="rh-rule" />
   <nav class="rh-subnav" aria-label="Research pages">
-    {subnav.map((item, i) => (<>
-      {i > 0 && <span class="rh-subnav-sep" aria-hidden="true"></span>}
-      <a
-        href={item.href}
-        class:list={['rh-subnav-link', { 'is-current': item.href === currentHref }]}
-        aria-current={item.href === currentHref ? 'page' : undefined}
-      >{item.label}</a>
-    </>))}
+    <ul class="rh-subnav-list">
+      {subnav.map((item) => (
+        <li class="rh-subnav-item">
+          <a
+            href={item.href}
+            class:list={['rh-subnav-link', { 'is-current': item.href === currentHref }]}
+            aria-current={item.href === currentHref ? 'page' : undefined}
+          >{item.label}</a>
+        </li>
+      ))}
+    </ul>
   </nav>
 </header>
 
@@ -60,6 +63,7 @@ const subnav = [
     flex-shrink: 0;
   }
 
+
   .rh-institution {
     display: flex;
     flex-direction: column;
@@ -84,14 +88,27 @@ const subnav = [
     margin: 0 0 1.4rem;
   }
 
-  .rh-subnav {
+  .rh-subnav-list {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     flex-wrap: wrap;
+    gap: 0 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rh-subnav-item {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
   }
 
   .rh-subnav-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-inline: 0.25rem;
     font-family: var(--site-font);
     font-size: 0.78rem;
     font-weight: 600;
@@ -102,24 +119,41 @@ const subnav = [
     transition: color 180ms var(--site-ease-out);
   }
 
+  .rh-subnav-item + .rh-subnav-item .rh-subnav-link {
+    margin-inline-start: 0.25rem;
+    padding-inline-start: 0.75rem;
+    border-inline-start: 1px solid var(--site-border);
+  }
+
   .rh-subnav-link:hover,
   .rh-subnav-link:focus-visible {
     color: var(--site-gold);
+  }
+
+  .rh-subnav-link:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--site-gold) 76%, var(--site-text-strong));
+    outline-offset: 2px;
   }
 
   .rh-subnav-link.is-current {
     color: var(--site-gold);
   }
 
-  .rh-subnav-sep {
-    display: inline-block;
-    width: 1px;
-    height: 0.7em;
-    background: var(--site-border);
-    opacity: 0.7;
+
+  @media (max-width: 900px) {
+    .rh-subnav-list {
+      gap: 0 0.75rem;
+    }
+
+    .rh-subnav-item + .rh-subnav-item .rh-subnav-link {
+      margin-inline-start: 0;
+      padding-inline-start: 0.25rem;
+      border-inline-start: 0;
+    }
   }
 
   @media (max-width: 679px) {
+
     .rh-header-row {
       flex-direction: column;
       align-items: flex-start;

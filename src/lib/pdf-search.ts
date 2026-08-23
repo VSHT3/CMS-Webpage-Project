@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
+import { archaeologicalReportSeries, REPORT_PAGE_PATH } from '../data/archaeological-reports';
 import { rewriteLegacyAssetUrl } from './legacy-pdf-map';
 
 export type PdfSearchItem = {
@@ -9,8 +10,11 @@ export type PdfSearchItem = {
   href: string;
   sourcePage: string;
   sourcePath: string;
+  sourceAnchor?: string;
   search: string;
 };
+
+const REPORT_SOURCE_PAGE = 'PARU Uaxactun — Archaeological Reports';
 
 const decodeEntities = (value = '') =>
   value
@@ -119,6 +123,33 @@ export const buildPdfSearchIndex = (): PdfSearchItem[] => {
         sourcePath: sourceRoute,
         search: normalizeForSearch(`${title} ${filename} ${pageTitle} ${sourceRoute} ${href}`),
       });
+    }
+  }
+
+  for (const series of archaeologicalReportSeries) {
+    for (const report of series.reports) {
+      const hasMultipleDocuments = report.documents.length > 1;
+      for (const document of report.documents) {
+        const filename = getPdfFilename(document.href);
+        const documentLabel = document.label.replace(/^open\s+/i, '').trim();
+        const title = hasMultipleDocuments
+          ? `${report.title} — ${documentLabel.charAt(0).toUpperCase()}${documentLabel.slice(1)}`
+          : report.title;
+        pdfs.set(document.href, {
+          title,
+          filename,
+          displayFilename: humanizePdfName(filename),
+          href: document.href,
+          sourcePage: REPORT_SOURCE_PAGE,
+          sourcePath: REPORT_PAGE_PATH,
+          sourceAnchor: report.id,
+          search: normalizeForSearch(
+            hasMultipleDocuments
+              ? `${title} ${series.title} ${report.title} ${report.details ?? ''} ${report.year} ${document.label} ${filename} ${REPORT_SOURCE_PAGE} ${REPORT_PAGE_PATH}`
+              : `${series.title} ${report.title} ${report.details ?? ''} ${report.year} ${filename} ${REPORT_SOURCE_PAGE} ${REPORT_PAGE_PATH}`,
+          ),
+        });
+      }
     }
   }
 

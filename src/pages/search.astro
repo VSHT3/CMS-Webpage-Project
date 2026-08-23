@@ -7,13 +7,13 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
 ---
 
 <Layout
-  title="Search Publications — Center for Mesoamerican Studies"
+  title="Search Publications & Reports — Center for Mesoamerican Studies"
   description="Search across publications, reports, and catalogues from the Center for Mesoamerican Studies."
   bodyClass="search-page"
 >
   <div class="search-shell">
     <header class="search-header">
-      <p class="search-eyebrow">Publications</p>
+      <p class="search-eyebrow">Publications &amp; Reports</p>
       <h1 class="search-title">Search</h1>
       <p class="search-subtitle">{items.length} documents indexed across reports, catalogues, and publications.</p>
 
@@ -36,7 +36,7 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
     </header>
 
     <ul class="search-results" data-search-results role="list"></ul>
-    <p class="search-empty" hidden data-search-empty>No matching publications. Try a different keyword.</p>
+    <p class="search-empty" hidden data-search-empty>No matching documents. Try a different keyword.</p>
   </div>
 </Layout>
 
@@ -50,6 +50,7 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
     href: string;
     sourcePage: string;
     sourcePath: string;
+    sourceAnchor?: string;
     search: string;
   };
 
@@ -161,8 +162,8 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
 
       emptyEl.hidden = true;
       statusEl.textContent = matches.length === 1
-        ? `1 publication for "${input.value}".`
-        : `${matches.length} publications for "${input.value}".`;
+        ? `1 document for "${input.value}".`
+        : `${matches.length} documents for "${input.value}".`;
 
       const observer = ensurePreviewObserver();
       const fragment = document.createDocumentFragment();
@@ -205,8 +206,8 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
         openBtn.setAttribute('data-umami-event-doc', docSlug(item.href));
 
         const pageBtn = document.createElement('a');
-        const slug = slugify(item.title);
-        pageBtn.href = `${item.sourcePath || '/'}${slug ? '#' + slug : ''}`;
+        const sourceAnchor = item.sourceAnchor || slugify(item.title);
+        pageBtn.href = `${item.sourcePath || '/'}${sourceAnchor ? '#' + sourceAnchor : ''}`;
         pageBtn.className = 'search-result-btn';
         pageBtn.textContent = 'View on page';
 

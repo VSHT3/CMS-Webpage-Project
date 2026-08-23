@@ -1,0 +1,350 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+interface Publication {
+  title: string;
+  subtitle: string;
+  credit?: string;
+  href: string;
+}
+
+interface PublicationSection {
+  heading: string;
+  publications: Publication[];
+}
+
+const sections: PublicationSection[] = [
+  {
+    heading: 'Books',
+    publications: [
+      {
+        title: 'Slnko s tŕňmi',
+        subtitle: 'Antológia Súčasnej Mayskej Poézie',
+        credit: 'Translated by Milan Kováč',
+        href: '/assets/pdfs/publications/slnko-s-trnmi.pdf',
+      },
+      {
+        title: 'IN THE SHADOW OF XIBALBA',
+        subtitle: 'Maya Caves and Underground Landscapes',
+        credit: 'Edited by Milan Kováč & Fátima Tec Pool',
+        href: '/assets/pdfs/publications/in-the-shadow-of-xibalba.pdf',
+      },
+      {
+        title: 'IN THE REALM OF MAIZE GOD',
+        subtitle: 'The World of Ancient Mayan and Mesoamerican Farmers',
+        credit: 'Edited by Milan Kováč & Jakub Špoták',
+        href: '/assets/pdfs/publications/in-the-realm-of-the-maize-god.pdf',
+      },
+      {
+        title: 'POSTCLASSIC MESOAMERICAN CODICES',
+        subtitle: 'A Selected Bibliography',
+        credit: 'Compiled by Jakub Špoták',
+        href: '/assets/pdfs/publications/spotak-meso-codices-2023.pdf',
+      },
+    ],
+  },
+  {
+    heading: 'Studies',
+    publications: [
+      {
+        title: 'The Legacy of an Early Maya King',
+        subtitle: 'Text, Imagery and Ritual Contexts of a Late Preclassic Cache from Structure H-XVI Sub, Uaxactun',
+        href: '/assets/pdfs/publications/mexicon-cetro.pdf',
+      },
+    ],
+  },
+  {
+    heading: 'Catalogues',
+    publications: [
+      {
+        title: 'CATALOGUE OF SMALL OBJECTS AND TOOLS OF REGIONAL PROJECT UAXACTUN 2009-2019',
+        subtitle: 'Compiled by Jakub Špoták',
+        href: '/assets/pdfs/publications/spotak-catalog-industria-2023.pdf',
+      },
+      {
+        title: 'CATALOGUE OF CERAMICS OF REGIONAL PROJECT UAXACTUN 2009-2019',
+        subtitle: 'Compiled by Jakub Špoták',
+        href: '/assets/pdfs/publications/spotak-catalog-ceramics-2023.pdf',
+      },
+    ],
+  },
+];
+
+const slugifyTitle = (title: string) =>
+  title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const documentSlug = (href: string) =>
+  (href.split(/[?#]/)[0].split('/').pop() ?? '')
+    .replace(/\.pdf$/i, '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+---
+
+<Layout
+  title="Publications — Center for Mesoamerican Studies"
+  description="Books, studies, and catalogues published by the Center for Mesoamerican Studies at Comenius University Bratislava."
+  bodyClass="publications-page"
+>
+  <div class="publications-shell">
+    <header class="publications-header">
+      <div class="publications-header-row">
+        <h1>Publications</h1>
+        <p>Books, studies, and catalogues from the Center's academic work.</p>
+      </div>
+      <hr />
+    </header>
+
+    <div class="publications-sections">
+      {sections.map((section) => {
+        const headingId = slugifyTitle(section.heading);
+        return (
+          <section class="publication-section" aria-labelledby={headingId}>
+            <h2 id={headingId}>{section.heading}</h2>
+            <ol class="publication-list">
+              {section.publications.map((publication) => (
+                <li class="publication-item" id={slugifyTitle(publication.title)}>
+                  <div class="publication-copy">
+                    <h3>{publication.title}</h3>
+                    <p class="publication-subtitle">{publication.subtitle}</p>
+                    {publication.credit && <p class="publication-credit">{publication.credit}</p>}
+                  </div>
+                  <a
+                    class="publication-action"
+                    href={publication.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-umami-event="pdf-download"
+                    data-umami-event-doc={documentSlug(publication.href)}
+                  >Open PDF</a>
+                </li>
+              ))}
+            </ol>
+          </section>
+        );
+      })}
+    </div>
+  </div>
+</Layout>
+
+
+<style>
+  .publications-shell {
+    width: min(100%, 90rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .publications-header {
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .publications-header-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .publications-header h1 {
+    flex-shrink: 0;
+    margin: 0;
+    font-family: var(--site-font-display);
+    font-size: clamp(3.2rem, 7.5vw, 7rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: 0.04em;
+    color: var(--site-text);
+  }
+
+  .publications-header p {
+    max-width: 34ch;
+    margin: 0 0 0.35rem;
+    font-family: var(--site-font-body);
+    font-size: clamp(0.95rem, 1.3vw, 1.08rem);
+    line-height: 1.65;
+    color: var(--site-text-dim);
+    text-wrap: pretty;
+  }
+
+  .publications-header hr {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid color-mix(in oklab, var(--site-gold) 50%, transparent);
+  }
+
+  .publications-sections {
+    display: grid;
+    gap: clamp(3.5rem, 7vw, 6rem);
+  }
+
+  .publication-section {
+    display: grid;
+    grid-template-columns: minmax(8rem, 0.28fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
+  }
+
+  .publication-section h2 {
+    margin: 0;
+    padding-top: 1.35rem;
+    font-family: var(--site-font-ui);
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+  }
+
+  .publication-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .publication-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(1.25rem, 3vw, 3rem);
+    padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(0rem, 1vw, 0.75rem);
+    border-top: 1px solid var(--site-border);
+    scroll-margin-top: 6rem;
+    transition: background-color 320ms var(--site-ease-out);
+  }
+
+  .publication-item:last-child {
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .publication-copy {
+    min-width: 0;
+  }
+
+  .publication-copy h3 {
+    margin: 0;
+    max-width: 52ch;
+    font-family: var(--site-font-display);
+    font-size: clamp(1.15rem, 2vw, 1.55rem);
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    color: var(--site-text-strong);
+    overflow-wrap: anywhere;
+    transition: color 220ms var(--site-ease-out);
+  }
+
+  .publication-subtitle {
+    margin: 0.35rem 0 0;
+    max-width: 62ch;
+    font-family: var(--site-font-body);
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    line-height: 1.6;
+    color: var(--site-text);
+    text-wrap: pretty;
+  }
+
+  .publication-credit {
+    margin: 0.45rem 0 0;
+    font-family: var(--site-font-ui);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    color: var(--site-text-dim);
+  }
+
+  .publication-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.55rem 1rem;
+    border: 1px solid color-mix(in oklab, var(--site-gold) 50%, transparent);
+    font-family: var(--site-font-ui);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--site-gold);
+    transition:
+      border-color 180ms var(--site-ease-out),
+      background-color 180ms var(--site-ease-out),
+      color 180ms var(--site-ease-out);
+  }
+
+  .publication-action:hover,
+  .publication-action:focus-visible {
+    border-color: var(--site-gold);
+    background: color-mix(in oklab, var(--site-gold) 10%, transparent);
+    color: var(--site-text-strong);
+  }
+
+  .publication-action:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--site-gold) 76%, var(--site-text-strong));
+    outline-offset: 4px;
+  }
+
+  .publication-item:target {
+    background: color-mix(in oklab, var(--site-gold) 9%, transparent);
+  }
+
+  .publication-item:target h3 {
+    color: var(--site-gold);
+  }
+
+
+  @media (max-width: 720px) {
+    .publications-header-row {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .publication-section {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .publication-section h2 {
+      padding-top: 0;
+    }
+
+    .publication-item {
+      grid-template-columns: 1fr;
+      align-items: start;
+      gap: 1rem;
+      padding-inline: 0;
+    }
+
+    .publication-action {
+      justify-self: start;
+    }
+  }
+
+  @media (pointer: coarse) {
+    .publication-action {
+      min-height: 2.75rem;
+      padding-inline: 1.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .publication-item,
+    .publication-copy h3,
+    .publication-action {
+      transition: none;
+    }
+
+  }
+</style>

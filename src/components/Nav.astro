@@ -126,7 +126,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           <ul class="dropdown-inner" role="list">
           <li><a href="/paru-uaxactun-history">History</a></li>
           <li><a href="/paru-uaxactun-maps">Maps</a></li>
-          <li><a href="/paru-uaxactun-papers">Papers</a></li>
+          <li><a href="/paru-uaxactun-papers">Archaeological Reports</a></li>
           <li><a href="/paru-uaxactun-gallery">Gallery</a></li>
           <li><a href="/paru-uaxactun-recent-investigations">Recent Investigations</a></li>
           <li><a href="/paru-uaxactun-archeological-artefacts">Archaeological Artefacts</a></li>
@@ -159,7 +159,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       <button
         class="pdf-search-trigger"
         type="button"
-        aria-label="Search publications"
+        aria-label="Search Publications & Reports"
         aria-controls="pdf-search-panel"
         aria-expanded="false"
         data-pdf-search-trigger
@@ -168,18 +168,18 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           <path d="m21 21-4.35-4.35" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path>
           <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
         </svg>
-        <span>Search Publications</span>
+        <span>Search Publications &amp; Reports</span>
       </button>
 
       <section
         class="pdf-search-panel"
         id="pdf-search-panel"
-        aria-label="Search publications"
+        aria-label="Search Publications & Reports"
         aria-hidden="true"
         inert
       >
         <form class="pdf-search-form" role="search" data-pdf-search-form>
-          <label class="pdf-search-label" for="pdf-search-input">Search publications</label>
+          <label class="pdf-search-label" for="pdf-search-input">Search Publications &amp; Reports</label>
           <input
             id="pdf-search-input"
             class="pdf-search-input"
@@ -190,10 +190,10 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
           />
         </form>
         <p class="pdf-search-status" aria-live="polite" data-pdf-search-status>
-          {pdfSearchItems.length} publications indexed.
+          {pdfSearchItems.length} documents indexed.
         </p>
         <ul class="pdf-search-results" id="pdf-search-results" role="list" data-pdf-search-results></ul>
-        <p class="pdf-search-empty" hidden data-pdf-search-empty>No matching publications.</p>
+        <p class="pdf-search-empty" hidden data-pdf-search-empty>No matching documents.</p>
       </section>
     </div>
 
@@ -1028,6 +1028,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     href: string;
     sourcePage: string;
     sourcePath: string;
+    sourceAnchor?: string;
     search: string;
   };
 
@@ -1100,7 +1101,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       pdfSearchResults.replaceChildren();
 
       if (!query) {
-        pdfSearchStatus.textContent = `${pdfItems.length} publications indexed. Type a title, report, catalogue, author, or year.`;
+        pdfSearchStatus.textContent = `${pdfItems.length} documents indexed. Type a title, report, catalogue, author, or year.`;
         pdfSearchEmpty.hidden = true;
         return;
       }
@@ -1142,7 +1143,8 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
         const actions = document.createElement('div');
         actions.className = 'pdf-search-result-actions';
         const pageBtn = document.createElement('a');
-        pageBtn.href = `${item.sourcePath || '/'}${slugifyHeading(item.title) ? '#' + slugifyHeading(item.title) : ''}`;
+        const sourceAnchor = item.sourceAnchor || slugifyHeading(item.title);
+        pageBtn.href = `${item.sourcePath || '/'}${sourceAnchor ? '#' + sourceAnchor : ''}`;
         pageBtn.className = 'pdf-search-result-btn pdf-search-result-btn--page';
         pageBtn.textContent = 'View on page';
         const openBtn = document.createElement('a');
@@ -1162,7 +1164,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       pdfSearchResults.append(fragment);
       pdfSearchEmpty.hidden = matches.length > 0;
       pdfSearchStatus.textContent =
-        matches.length === 1 ? '1 publication found.' : `${matches.length} publications found.`;
+        matches.length === 1 ? '1 document found.' : `${matches.length} documents found.`;
     };
 
     const setSearchState = (open: boolean) => {
@@ -1223,13 +1225,25 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     }, { signal });
 
     window.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
+      if (event.key !== 'Escape') return;
+
+      if (pdfSearch?.classList.contains('is-open')) {
+        event.preventDefault();
         setSearchState(false);
-        setMenuState(false);
-        document
-          .querySelectorAll<HTMLButtonElement>('.nav-dropdown-toggle[aria-expanded="true"]')
-          .forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
+        pdfSearchTrigger?.focus();
+        return;
       }
+
+      if (links?.classList.contains('open')) {
+        event.preventDefault();
+        setMenuState(false);
+        toggle?.focus();
+        return;
+      }
+
+      document
+        .querySelectorAll<HTMLButtonElement>('.nav-dropdown-toggle[aria-expanded="true"]')
+        .forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
     }, { signal });
 
     document.querySelectorAll<HTMLElement>('.has-dropdown').forEach((item) => {

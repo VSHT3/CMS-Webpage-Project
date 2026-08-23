@@ -1,0 +1,437 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { archaeologicalReportSeries } from '../data/archaeological-reports';
+
+const archiveHref = 'https://drive.google.com/drive/folders/1La4VhMMrKLhA9mnwJz98koKcTXG0rJNO?usp=sharing';
+---
+
+<Layout
+  title="Archaeological Reports — PARU Uaxactun — Center for Mesoamerican Studies"
+  description="PARU Uaxactun archaeological reports from the Uaxactun and Petén Noreste series, published by the Center for Mesoamerican Studies."
+  bodyClass="reports-page"
+>
+  <div class="reports-shell">
+    <header class="reports-header reveal-target">
+      <div class="reports-header-row">
+        <div class="reports-heading">
+          <p class="reports-context">PARU Uaxactun</p>
+          <h1 class="reports-page-title">Archaeological Reports</h1>
+        </div>
+        <div class="reports-institution" aria-label="Institutional affiliation">
+          <span>Faculty of Arts</span>
+          <span>Comenius University Bratislava</span>
+        </div>
+      </div>
+      <hr class="reports-rule" />
+    </header>
+
+    <div class="reports-intro reveal-target" style="--reveal-delay: 80ms">
+      <p class="reports-lead">
+        Browse the Uaxactun and Petén Noreste archaeological report series. Each entry links directly to its published PDF.
+      </p>
+    </div>
+
+    <div class="reports-catalog reveal-target" style="--reveal-delay: 140ms">
+      {archaeologicalReportSeries.map((series) => (
+        <section class="report-series" aria-labelledby={`series-${series.id}`}>
+          <header class="series-header">
+            <h2 class="series-title" id={`series-${series.id}`}>{series.title}</h2>
+          </header>
+
+          <ol class="report-list">
+            {series.reports.map((report) => (
+              <li class="report-item" id={report.id}>
+                <div class="report-record">
+                  <h3 class="report-title">{report.title}</h3>
+                  {report.details && <p class="report-details">{report.details}</p>}
+                  <p class="report-year"><span>Year</span> {report.year}</p>
+                </div>
+
+                <div class="report-documents" aria-label={`Documents for ${report.title}`}>
+                  {report.documents.map((document) => (
+                    <a
+                      class="report-link"
+                      href={document.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${document.label} for ${report.title}, ${report.year} (opens in a new tab)`}
+                      data-umami-event="pdf-download"
+                      data-umami-event-doc={document.href.split('/').pop()?.replace(/\.pdf$/i, '')}
+                    >{document.label}</a>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
+    </div>
+
+    <section class="reports-archive reveal-target" style="--reveal-delay: 200ms" aria-labelledby="archive-heading">
+      <h2 class="archive-title" id="archive-heading">Supplementary archive</h2>
+      <p class="archive-text">
+        Supplementary field documentation and photographs are hosted externally in a Google Drive folder. This archive is provided for supplementary browsing; it is not a report or citation destination.
+      </p>
+      <a
+        class="archive-link"
+        href={archiveHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Open the supplementary PARU Uaxactun archive on Google Drive (opens in a new tab)"
+        data-umami-event="external-archive-open"
+      >Open supplementary archive on Google Drive <span aria-hidden="true">↗</span></a>
+    </section>
+  </div>
+</Layout>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll<HTMLElement>('.reveal-target');
+
+  if (!reduceMotion && targets.length > 0 && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const element = entry.target as HTMLElement;
+            element.style.transitionDelay = element.style.getPropertyValue('--reveal-delay') || '0ms';
+            element.classList.add('is-visible');
+            observer.unobserve(element);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+    );
+
+    targets.forEach((element) => {
+      element.classList.add('will-reveal');
+      observer.observe(element);
+    });
+  }
+</script>
+
+<style>
+  .reports-shell {
+    width: min(100%, 90rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .reports-header {
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .reports-header-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .reports-heading {
+    display: grid;
+    min-width: 0;
+    gap: clamp(0.75rem, 1.4vw, 1rem);
+  }
+
+  .reports-page-title {
+    max-width: 14ch;
+    margin: 0;
+    font-family: var(--site-font);
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--site-text);
+    text-wrap: balance;
+  }
+
+  .reports-institution {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    padding-bottom: 0.3rem;
+  }
+
+  .reports-institution span {
+    font-family: var(--site-font);
+    font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+    line-height: 1.4;
+    letter-spacing: 0.1em;
+    text-align: right;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+  }
+
+  .reports-rule {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid oklch(0.76 0.08 92 / 0.5);
+  }
+
+  .reports-intro {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(2rem, 4vw, 3rem) 0;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .reports-context {
+    margin: 0;
+    font-family: var(--site-font-ui);
+    font-size: clamp(0.78rem, 1.1vw, 0.88rem);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--site-gold);
+  }
+
+  .reports-lead {
+    max-width: 65ch;
+    margin: 0;
+    font-size: clamp(1rem, 1.35vw, 1.1rem);
+    line-height: 1.8;
+    color: var(--site-text);
+    text-wrap: pretty;
+  }
+
+  .reports-catalog {
+    padding: clamp(2.5rem, 5vw, 4rem) 0;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .report-series + .report-series {
+    margin-top: clamp(3rem, 6vw, 5rem);
+  }
+
+  .series-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: clamp(1.25rem, 2vw, 1.75rem);
+  }
+
+  .series-title {
+    margin: 0;
+    font-family: var(--site-font-display);
+    font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--site-text-strong);
+  }
+
+  .report-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--site-border);
+  }
+
+  .report-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(0.75rem, 2vw, 1.25rem);
+    border-top: 1px solid var(--site-border);
+    scroll-margin-top: 7rem;
+    transition: background-color 320ms var(--site-ease-out);
+  }
+
+  .report-item:target {
+    background: color-mix(in oklab, var(--site-gold) 10%, transparent);
+  }
+
+  .report-record {
+    min-width: 0;
+  }
+
+  .report-title {
+    margin: 0;
+    font-family: var(--site-font-display);
+    font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+    color: var(--site-text-strong);
+    text-wrap: pretty;
+    transition: color 220ms var(--site-ease-out);
+  }
+
+  .report-item:target .report-title {
+    color: var(--site-gold);
+  }
+
+  .report-details {
+    margin: 0.35rem 0 0;
+    font-size: clamp(0.88rem, 1.1vw, 0.98rem);
+    line-height: 1.55;
+    color: var(--site-text-dim);
+    text-wrap: pretty;
+  }
+
+  .report-year {
+    margin: 0.45rem 0 0;
+    font-family: var(--site-font-ui);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-text-dim);
+  }
+
+  .report-year span {
+    margin-inline-end: 0.45rem;
+    color: var(--site-teal);
+  }
+
+  .report-documents {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .report-link,
+  .archive-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    font-family: var(--site-font-ui);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .report-link {
+    padding: 0.65rem 1rem;
+    border: 1px solid color-mix(in oklab, var(--site-gold) 50%, transparent);
+    color: var(--site-gold);
+    transition: border-color 180ms var(--site-ease-out), color 180ms var(--site-ease-out);
+    white-space: nowrap;
+  }
+
+  .report-link:hover,
+  .report-link:focus-visible {
+    border-color: var(--site-gold);
+    color: var(--site-text-strong);
+  }
+
+  .report-link:focus-visible,
+  .archive-link:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--site-gold) 76%, var(--site-text-strong));
+    outline-offset: 3px;
+  }
+
+  .reports-archive {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(2.5rem, 5vw, 4rem) 0 0;
+  }
+
+  .archive-title {
+    margin: 0;
+    font-family: var(--site-font-display);
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+    font-weight: 500;
+    color: var(--site-text-strong);
+  }
+
+  .archive-text {
+    max-width: 65ch;
+    margin: 0;
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    line-height: 1.75;
+    color: var(--site-text);
+    text-wrap: pretty;
+  }
+
+  .archive-link {
+    justify-self: start;
+    gap: 0.5rem;
+    padding: 0.65rem 0;
+    color: var(--site-gold);
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0 1px;
+    transition: background-size 320ms var(--site-ease-out), color 180ms var(--site-ease-out);
+  }
+
+  .archive-link:hover,
+  .archive-link:focus-visible {
+    color: var(--site-text-strong);
+    background-size: 100% 1px;
+  }
+
+  .will-reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 500ms var(--site-ease-out), transform 600ms var(--site-ease-out);
+    will-change: opacity, transform;
+  }
+
+  .will-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 679px) {
+    .reports-header-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .reports-institution {
+      align-items: flex-start;
+    }
+
+    .reports-institution span {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .report-item {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .report-documents {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .report-documents {
+      display: grid;
+    }
+
+    .report-link {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .report-item,
+    .report-title,
+    .report-link,
+    .archive-link,
+    .will-reveal {
+      transition: none;
+    }
+
+    .will-reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
