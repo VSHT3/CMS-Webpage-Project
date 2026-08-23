@@ -1083,6 +1083,16 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
 
+    const docSlug = (href: string) =>
+      (href.split(/[?#]/)[0].split('/').pop() ?? '')
+        .replace(/\.pdf$/i, '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 60);
+
     const renderPdfResults = () => {
       if (!pdfSearchInput || !pdfSearchResults || !pdfSearchStatus || !pdfSearchEmpty) return;
 
@@ -1141,6 +1151,8 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
         openBtn.rel = 'noopener noreferrer';
         openBtn.className = 'pdf-search-result-btn pdf-search-result-btn--open';
         openBtn.textContent = 'Open document';
+        openBtn.setAttribute('data-umami-event', 'pdf-download');
+        openBtn.setAttribute('data-umami-event-doc', docSlug(item.href));
         actions.append(pageBtn, openBtn);
         card.append(info, actions);
         result.append(card);

@@ -62,7 +62,7 @@ const archivesHref = 'https://drive.google.com/drive/folders/1La4VhMMrKLhA9mnwJz
               <span class="research-report-title">{r.title}</span>
               <span class="research-report-links">
                 {r.links.map((l) => (
-                  <a href={l.href} class="research-report-link" target="_blank" rel="noopener noreferrer">{l.label}</a>
+                  <a href={l.href} class="research-report-link" target="_blank" rel="noopener noreferrer" data-umami-event="pdf-download" data-umami-event-doc={l.href.split('/').pop()?.replace(/\.pdf$/i, '')}>{l.label}</a>
                 ))}
               </span>
             </li>
@@ -78,7 +78,7 @@ const archivesHref = 'https://drive.google.com/drive/folders/1La4VhMMrKLhA9mnwJz
               <span class="research-report-title">{r.title}</span>
               <span class="research-report-links">
                 {r.links.map((l) => (
-                  <a href={l.href} class="research-report-link" target="_blank" rel="noopener noreferrer">{l.label}</a>
+                  <a href={l.href} class="research-report-link" target="_blank" rel="noopener noreferrer" data-umami-event="pdf-download" data-umami-event-doc={l.href.split('/').pop()?.replace(/\.pdf$/i, '')}>{l.label}</a>
                 ))}
                 {r.links.length === 0 && <span class="research-report-pending">Coming soon</span>}
               </span>
@@ -93,7 +93,7 @@ const archivesHref = 'https://drive.google.com/drive/folders/1La4VhMMrKLhA9mnwJz
       <p class="research-archives-text">
         Full field documentation, photographs, and supplementary materials are preserved in the project archives.
       </p>
-      <a href={archivesHref} class="research-archives-link" target="_blank" rel="noopener noreferrer">Browse archives</a>
+      <a href={archivesHref} class="research-archives-link" target="_blank" rel="noopener noreferrer" data-umami-event="pdf-download" data-umami-event-doc="paru-archives">Browse archives</a>
     </section>
 
   </div>

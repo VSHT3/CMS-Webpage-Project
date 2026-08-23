@@ -52,7 +52,7 @@ const members: { name: string; role: string; email?: string; bio?: string }[] = 
                 <div class="members-item-role">{member.role}</div>
                 {member.bio && <p class="members-item-bio">{member.bio}</p>}
                 {member.email && (
-                  <a href={`mailto:${member.email}`} class="members-item-email">{member.email}</a>
+                  <a href={`mailto:${member.email}`} class="members-item-email" data-umami-event="mail-click">{member.email}</a>
                 )}
               </div>
             </li>

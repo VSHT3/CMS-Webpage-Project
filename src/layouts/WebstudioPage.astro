@@ -225,6 +225,48 @@ const renderAttrs = (tag: string, attrs: Record<string, string> = {}) => {
   return rendered.length ? ` ${rendered.join(' ')}` : '';
 };
 
+// Cookieless conversion tracking for legacy anchors: tel/mailto links and
+// document downloads (a[href$=".pdf"] or a[download]). Resolved once here so
+// every legacy page rendered through this layout gets it, without touching
+// per-page markup. Slugs are derived from the (already-canonical, non-PII)
+// href/download filename — never the free-text link label.
+const getLegacyDocSlug = (value: string) => {
+  const base = decodeEntities(value).trim().split(/[?#]/)[0].split('/').pop() ?? '';
+  return base
+    .replace(/\.pdf$/i, '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+};
+
+const getLegacyLinkTracking = (attrs: Record<string, string> = {}) => {
+  const hrefRaw = decodeEntities(attrs.href ?? '').trim();
+  if (!hrefRaw) {
+    return '';
+  }
+
+  if (/^tel:/i.test(hrefRaw)) {
+    return ' data-umami-event="tel-click"';
+  }
+
+  if (/^mailto:/i.test(hrefRaw)) {
+    return ' data-umami-event="mail-click"';
+  }
+
+  const href = rewriteLegacyAssetUrl(hrefRaw);
+  const downloadName = decodeEntities(attrs.download ?? '').trim();
+  const isDocument = downloadName !== '' || /\.pdf(?:[?#]|$)/i.test(href);
+  if (!isDocument) {
+    return '';
+  }
+
+  const slug = getLegacyDocSlug(downloadName || href);
+  return ` data-umami-event="pdf-download"${slug ? ` data-umami-event-doc="${escapeAttribute(slug)}"` : ''}`;
+};
+
 const getAssetName = (src = '') => {
   const normalized = decodeEntities(src).trim();
   if (!normalized.startsWith('/assets/')) {
@@ -426,7 +468,8 @@ const renderCleanNode = (node: LegacyNode): string => {
     if (!node.attributes?.href) {
       return children;
     }
-    return `<a${attrs}>${children}</a>`;
+    const tracking = getLegacyLinkTracking(node.attributes);
+    return `<a${attrs}${tracking}>${children}</a>`;
   }
 
   if (['strong', 'b', 'em', 'i'].includes(tag)) {

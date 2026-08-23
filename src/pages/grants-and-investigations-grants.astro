@@ -36,7 +36,7 @@ const grants = [
               {g.description && <p class="gl-grant-desc">{g.description}</p>}
               <p class="gl-grant-researcher">Researcher: {g.researcher}</p>
               {g.pdf && (
-                <a href={g.pdf.href} class="gl-grant-pdf" target="_blank" rel="noopener noreferrer">{g.pdf.label}</a>
+                <a href={g.pdf.href} class="gl-grant-pdf" target="_blank" rel="noopener noreferrer" data-umami-event="pdf-download" data-umami-event-doc={g.pdf.href.split('/').pop()?.replace(/\.pdf$/i, '')}>{g.pdf.label}</a>
               )}
             </div>
           </li>
