@@ -208,7 +208,8 @@ const formatNumber = (value: number) => numberFormatter.format(value);
 
   function initPotbellyDatabase() {
     const root = document.querySelector<HTMLElement>('[data-potbelly-database]');
-    if (!root) return;
+    if (!root || root.dataset.databaseInitialized === 'true') return;
+    root.dataset.databaseInitialized = 'true';
 
     const stage = root.querySelector<HTMLElement>('[data-model-stage]');
     const viewerPanel = root.querySelector<HTMLElement>('.viewer-panel');
@@ -233,7 +234,6 @@ const formatNumber = (value: number) => numberFormatter.format(value);
     const recordButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-model-select]'));
     const yearButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-year-filter]'));
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const stackedLayout = window.matchMedia('(max-width: 67.99rem)');
 
     if (!stage || recordButtons.length === 0) return;
 
@@ -281,6 +281,11 @@ const formatNumber = (value: number) => numberFormatter.format(value);
     };
 
     const createViewer = () => {
+      if (stage.querySelector('model-viewer')) {
+        applyModelToViewer();
+        return;
+      }
+
       const data = selectedData();
       const viewer = document.createElement('model-viewer') as ModelViewerElement;
       viewer.setAttribute('poster', data.posterUrl || '');
@@ -437,13 +442,42 @@ const formatNumber = (value: number) => numberFormatter.format(value);
         window.history.replaceState(null, '', url);
       }
 
-      if (options.scrollToViewer && stackedLayout.matches && viewerPanel) {
+      if (options.scrollToViewer && viewerPanel) {
         viewerPanel.scrollIntoView({
           behavior: reducedMotion.matches ? 'auto' : 'smooth',
           block: 'start',
         });
       }
     };
+    const findHashRecord = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash) return;
+
+      try {
+        const id = decodeURIComponent(hash);
+        return recordButtons.find((button) => button.dataset.id === id);
+      } catch {
+        return;
+      }
+    };
+
+    const selectHashRecord = () => {
+      const button = findHashRecord();
+      if (!button) return false;
+
+      selectRecord(button, { updateUrl: false, scrollToViewer: true });
+      requestViewer();
+      return true;
+    };
+
+    const handleHashChange = () => {
+      if (!root.isConnected) {
+        window.removeEventListener('hashchange', handleHashChange);
+        return;
+      }
+      selectHashRecord();
+    };
+
 
     const filterRecords = () => {
       const query = searchInput?.value.trim().toLowerCase() || '';
@@ -492,11 +526,14 @@ const formatNumber = (value: number) => numberFormatter.format(value);
       }
     });
 
-    const requestedId = decodeURIComponent(window.location.hash.slice(1));
-    const requestedButton = requestedId
-      ? recordButtons.find((button) => button.dataset.id === requestedId)
-      : undefined;
-    selectRecord(requestedButton || recordButtons[0], { updateUrl: false });
+    window.addEventListener('hashchange', handleHashChange);
+    document.addEventListener('astro:before-swap', () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    }, { once: true });
+
+    if (!selectHashRecord()) {
+      selectRecord(recordButtons[0], { updateUrl: false });
+    }
   }
 
   document.addEventListener('astro:page-load', initPotbellyDatabase);

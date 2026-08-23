@@ -1,12 +1,13 @@
 ---
-import { evenlySampled, recordHref, totalRecords } from '../../lib/potbelly';
+import { recordHref, selectRecords, totalRecords } from '../../lib/potbelly';
 
-/*
-  Sampled across the whole catalogue rather than from the newest end: HomeRecent
-  renders newest(6) further down the same page, and drawing both from the same
-  end would print the same posters twice.
-*/
-const mosaic = evenlySampled(5);
+const mosaic = selectRecords([
+  'my-scene',
+  '2025-12-08-a',
+  '2026-07-11-b',
+  '2026-07-11-c',
+  '2026-07-10-a',
+] as const);
 ---
 <section class="potbelly h-band h-band--abyss">
   <div class="h-track--wide potbelly-grid">

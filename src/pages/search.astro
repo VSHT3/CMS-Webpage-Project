@@ -1,30 +1,34 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { buildPdfSearchIndex } from '../lib/pdf-search';
+import { buildSiteSearchIndex } from '../lib/site-search';
 
-const items = buildPdfSearchIndex();
+const items = buildSiteSearchIndex();
+const pageCount = items.filter((item) => item.kind === 'page').length;
+const documentCount = items.length - pageCount;
 const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
 ---
 
 <Layout
-  title="Search Publications & Reports — Center for Mesoamerican Studies"
-  description="Search across publications, reports, and catalogues from the Center for Mesoamerican Studies."
+  title="Site Search — Center for Mesoamerican Studies"
+  description="Search pages, publications, archaeological reports, catalogues, and research resources from the Center for Mesoamerican Studies."
   bodyClass="search-page"
 >
   <div class="search-shell">
     <header class="search-header">
-      <p class="search-eyebrow">Publications &amp; Reports</p>
-      <h1 class="search-title">Search</h1>
-      <p class="search-subtitle">{items.length} documents indexed across reports, catalogues, and publications.</p>
+      <p class="search-eyebrow">Site search</p>
+      <h1 class="search-title">Search the Center</h1>
+      <p class="search-subtitle">
+        Search {pageCount} pages and {documentCount} documents across the Center’s research, collections, publications, and archives.
+      </p>
 
-      <form class="search-form" method="get" action="/search" data-search-form>
-        <label for="search-input" class="visually-hidden">Search query</label>
+      <form class="search-form" role="search" method="get" action="/search" data-search-form>
+        <label for="search-input" class="visually-hidden">Search the site</label>
         <input
           id="search-input"
           class="search-input"
           type="search"
           name="q"
-          placeholder="Type a title, year, author, or keyword..."
+          placeholder="Search pages, reports, authors, years, or topics"
           autocomplete="off"
           autofocus
           data-search-input
@@ -36,62 +40,30 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
     </header>
 
     <ul class="search-results" data-search-results role="list"></ul>
-    <p class="search-empty" hidden data-search-empty>No matching documents. Try a different keyword.</p>
+    <p class="search-empty" hidden data-search-empty>No matching pages or documents. Try a different title, name, or topic.</p>
   </div>
 </Layout>
 
 <script type="application/json" id="search-data" set:html={itemsJson} is:inline></script>
 
 <script>
-  type PdfSearchItem = {
-    title: string;
-    filename: string;
-    displayFilename: string;
-    href: string;
-    sourcePage: string;
-    sourcePath: string;
-    sourceAnchor?: string;
-    search: string;
-  };
-
-  const normalizeQuery = (value = '') =>
-    value
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[̀-ͯ]/g, '')
-      .replace(/[_./-]+/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-  const slugify = (text: string) =>
-    text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[̀-ͯ]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-
-  const docSlug = (href: string) =>
-    (href.split(/[?#]/)[0].split('/').pop() ?? '')
-      .replace(/\.pdf$/i, '')
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[̀-ͯ]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 60);
+  import type { SiteSearchItem } from '../lib/site-search';
+  import { rankSearchItems } from '../lib/search-match';
 
   let previewObserver: IntersectionObserver | null = null;
 
   const ensurePreviewObserver = () => {
     if (previewObserver || !('IntersectionObserver' in window)) return previewObserver;
+
     previewObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
+
           const wrapper = entry.target as HTMLElement;
           const src = wrapper.getAttribute('data-preview-src');
           if (!src) return;
+
           const iframe = document.createElement('iframe');
           iframe.src = `${src}#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&messages=0&pagemode=none&view=FitV`;
           iframe.title = wrapper.getAttribute('data-preview-title') ?? 'PDF preview';
@@ -104,122 +76,130 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
       },
       { rootMargin: '320px 0px' },
     );
+
     return previewObserver;
   };
 
   const init = () => {
-    const dataEl = document.querySelector<HTMLScriptElement>('#search-data');
+    const dataElement = document.querySelector<HTMLScriptElement>('#search-data');
     const form = document.querySelector<HTMLFormElement>('[data-search-form]');
     const input = document.querySelector<HTMLInputElement>('[data-search-input]');
-    const resultsEl = document.querySelector<HTMLElement>('[data-search-results]');
-    const statusEl = document.querySelector<HTMLElement>('[data-search-status]');
-    const emptyEl = document.querySelector<HTMLElement>('[data-search-empty]');
-    if (!dataEl || !form || !input || !resultsEl || !statusEl || !emptyEl) return;
+    const resultsElement = document.querySelector<HTMLElement>('[data-search-results]');
+    const statusElement = document.querySelector<HTMLElement>('[data-search-status]');
+    const emptyElement = document.querySelector<HTMLElement>('[data-search-empty]');
+    if (!dataElement || !form || !input || !resultsElement || !statusElement || !emptyElement) return;
 
-    const items: PdfSearchItem[] = JSON.parse(dataEl.textContent || '[]');
-
+    const items: SiteSearchItem[] = JSON.parse(dataElement.textContent || '[]');
     const urlQuery = new URL(window.location.href).searchParams.get('q') ?? '';
     if (urlQuery) input.value = urlQuery;
 
     const render = () => {
       previewObserver?.disconnect();
       previewObserver = null;
+      resultsElement.replaceChildren();
 
-      const query = normalizeQuery(input.value);
-      resultsEl.replaceChildren();
-
-      if (!query) {
-        statusEl.textContent = 'Type a query to begin searching.';
-        emptyEl.hidden = true;
+      const visibleQuery = input.value.trim();
+      if (!visibleQuery) {
+        statusElement.textContent = 'Search by page, publication, report title, author, year, or topic.';
+        emptyElement.hidden = true;
         return;
       }
 
-      const terms = query.split(' ').filter(Boolean);
-      const matches = items
-        .map((item) => {
-          if (!terms.every((term) => item.search.includes(term))) return null;
-          let score = 0;
-          const title = normalizeQuery(item.title);
-          const filename = normalizeQuery(item.filename);
-          const source = normalizeQuery(item.sourcePage);
-          terms.forEach((term) => {
-            if (title.startsWith(term)) score += 18;
-            if (filename.startsWith(term)) score += 14;
-            if (title.includes(term)) score += 8;
-            if (filename.includes(term)) score += 6;
-            if (source.includes(term)) score += 3;
-          });
-          return { item, score };
-        })
-        .filter((m): m is { item: PdfSearchItem; score: number } => Boolean(m))
-        .sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title));
-
+      const matches = rankSearchItems(items, visibleQuery);
       if (matches.length === 0) {
-        statusEl.textContent = `No results for "${input.value}".`;
-        emptyEl.hidden = false;
+        statusElement.textContent = `No results for “${visibleQuery}”.`;
+        emptyElement.hidden = false;
         return;
       }
 
-      emptyEl.hidden = true;
-      statusEl.textContent = matches.length === 1
-        ? `1 document for "${input.value}".`
-        : `${matches.length} documents for "${input.value}".`;
+      emptyElement.hidden = true;
+      statusElement.textContent = matches.length === 1
+        ? `1 result for “${visibleQuery}”.`
+        : `${matches.length} results for “${visibleQuery}”.`;
 
-      const observer = ensurePreviewObserver();
       const fragment = document.createDocumentFragment();
 
       matches.forEach(({ item }) => {
-        const li = document.createElement('li');
-        li.className = 'search-result';
-
-        const preview = document.createElement('div');
-        preview.className = 'search-result-preview';
-        preview.setAttribute('data-preview-src', item.href);
-        preview.setAttribute('data-preview-title', `${item.title} — preview`);
-        preview.innerHTML = '<span class="search-result-preview-spinner" aria-hidden="true">PDF</span>';
+        const result = document.createElement('li');
+        result.className = `search-result search-result--${item.kind}`;
 
         const info = document.createElement('div');
         info.className = 'search-result-info';
+
+        const meta = document.createElement('p');
+        meta.className = 'search-result-meta';
+        meta.textContent = `${item.kind === 'page' ? 'Page' : 'Document'} · ${item.context}`;
 
         const title = document.createElement('h2');
         title.className = 'search-result-title';
         title.textContent = item.title;
 
-        const meta = document.createElement('p');
-        meta.className = 'search-result-meta';
-        meta.textContent = item.sourcePage;
+        const description = document.createElement('p');
+        description.className = 'search-result-description';
+        description.textContent = item.description;
 
-        const filename = document.createElement('p');
-        filename.className = 'search-result-filename';
-        filename.textContent = item.displayFilename;
+        info.append(meta, title, description);
+
+        if (item.filename) {
+          const filename = document.createElement('p');
+          filename.className = 'search-result-filename';
+          filename.textContent = item.filename;
+          info.append(filename);
+        }
 
         const actions = document.createElement('div');
         actions.className = 'search-result-actions';
 
-        const openBtn = document.createElement('a');
-        openBtn.href = item.href;
-        openBtn.target = '_blank';
-        openBtn.rel = 'noopener noreferrer';
-        openBtn.className = 'search-result-btn search-result-btn--primary';
-        openBtn.textContent = 'Open document';
-        openBtn.setAttribute('data-umami-event', 'pdf-download');
-        openBtn.setAttribute('data-umami-event-doc', docSlug(item.href));
+        if (item.kind === 'page') {
+          const pageButton = document.createElement('a');
+          pageButton.href = item.href;
+          pageButton.className = 'search-result-btn search-result-btn--primary';
+          pageButton.textContent = 'Open page';
+          actions.append(pageButton);
+        } else {
+          const pageButton = document.createElement('a');
+          pageButton.href = item.pageHref;
+          pageButton.className = 'search-result-btn';
+          pageButton.textContent = 'View on page';
 
-        const pageBtn = document.createElement('a');
-        const sourceAnchor = item.sourceAnchor || slugify(item.title);
-        pageBtn.href = `${item.sourcePath || '/'}${sourceAnchor ? '#' + sourceAnchor : ''}`;
-        pageBtn.className = 'search-result-btn';
-        pageBtn.textContent = 'View on page';
+          const documentButton = document.createElement('a');
+          documentButton.href = item.href;
+          documentButton.target = '_blank';
+          documentButton.rel = 'noopener noreferrer';
+          documentButton.className = 'search-result-btn search-result-btn--primary';
+          documentButton.textContent = 'Open document';
+          documentButton.setAttribute('data-umami-event', 'pdf-download');
+          const analyticsDocumentSlug = (item.href.split(/[?#]/)[0].split('/').pop() ?? '')
+            .replace(/\.pdf$/i, '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .slice(0, 60);
+          documentButton.setAttribute('data-umami-event-doc', analyticsDocumentSlug);
 
-        actions.append(openBtn, pageBtn);
-        info.append(title, meta, filename, actions);
-        li.append(preview, info);
-        fragment.append(li);
+          actions.append(pageButton, documentButton);
+        }
 
-        if (observer) observer.observe(preview);
+        info.append(actions);
+
+        if (item.kind === 'document') {
+          const preview = document.createElement('div');
+          preview.className = 'search-result-preview';
+          preview.setAttribute('data-preview-src', item.href);
+          preview.setAttribute('data-preview-title', `${item.title} — preview`);
+          preview.innerHTML = '<span class="search-result-preview-spinner" aria-hidden="true">PDF</span>';
+          result.append(preview, info);
+          ensurePreviewObserver()?.observe(preview);
+        } else {
+          result.append(info);
+        }
+
+        fragment.append(result);
       });
 
-      resultsEl.append(fragment);
+      resultsElement.append(fragment);
     };
 
     let inputDebounce = 0;
@@ -277,13 +257,16 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
     line-height: 0.95;
     letter-spacing: 0.02em;
     color: var(--site-text-strong);
+    text-wrap: balance;
   }
 
   .search-subtitle {
+    max-width: 70ch;
     margin: 0;
     color: var(--site-text-dim);
     font-size: clamp(0.9rem, 1.2vw, 1rem);
     line-height: 1.6;
+    text-wrap: pretty;
   }
 
   .search-form {
@@ -348,6 +331,7 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
   }
 
   .search-status {
+    min-height: 1.5em;
     margin: 0;
     color: var(--site-text-dim);
     font-size: 0.92rem;
@@ -397,6 +381,15 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
     background: color-mix(in oklab, var(--site-surface) 48%, transparent);
   }
 
+  .search-result--page {
+    grid-template-columns: 1fr;
+    padding-block: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  .search-result--page .search-result-info {
+    max-width: 68rem;
+  }
+
   .search-result-preview {
     position: relative;
     aspect-ratio: 1 / 1.414;
@@ -430,7 +423,7 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
   .search-result-info {
     display: grid;
     align-content: start;
-    gap: 0.5rem;
+    gap: 0.55rem;
   }
 
   .search-result-title {
@@ -446,10 +439,19 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
   .search-result-meta {
     margin: 0;
     font-family: var(--site-font);
-    font-size: 0.82rem;
-    letter-spacing: 0.06em;
+    font-size: 0.78rem;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--site-gold);
+  }
+
+  .search-result-description {
+    max-width: 68ch;
+    margin: 0.15rem 0 0;
+    color: var(--site-text);
+    font-size: 0.94rem;
+    line-height: 1.65;
+    text-wrap: pretty;
   }
 
   .search-result-filename {
@@ -464,7 +466,7 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
-    margin-top: 0.5rem;
+    margin-top: 0.65rem;
   }
 
   .search-result-btn {

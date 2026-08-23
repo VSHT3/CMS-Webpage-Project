@@ -39,16 +39,17 @@ export function newest(count: number): ModelRecord[] {
 }
 
 /**
- * `count` records spread evenly across the whole catalogue by index.
+ * Resolve an intentional record selection in the supplied order.
  *
- * Deliberately not drawn from the newest end: the homepage shows `newest(6)`
- * elsewhere on the same page, and sampling both from the same end would render
- * the same posters twice.
+ * Curated surfaces should fail at build time when catalogue data changes rather
+ * than quietly substituting a different record.
  */
-export function evenlySampled(count: number): ModelRecord[] {
-  if (count >= records.length) return [...records];
-  const step = records.length / count;
-  return Array.from({ length: count }, (_, i) => records[Math.floor(i * step)]);
+export function selectRecords(ids: readonly ModelRecord['id'][]): ModelRecord[] {
+  return ids.map((id) => {
+    const record = records.find((candidate) => candidate.id === id);
+    if (!record) throw new Error(`Unknown potbelly record: ${id}`);
+    return record;
+  });
 }
 
 /** Deep link into the 3D database, which selects the record from the hash. */

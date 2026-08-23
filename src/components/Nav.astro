@@ -1,8 +1,8 @@
 ---
-import { buildPdfSearchIndex } from '../lib/pdf-search';
+import { buildSiteSearchIndex } from '../lib/site-search';
 
-const pdfSearchItems = buildPdfSearchIndex();
-const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
+const siteSearchItems = buildSiteSearchIndex();
+const siteSearchJson = JSON.stringify(siteSearchItems).replace(/</g, '\\u003c');
 ---
 <header class="site-nav-wrapper">
   <nav class="site-nav" role="navigation" aria-label="Main navigation">
@@ -115,7 +115,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
 
       <li class="nav-item has-dropdown">
         <div class="nav-link-group">
-          <a href="/paru-uaxactun-history" class="nav-link nav-parent-link">PARU Uaxactun</a>
+          <a href="/paru-uaxactun-papers" class="nav-link nav-parent-link">PARU Uaxactun</a>
           <button class="nav-dropdown-toggle" type="button" aria-label="Toggle PARU Uaxactun menu" aria-haspopup="true" aria-expanded="false" data-dropdown-trigger>
           <svg class="chevron" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m4 6 4 4 4-4"/>
@@ -155,45 +155,43 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
 
     </ul>
 
-    <div class="pdf-search" data-pdf-search>
+    <div class="site-search" data-site-search>
       <button
-        class="pdf-search-trigger"
+        class="site-search-trigger"
         type="button"
-        aria-label="Search Publications & Reports"
-        aria-controls="pdf-search-panel"
+        aria-label="Search site"
+        aria-controls="site-search-panel"
         aria-expanded="false"
-        data-pdf-search-trigger
+        data-site-search-trigger
       >
-        <svg class="pdf-search-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <svg class="site-search-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
           <path d="m21 21-4.35-4.35" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path>
           <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
         </svg>
-        <span>Search Publications &amp; Reports</span>
+        <span>Search site</span>
       </button>
 
       <section
-        class="pdf-search-panel"
-        id="pdf-search-panel"
-        aria-label="Search Publications & Reports"
+        class="site-search-panel"
+        id="site-search-panel"
+        aria-label="Search site"
         aria-hidden="true"
         inert
       >
-        <form class="pdf-search-form" role="search" data-pdf-search-form>
-          <label class="pdf-search-label" for="pdf-search-input">Search Publications &amp; Reports</label>
+        <form class="site-search-form" role="search" data-site-search-form>
+          <label class="site-search-label" for="site-search-input">Search site</label>
           <input
-            id="pdf-search-input"
-            class="pdf-search-input"
+            id="site-search-input"
+            class="site-search-input"
             type="search"
             autocomplete="off"
-            placeholder="Type a title, report, catalogue, author, or year"
-            data-pdf-search-input
+            placeholder="Search pages, databases, reports, authors, or years"
+            data-site-search-input
           />
         </form>
-        <p class="pdf-search-status" aria-live="polite" data-pdf-search-status>
-          {pdfSearchItems.length} documents indexed.
-        </p>
-        <ul class="pdf-search-results" id="pdf-search-results" role="list" data-pdf-search-results></ul>
-        <p class="pdf-search-empty" hidden data-pdf-search-empty>No matching documents.</p>
+        <p class="site-search-status" aria-live="polite" data-site-search-status></p>
+        <ul class="site-search-results" id="site-search-results" role="list" data-site-search-results></ul>
+        <p class="site-search-empty" hidden data-site-search-empty>No matching pages or documents.</p>
       </section>
     </div>
 
@@ -209,9 +207,10 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       <span class="hamburger-line"></span>
     </button>
   </nav>
+  <div class="nav-scrim" aria-hidden="true" data-nav-scrim></div>
 </header>
 
-<script type="application/json" id="pdf-search-data" set:html={pdfSearchJson} is:inline></script>
+<script type="application/json" id="site-search-data" set:html={siteSearchJson} is:inline></script>
 
 <style>
   :root {
@@ -222,6 +221,8 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     --nav-gold: var(--site-gold);
     --nav-gold-light: oklch(0.84 0.075 88);
     --nav-border: oklch(0.52 0.04 190 / 0.72);
+    --nav-scrim: oklch(0.1 0.018 204 / 0.5);
+    --nav-sheet-shadow: oklch(0.1 0.018 204 / 0.28);
     --nav-logo-h: 92px;
     --nav-font: var(--site-font-display);
     --nav-ease: var(--site-ease-out, cubic-bezier(0.22, 1, 0.36, 1));
@@ -293,6 +294,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     display: flex;
     align-items: stretch;
     flex: 0 1 auto;
+    min-width: max-content;
     justify-content: center;
   }
 
@@ -402,6 +404,15 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       visibility 0s linear;
   }
 
+  /* Search and navigation dropdowns share the same top-layer space. */
+  .site-nav.has-open-search .dropdown {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(0.35rem);
+    transition: none;
+  }
+
   /* .dropdown-inner: transparent passthrough on desktop, grid child on mobile */
   .dropdown-inner {
     display: contents;
@@ -442,14 +453,14 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     display: none;
   }
 
-  .pdf-search {
+  .site-search {
     position: relative;
     display: flex;
     align-items: center;
     flex: 0 0 auto;
   }
 
-  .pdf-search-trigger {
+  .site-search-trigger {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -475,19 +486,19 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       transform 180ms var(--nav-ease);
   }
 
-  .pdf-search-trigger:hover,
-  .pdf-search-trigger:focus-visible,
-  .pdf-search.is-open .pdf-search-trigger {
+  .site-search-trigger:hover,
+  .site-search-trigger:focus-visible,
+  .site-search.is-open .site-search-trigger {
     color: var(--nav-gold);
     border-color: color-mix(in oklab, var(--nav-gold) 64%, transparent);
     background: oklch(0.84 0.075 88 / 0.1);
   }
 
-  .pdf-search-trigger:active {
+  .site-search-trigger:active {
     transform: translateY(1px);
   }
 
-  .pdf-search-panel {
+  .site-search-panel {
     position: absolute;
     top: calc(100% + 0.65rem);
     right: 0;
@@ -508,7 +519,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       visibility 0s linear 220ms;
   }
 
-  .pdf-search.is-open .pdf-search-panel {
+  .site-search.is-open .site-search-panel {
     opacity: 1;
     pointer-events: auto;
     visibility: visible;
@@ -519,13 +530,13 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       visibility 0s linear;
   }
 
-  .pdf-search-form {
+  .site-search-form {
     display: grid;
     gap: 0.55rem;
     margin: 0;
   }
 
-  .pdf-search-label {
+  .site-search-label {
     color: var(--nav-gold);
     font-family: var(--nav-font);
     font-size: 0.76rem;
@@ -534,7 +545,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     text-transform: uppercase;
   }
 
-  .pdf-search-input {
+  .site-search-input {
     width: 100%;
     min-height: 2.8rem;
     padding: 0.78rem 0.85rem;
@@ -551,24 +562,28 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       background-color 180ms var(--nav-ease);
   }
 
-  .pdf-search-input::placeholder {
+  .site-search-input::placeholder {
     color: color-mix(in oklab, var(--nav-text-dim) 72%, transparent);
   }
 
-  .pdf-search-input:focus {
+  .site-search-input:focus {
     border-color: var(--nav-gold);
     background: oklch(0.16 0.024 202 / 0.92);
   }
 
-  .pdf-search-status,
-  .pdf-search-empty {
+  .site-search-status,
+  .site-search-empty {
     margin: 0.8rem 0 0;
     color: var(--nav-text-dim);
     font-size: 0.88rem;
     line-height: 1.55;
   }
 
-  .pdf-search-results {
+  .site-search-status:empty {
+    display: none;
+  }
+
+  .site-search-results {
     display: grid;
     max-height: min(44dvh, 21rem);
     margin: 0.75rem 0 0;
@@ -578,26 +593,26 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     border-top: 1px solid color-mix(in oklab, var(--nav-border) 72%, transparent);
   }
 
-  .pdf-search-results:empty {
+  .site-search-results:empty {
     display: none;
   }
 
-  :global(.pdf-search-result) {
+  :global(.site-search-result) {
     padding: 0.75rem 0;
     border-bottom: 1px solid color-mix(in oklab, var(--nav-border) 48%, transparent);
   }
 
-  :global(.pdf-search-result-card) {
+  :global(.site-search-result-card) {
     display: grid;
     gap: 0.55rem;
   }
 
-  :global(.pdf-search-result-info) {
+  :global(.site-search-result-info) {
     display: grid;
     gap: 0.28rem;
   }
 
-  :global(.pdf-search-result strong) {
+  :global(.site-search-result strong) {
     color: var(--nav-text);
     font-family: var(--nav-font);
     font-size: 0.95rem;
@@ -606,22 +621,28 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     overflow-wrap: break-word;
   }
 
-  :global(.pdf-search-result-source) {
+  :global(.site-search-result-context),
+  :global(.site-search-result-description) {
     color: var(--nav-text-dim);
     font-size: 0.78rem;
     line-height: 1.4;
     overflow-wrap: break-word;
   }
 
-  :global(.pdf-search-result-actions) {
+  :global(.site-search-result-description) {
+    margin: 0;
+  }
+
+  :global(.site-search-result-actions) {
     display: flex;
     gap: 0.6rem;
     flex-wrap: wrap;
   }
 
-  :global(.pdf-search-result-btn) {
+  :global(.site-search-result-btn) {
     display: inline-flex;
     align-items: center;
+    min-height: 2.25rem;
     gap: 0.3rem;
     padding: 0.36rem 0.8rem;
     border: 1px solid color-mix(in oklab, var(--nav-border) 72%, transparent);
@@ -641,20 +662,20 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       background-color 150ms var(--nav-ease);
   }
 
-  :global(.pdf-search-result-btn:hover),
-  :global(.pdf-search-result-btn:focus-visible) {
+  :global(.site-search-result-btn:hover),
+  :global(.site-search-result-btn:focus-visible) {
     color: var(--nav-gold) !important;
     border-color: color-mix(in oklab, var(--nav-gold) 56%, transparent);
     background: oklch(0.84 0.075 88 / 0.08);
   }
 
-  :global(.pdf-search-result-btn--open) {
+  :global(.site-search-result-btn--open) {
     color: var(--nav-gold) !important;
     border-color: color-mix(in oklab, var(--nav-gold) 40%, transparent);
   }
 
-  :global(.pdf-search-result-btn--open:hover),
-  :global(.pdf-search-result-btn--open:focus-visible) {
+  :global(.site-search-result-btn--open:hover),
+  :global(.site-search-result-btn--open:focus-visible) {
     background: oklch(0.84 0.075 88 / 0.12);
     border-color: var(--nav-gold);
   }
@@ -669,33 +690,100 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     transition: transform 220ms var(--nav-ease), opacity 160ms var(--nav-ease);
   }
 
-  @media (max-width: 1480px) {
+  /*
+    Compact desktop: MacBook and embedded-preview widths keep the complete
+    navigation visible without shrinking its type below the existing minimum.
+    The logo is only slightly shorter and search becomes its icon control.
+  */
+  @media (min-width: 1251px) and (max-width: 1680px) {
+    :root {
+      --nav-logo-h: 84px;
+    }
+
+    .site-nav {
+      gap: clamp(0.2rem, 0.35vw, 0.4rem);
+      padding-right: max(0.5rem, env(safe-area-inset-right));
+    }
+
+    .nav-link {
+      padding-inline: clamp(0.28rem, 0.38vw, 0.4rem);
+      font-size: clamp(0.64rem, 0.7vw, 0.75rem);
+      letter-spacing: 0.035em;
+    }
+
+    .nav-parent-link {
+      padding-right: 0.125rem;
+    }
+
+    .nav-dropdown-toggle {
+      width: 1.1rem;
+    }
+
+    .site-search-trigger {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      padding: 0;
+    }
+
+    .site-search-trigger span {
+      display: none;
+    }
+  }
+
+  .nav-scrim {
+    position: fixed;
+    inset: var(--nav-logo-h) 0 0;
+    z-index: calc(var(--site-z-nav-panel, 39) - 1);
+    background: var(--nav-scrim);
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition:
+      opacity 220ms ease,
+      visibility 0s linear 220ms;
+  }
+
+  @media (max-width: 1250px) {
     :global(body.nav-open) {
       overflow: hidden;
     }
 
-    /* ── Drawer panel ───────────────────── */
+    .nav-scrim.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+      transition:
+        opacity 220ms ease,
+        visibility 0s linear;
+    }
+
+    /* Right-side sheet keeps page context visible on tablets and laptops. */
     .nav-links {
       display: flex;
       flex-direction: column;
       align-items: stretch;
+      justify-content: flex-start;
       position: fixed;
       top: var(--nav-logo-h);
-      left: 0;
       right: 0;
       bottom: 0;
-      height: auto;
+      left: auto;
       z-index: var(--site-z-nav-panel, 39);
-      padding: 0;
+      width: min(29rem, calc(100vw - 3.5rem));
+      height: auto;
+      padding: 0 env(safe-area-inset-right) 0 0;
       background: var(--nav-bg-dark);
+      border-left: 1px solid color-mix(in oklab, var(--nav-border) 88%, var(--nav-bg-dark));
+      box-shadow: -8px 0 8px var(--nav-sheet-shadow);
       overflow-y: auto;
       overflow-x: hidden;
       opacity: 0;
       pointer-events: none;
       visibility: hidden;
-      transform: translateY(-10px);
+      transform: translateX(100%);
       transition:
-        opacity 200ms ease,
+        opacity 180ms ease,
         transform 280ms var(--nav-ease),
         visibility 0s linear 280ms;
     }
@@ -707,7 +795,6 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       padding-right: max(0.75rem, env(safe-area-inset-right));
     }
 
-    /* ── Hamburger button ───────────────── */
     .nav-mobile-toggle {
       display: flex;
       align-items: center;
@@ -747,12 +834,11 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       transform: translateY(-7px) rotate(-45deg);
     }
 
-    /* ── Search: icon-only in mobile nav bar ── */
-    .pdf-search {
+    .site-search {
       margin-left: auto;
     }
 
-    .pdf-search-trigger {
+    .site-search-trigger {
       width: 48px;
       height: 48px;
       padding: 0;
@@ -760,15 +846,15 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       background: transparent;
     }
 
-    .pdf-search-trigger span {
+    .site-search-trigger span {
       display: none;
     }
 
-    .pdf-search-panel {
+    .site-search-panel {
       position: fixed;
       top: var(--nav-logo-h);
-      left: 0;
       right: 0;
+      left: 0;
       width: 100%;
       max-height: calc(100dvh - var(--nav-logo-h));
       padding: 1rem clamp(1rem, 4vw, 1.4rem) max(1.35rem, env(safe-area-inset-bottom));
@@ -778,68 +864,43 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       transform: translateY(-0.55rem);
     }
 
-    /* ── Open drawer state ──────────────── */
     .nav-links.open {
       opacity: 1;
       pointer-events: auto;
       visibility: visible;
-      transform: translateY(0);
-      counter-reset: nav-item;
+      transform: translateX(0);
       transition:
-        opacity 200ms ease,
+        opacity 180ms ease,
         transform 280ms var(--nav-ease),
         visibility 0s linear;
     }
 
-    /* ── Nav items: full-width rows ─────── */
-
     .nav-links.open .nav-item {
       width: 100%;
+      min-width: 0;
       flex: 0 0 auto;
       flex-direction: column;
       align-items: stretch;
       position: relative;
-      counter-increment: nav-item;
     }
 
-    /* Roman numeral accent — positioned left of each row */
-    .nav-links.open .nav-item::before {
-      content: counter(nav-item, upper-roman);
-      position: absolute;
-      left: clamp(0.6rem, 2.5vw, 1rem);
-      top: 0;
-      height: 58px;
-      display: flex;
-      align-items: center;
-      font-family: var(--nav-font);
-      font-size: 0.52rem;
-      font-weight: 400;
-      letter-spacing: 0.04em;
-      color: var(--nav-gold);
-      opacity: 0.45;
-      line-height: 1;
-      pointer-events: none;
-    }
-
-    /* Link group: link + chevron toggle */
     .nav-links.open .nav-link-group {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 3.25rem;
+      grid-template-columns: minmax(0, 1fr) 3rem;
       width: 100%;
-      min-height: 58px;
+      min-height: 52px;
       align-items: stretch;
     }
 
     .nav-links.open .nav-link,
     .nav-links.open .nav-dropdown-toggle {
       width: 100%;
-      min-height: 58px;
-      padding: 0 clamp(1rem, 4vw, 1.5rem);
-      padding-left: clamp(2.5rem, 8vw, 3.25rem);
+      min-height: 52px;
+      padding: 0 1.25rem;
       font-family: var(--nav-font);
-      font-size: 1.05rem;
+      font-size: 0.94rem;
       font-weight: 600;
-      letter-spacing: 0.055em;
+      letter-spacing: 0.045em;
       text-transform: uppercase;
       line-height: 1.2;
       color: var(--nav-text) !important;
@@ -859,18 +920,15 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       background: oklch(0.84 0.075 88 / 0.05);
     }
 
-    /* Standalone nav-item (no dropdown): no index pseudo-element offset needed */
     .nav-links.open .nav-item:not(.has-dropdown) .nav-link {
       grid-column: 1 / -1;
     }
 
-    /* Chevron toggle column */
     .nav-links.open .nav-dropdown-toggle {
       padding: 0;
-      padding-left: 0;
       justify-content: center;
       align-items: center;
-      min-width: 3.25rem;
+      min-width: 3rem;
       border-bottom: 1px solid oklch(0.52 0.04 190 / 0.28);
       color: var(--nav-text-dim) !important;
       transition: color 160ms ease, background 160ms ease;
@@ -882,31 +940,20 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       background: oklch(0.84 0.075 88 / 0.05);
     }
 
-    /* Disable desktop hover chevron rotation inside mobile */
     .nav-links.open .nav-item:hover .chevron,
     .nav-links.open .nav-item:focus-within .chevron {
       transform: none;
       opacity: 0.65;
     }
 
-    /* Rotate on explicit expand */
     .nav-links.open .has-dropdown.is-expanded > .nav-link-group .chevron {
       transform: rotate(180deg);
       opacity: 1;
     }
 
-    /* ── Accordion sub-nav ──────────────── */
-    /* grid-template-rows trick: no max-height hack, animates cleanly */
     .nav-links.open .dropdown {
       display: grid;
       grid-template-rows: 0fr;
-      /* `.nav-item` is a column flex container whose height resolves to the sum
-         of its two children, and `.nav-link-group` grows into any space this
-         element gives up. Without this, the default `flex-shrink: 1` let the
-         group take 118px of a 202px row and squeezed the expanded sub-menu from
-         its 144px of content down to 84px, clipping the last item so it could
-         not be reached. The drawer already has `overflow-y: auto`, so refusing
-         to shrink here scrolls the drawer instead of hiding a nav link. */
       flex-shrink: 0;
       position: static;
       transform: none;
@@ -925,7 +972,6 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
         visibility 0s linear 280ms;
     }
 
-    /* .dropdown-inner is the single grid child — overflow:hidden clips content during animation */
     .nav-links.open .dropdown-inner {
       display: block;
       overflow: hidden;
@@ -935,10 +981,6 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       grid-template-rows: 1fr;
       opacity: 1;
       visibility: visible;
-      /* The base `.dropdown` rule sets `pointer-events: none` and only
-         `.has-dropdown:hover` restores it. Hover never fires on a touch device,
-         so without this every sub-menu link in the drawer rendered normally and
-         silently swallowed taps, making 22 pages unreachable on mobile. */
       pointer-events: auto;
       transition:
         grid-template-rows 280ms var(--nav-ease),
@@ -953,13 +995,12 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     .nav-links.open .dropdown a {
       display: flex;
       align-items: center;
-      min-height: 48px;
-      padding: 0 clamp(1.5rem, 6vw, 2.5rem);
-      padding-left: clamp(2.5rem, 8vw, 3.25rem);
+      min-height: 46px;
+      padding: 0 1.75rem;
       font-family: var(--nav-font);
-      font-size: 0.82rem;
+      font-size: 0.79rem;
       font-weight: 400;
-      letter-spacing: 0.07em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       line-height: 1.35;
       white-space: normal;
@@ -973,14 +1014,13 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     .nav-links.open .dropdown a:focus-visible {
       color: var(--nav-gold-light) !important;
       background: oklch(0.84 0.075 88 / 0.07);
-      padding-left: calc(clamp(2.5rem, 8vw, 3.25rem) + 0.4rem);
+      padding-left: 2rem;
     }
 
     .nav-links.open .dropdown li:last-child a {
       border-bottom: none;
     }
 
-    /* ── Bottom safe-area spacer ────────── */
     .nav-links.open::after {
       content: '';
       display: block;
@@ -999,40 +1039,40 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
       max-width: none;
       object-position: left center;
     }
+
+    .nav-links {
+      width: 100%;
+      border-left: 0;
+      box-shadow: none;
+      padding-left: env(safe-area-inset-left);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .nav-links,
+    .nav-scrim,
+    .nav-link,
     .dropdown,
-    .pdf-search-panel,
-    .pdf-search-trigger,
+    .dropdown a,
+    .chevron,
+    .site-search-panel,
+    .site-search-trigger,
+    .site-search-input,
     .hamburger-line,
     .nav-mobile-toggle,
-    .nav-dropdown-toggle {
-      transition: none;
-    }
-
-    :global(.pdf-search-result-btn) {
-      transition: none;
+    .nav-dropdown-toggle,
+    :global(.site-search-result-btn) {
+      transition: none !important;
     }
   }
 </style>
 
 <script>
   import { navigate } from 'astro:transitions/client';
+  import { rankSearchItems } from '../lib/search-match';
+  import type { SiteSearchItem } from '../lib/site-search';
 
-  type PdfSearchItem = {
-    title: string;
-    filename: string;
-    displayFilename: string;
-    href: string;
-    sourcePage: string;
-    sourcePath: string;
-    sourceAnchor?: string;
-    search: string;
-  };
-
-  const MOBILE_MQ = '(max-width: 1480px)';
+  const MOBILE_MQ = '(max-width: 1250px)';
   let navController: AbortController | null = null;
 
   document.addEventListener('astro:page-load', () => {
@@ -1041,22 +1081,25 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     const { signal } = navController;
 
     const toggle = document.querySelector('.nav-mobile-toggle') as HTMLButtonElement | null;
-    const links = document.querySelector('#site-nav-links') as HTMLElement | null;
+    const siteNav = document.querySelector<HTMLElement>('.site-nav');
+    const links = document.querySelector<HTMLElement>('#site-nav-links');
+    const navScrim = document.querySelector<HTMLElement>('[data-nav-scrim]');
     const docBody = document.body;
-    const pdfSearch = document.querySelector<HTMLElement>('[data-pdf-search]');
-    const pdfSearchTrigger = document.querySelector<HTMLButtonElement>('[data-pdf-search-trigger]');
-    const pdfSearchPanel = document.querySelector<HTMLElement>('#pdf-search-panel');
-    const pdfSearchInput = document.querySelector<HTMLInputElement>('[data-pdf-search-input]');
-    const pdfSearchForm = document.querySelector<HTMLFormElement>('[data-pdf-search-form]');
-    const pdfSearchStatus = document.querySelector<HTMLElement>('[data-pdf-search-status]');
-    const pdfSearchResults = document.querySelector<HTMLElement>('[data-pdf-search-results]');
-    const pdfSearchEmpty = document.querySelector<HTMLElement>('[data-pdf-search-empty]');
-    const pdfSearchData = document.querySelector<HTMLScriptElement>('#pdf-search-data');
+    const siteSearch = document.querySelector<HTMLElement>('[data-site-search]');
+    const siteSearchTrigger = document.querySelector<HTMLButtonElement>('[data-site-search-trigger]');
+    const siteSearchPanel = document.querySelector<HTMLElement>('#site-search-panel');
+    const siteSearchInput = document.querySelector<HTMLInputElement>('[data-site-search-input]');
+    const siteSearchForm = document.querySelector<HTMLFormElement>('[data-site-search-form]');
+    const siteSearchStatus = document.querySelector<HTMLElement>('[data-site-search-status]');
+    const siteSearchResults = document.querySelector<HTMLElement>('[data-site-search-results]');
+    const siteSearchEmpty = document.querySelector<HTMLElement>('[data-site-search-empty]');
+    const siteSearchData = document.querySelector<HTMLScriptElement>('#site-search-data');
 
-    const pdfItems: PdfSearchItem[] = JSON.parse(pdfSearchData?.textContent || '[]');
+    const searchItems: SiteSearchItem[] = JSON.parse(siteSearchData?.textContent || '[]');
 
     const setMenuState = (open: boolean) => {
       links?.classList.toggle('open', open);
+      navScrim?.classList.toggle('is-open', open);
       toggle?.setAttribute('aria-expanded', String(open));
       docBody.classList.toggle('nav-open', open);
       document.querySelectorAll<HTMLElement>('.has-dropdown.is-expanded').forEach((item) => {
@@ -1067,24 +1110,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
         .forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
     };
 
-    const normalizePdfQuery = (value = '') =>
-      value
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[_./-]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-    const slugifyHeading = (text: string) =>
-      text
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-
-    const docSlug = (href: string) =>
+    const documentSlug = (href: string) =>
       (href.split(/[?#]/)[0].split('/').pop() ?? '')
         .replace(/\.pdf$/i, '')
         .toLowerCase()
@@ -1094,114 +1120,129 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
         .replace(/^-+|-+$/g, '')
         .slice(0, 60);
 
-    const renderPdfResults = () => {
-      if (!pdfSearchInput || !pdfSearchResults || !pdfSearchStatus || !pdfSearchEmpty) return;
+    const createAction = (href: string, label: string, modifier: string) => {
+      const action = document.createElement('a');
+      action.href = href;
+      action.className = `site-search-result-btn ${modifier}`;
+      action.textContent = label;
+      return action;
+    };
 
-      const query = normalizePdfQuery(pdfSearchInput.value);
-      pdfSearchResults.replaceChildren();
+    const renderSearchResults = () => {
+      if (!siteSearchInput || !siteSearchResults || !siteSearchStatus || !siteSearchEmpty) return;
 
-      if (!query) {
-        pdfSearchStatus.textContent = `${pdfItems.length} documents indexed. Type a title, report, catalogue, author, or year.`;
-        pdfSearchEmpty.hidden = true;
+      const rawQuery = siteSearchInput.value.trim();
+      siteSearchResults.replaceChildren();
+
+      if (!rawQuery) {
+        siteSearchStatus.textContent = '';
+        siteSearchEmpty.hidden = true;
         return;
       }
 
-      const terms = query.split(' ').filter(Boolean);
-      const matches = pdfItems
-        .map((item) => {
-          if (!terms.every((term) => item.search.includes(term))) return null;
-          let score = 0;
-          const title = normalizePdfQuery(item.title);
-          const filename = normalizePdfQuery(item.filename);
-          const source = normalizePdfQuery(item.sourcePage);
-          terms.forEach((term) => {
-            if (title.startsWith(term)) score += 18;
-            if (filename.startsWith(term)) score += 14;
-            if (title.includes(term)) score += 8;
-            if (filename.includes(term)) score += 6;
-            if (source.includes(term)) score += 3;
-          });
-          return { item, score };
-        })
-        .filter((match): match is { item: PdfSearchItem; score: number } => Boolean(match))
-        .sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title));
-
+      const rankedMatches = rankSearchItems(searchItems, rawQuery);
+      const matches = rankedMatches.slice(0, 12);
       const fragment = document.createDocumentFragment();
+
       matches.forEach(({ item }) => {
         const result = document.createElement('li');
-        result.className = 'pdf-search-result';
+        result.className = 'site-search-result';
         const card = document.createElement('div');
-        card.className = 'pdf-search-result-card';
+        card.className = 'site-search-result-card';
         const info = document.createElement('div');
-        info.className = 'pdf-search-result-info';
-        const titleEl = document.createElement('strong');
-        titleEl.textContent = item.title;
-        const sourceEl = document.createElement('span');
-        sourceEl.className = 'pdf-search-result-source';
-        sourceEl.textContent = item.sourcePage;
-        info.append(titleEl, sourceEl);
+        info.className = 'site-search-result-info';
+        const title = document.createElement('strong');
+        title.textContent = item.title;
+        const context = document.createElement('span');
+        context.className = 'site-search-result-context';
+        context.textContent = item.context;
+        info.append(title, context);
+
+        if (item.kind === 'page' && item.description) {
+          const description = document.createElement('p');
+          description.className = 'site-search-result-description';
+          description.textContent = item.description;
+          info.append(description);
+        }
+
         const actions = document.createElement('div');
-        actions.className = 'pdf-search-result-actions';
-        const pageBtn = document.createElement('a');
-        const sourceAnchor = item.sourceAnchor || slugifyHeading(item.title);
-        pageBtn.href = `${item.sourcePath || '/'}${sourceAnchor ? '#' + sourceAnchor : ''}`;
-        pageBtn.className = 'pdf-search-result-btn pdf-search-result-btn--page';
-        pageBtn.textContent = 'View on page';
-        const openBtn = document.createElement('a');
-        openBtn.href = item.href;
-        openBtn.target = '_blank';
-        openBtn.rel = 'noopener noreferrer';
-        openBtn.className = 'pdf-search-result-btn pdf-search-result-btn--open';
-        openBtn.textContent = 'Open document';
-        openBtn.setAttribute('data-umami-event', 'pdf-download');
-        openBtn.setAttribute('data-umami-event-doc', docSlug(item.href));
-        actions.append(pageBtn, openBtn);
+        actions.className = 'site-search-result-actions';
+
+        if (item.kind === 'page') {
+          actions.append(createAction(item.href, 'Open page', 'site-search-result-btn--open'));
+        } else {
+          const pageAction = createAction(item.pageHref, 'View on page', 'site-search-result-btn--page');
+          const documentAction = createAction(item.href, 'Open document', 'site-search-result-btn--open');
+          documentAction.target = '_blank';
+          documentAction.rel = 'noopener noreferrer';
+          documentAction.setAttribute('data-umami-event', 'pdf-download');
+          documentAction.setAttribute('data-umami-event-doc', documentSlug(item.href));
+          actions.append(pageAction, documentAction);
+        }
+
         card.append(info, actions);
         result.append(card);
         fragment.append(result);
       });
 
-      pdfSearchResults.append(fragment);
-      pdfSearchEmpty.hidden = matches.length > 0;
-      pdfSearchStatus.textContent =
-        matches.length === 1 ? '1 document found.' : `${matches.length} documents found.`;
+      siteSearchResults.append(fragment);
+      siteSearchEmpty.hidden = matches.length > 0;
+      siteSearchStatus.textContent =
+        rankedMatches.length > matches.length
+          ? `Showing ${matches.length} of ${rankedMatches.length} results.`
+          : matches.length === 1
+            ? '1 result found.'
+            : `${matches.length} results found.`;
     };
 
     const setSearchState = (open: boolean) => {
-      pdfSearch?.classList.toggle('is-open', open);
-      pdfSearchTrigger?.setAttribute('aria-expanded', String(open));
-      pdfSearchPanel?.setAttribute('aria-hidden', String(!open));
-      pdfSearchPanel?.toggleAttribute('inert', !open);
+      siteSearch?.classList.toggle('is-open', open);
+      siteNav?.classList.toggle('has-open-search', open);
+      siteSearchTrigger?.setAttribute('aria-expanded', String(open));
+      siteSearchPanel?.setAttribute('aria-hidden', String(!open));
+      siteSearchPanel?.toggleAttribute('inert', !open);
       if (open) {
         setMenuState(false);
-        renderPdfResults();
-        window.requestAnimationFrame(() => pdfSearchInput?.focus());
+        renderSearchResults();
+        window.requestAnimationFrame(() => siteSearchInput?.focus());
       }
     };
 
     toggle?.addEventListener('click', () => {
       setSearchState(false);
       setMenuState(!(links?.classList.contains('open') ?? false));
-    });
+    }, { signal });
 
-    pdfSearchTrigger?.addEventListener('click', () => {
-      setSearchState(!(pdfSearch?.classList.contains('is-open') ?? false));
-    });
+    navScrim?.addEventListener('click', () => setMenuState(false), { signal });
 
-    pdfSearchInput?.addEventListener('input', renderPdfResults);
+    siteSearchTrigger?.addEventListener('click', () => {
+      setSearchState(!(siteSearch?.classList.contains('is-open') ?? false));
+    }, { signal });
 
-    pdfSearchForm?.addEventListener('submit', (event) => {
+    siteSearchInput?.addEventListener('input', renderSearchResults, { signal });
+
+    siteSearchForm?.addEventListener('submit', (event) => {
       event.preventDefault();
-      const value = pdfSearchInput?.value.trim() ?? '';
+      const value = siteSearchInput?.value.trim() ?? '';
       const target = value ? `/search?q=${encodeURIComponent(value)}` : '/search';
       setSearchState(false);
       navigate(target);
-    });
+    }, { signal });
 
     document.addEventListener('click', (event) => {
       const target = event.target as Node | null;
-      if (target && pdfSearch?.classList.contains('is-open') && !pdfSearch.contains(target)) {
+      if (!target) return;
+
+      if (siteSearch?.classList.contains('is-open') && !siteSearch.contains(target)) {
         setSearchState(false);
+      }
+
+      if (
+        links?.classList.contains('open') &&
+        !links.contains(target) &&
+        !toggle?.contains(target)
+      ) {
+        setMenuState(false);
       }
     }, { signal });
 
@@ -1218,7 +1259,7 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
         return;
       }
       if (mobileMenu && target?.closest('a')) setMenuState(false);
-    });
+    }, { signal });
 
     window.addEventListener('resize', () => {
       if (!window.matchMedia(MOBILE_MQ).matches) setMenuState(false);
@@ -1227,10 +1268,10 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     window.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape') return;
 
-      if (pdfSearch?.classList.contains('is-open')) {
+      if (siteSearch?.classList.contains('is-open')) {
         event.preventDefault();
         setSearchState(false);
-        pdfSearchTrigger?.focus();
+        siteSearchTrigger?.focus();
         return;
       }
 
@@ -1249,15 +1290,18 @@ const pdfSearchJson = JSON.stringify(pdfSearchItems).replace(/</g, '\\u003c');
     document.querySelectorAll<HTMLElement>('.has-dropdown').forEach((item) => {
       const trigger = item.querySelector<HTMLButtonElement>(':scope .nav-dropdown-toggle[aria-haspopup="true"]');
       const setExpanded = (expanded: boolean) => {
-        if (window.matchMedia(MOBILE_MQ).matches) return;
+        if (window.matchMedia(MOBILE_MQ).matches || siteNav?.classList.contains('has-open-search')) {
+          trigger?.setAttribute('aria-expanded', 'false');
+          return;
+        }
         trigger?.setAttribute('aria-expanded', String(expanded));
       };
-      item.addEventListener('pointerenter', () => setExpanded(true));
-      item.addEventListener('pointerleave', () => setExpanded(false));
-      item.addEventListener('focusin', () => setExpanded(true));
+      item.addEventListener('pointerenter', () => setExpanded(true), { signal });
+      item.addEventListener('pointerleave', () => setExpanded(false), { signal });
+      item.addEventListener('focusin', () => setExpanded(true), { signal });
       item.addEventListener('focusout', (event) => {
         if (!item.contains(event.relatedTarget as Node | null)) setExpanded(false);
-      });
+      }, { signal });
     });
   });
 </script>
