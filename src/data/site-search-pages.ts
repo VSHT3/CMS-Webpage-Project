@@ -140,4 +140,11 @@ export const siteSearchPages = [
     context: 'Research · Potbelly Sculptures',
     keywords: ['09I03-03-V04-00234', 'Peten', 'Petén', 'Guatemala', 'ancestor cult'],
   },
+  {
+    title: 'Tzolk’in Almanac Database — MayaCal',
+    href: '/mayacal/almanac-database',
+    description: 'Read-only reconstructions of almanac sequences from the Dresden, Madrid, and Paris Maya codices.',
+    context: 'Research · MayaCal',
+    keywords: ['Tzolkin', 'Tzolk’in', 'almanacs', 'Maya codices', 'Dresden Codex', 'Madrid Codex', 'Paris Codex', '09I03-03-V04-00243'],
+  },
 ] satisfies readonly SiteSearchPage[];

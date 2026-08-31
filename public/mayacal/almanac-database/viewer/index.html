@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tzolk'in Almanac Reconstruction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <div class="header-inner">
+        <h1 class="app-title">Tzolk'in Almanac Reconstruction</h1>
+        <p class="app-sub">Maya codex almanac sequences · Dresden (DRE) · Madrid (MAD) · Paris (PAR)</p>
+      </div>
+      <div class="header-meta">
+        <span class="ro-badge">read-only</span>
+        <span id="data-stamp" class="data-stamp"></span>
+      </div>
+    </header>
+
+    <div class="app-body">
+      <aside id="sidebar" class="sidebar">
+        <div class="sb-header">
+          <span class="sb-title">Almanacs</span>
+          <button id="sb-toggle" class="sb-toggle" onclick="toggleSidebar()" title="Hide list">‹</button>
+        </div>
+        <div id="sb-list" class="sb-list"></div>
+      </aside>
+
+      <main class="app-main">
+        <div id="codex-tabs" class="codex-tabs"></div>
+
+        <div class="selector-row">
+          <div class="sel-group">
+            <label class="sel-label" for="sel-page">Page</label>
+            <select id="sel-page"></select>
+          </div>
+          <div class="sel-group">
+            <label class="sel-label" for="sel-register">Register</label>
+            <select id="sel-register"></select>
+          </div>
+          <div class="sel-group sel-group-almanac">
+            <label class="sel-label" id="lbl-almanac" for="sel-almanac">Almanac</label>
+            <select id="sel-almanac"></select>
+          </div>
+          <div class="sel-group sel-group-search">
+            <label class="sel-label" for="search-input">Quick search</label>
+            <div class="search-wrap">
+              <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="8.5" cy="8.5" r="5" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M13 13l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <input id="search-input" type="text" placeholder="page, day name, coeff…" autocomplete="off">
+              <div id="search-results" class="search-results hidden"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="breadcrumb" class="breadcrumb"></div>
+        <div id="meta-cards" class="meta-row"></div>
+
+        <div class="section-head">Distance numbers</div>
+        <div id="dn-section"></div>
+
+        <div class="section-head" style="margin-top:1.5rem">Reconstructed sequence</div>
+        <div id="table-wrap" class="table-wrap"></div>
+
+        <footer class="funding">
+          <img class="funding-logo" src="funding-logo.png"
+               alt="Funded by the European Union — NextGenerationEU · Recovery and Resilience Plan · Ministry of Education, Research, Development and Youth of the Slovak Republic"
+               onerror="this.style.display='none'">
+          <p class="funding-text">
+            Funded by the EU NextGenerationEU through the Recovery and Resilience Plan
+            for Slovakia under the project No.&nbsp;09I03-03-V04-00243
+          </p>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="almanac_types.js"></script>
+  <script src="viewer_data.js"></script>
+  <script src="viewer.js"></script>
+</body>
+</html>

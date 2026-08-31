@@ -32,6 +32,8 @@ const PDF_MAP: Record<string, string> = {
   // Grant reports
   'Report_1_MayaCal.pdf':                                        '/assets/pdfs/grants/mayacal-report-1.pdf',
   'Report_2_MayaCal.pdf':                                        '/assets/pdfs/grants/mayacal-report-2.pdf',
+  'Report_3_MayaCal.pdf':                                        '/assets/pdfs/grants/mayacal-report-3.pdf',
+  'Report_4_Final_MayaCal.pdf':                                  '/assets/pdfs/grants/mayacal-final-report.pdf',
   'Final_report_on_the_CU_grant_2025.pdf':                      '/assets/pdfs/grants/cu-grant-final-report-2025.pdf',
   // Referenced from grants-and-investigations with spaces around the hyphen;
   // `rewriteLegacyAssetUrl` decodes the URL before lookup, so the key carries
