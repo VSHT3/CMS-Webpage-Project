@@ -26,6 +26,9 @@ const formatNumber = (value: number) => numberFormatter.format(value);
       <div class="db-title-group">
         <p class="db-project-id">09I03-03-V04-00234</p>
         <h2>3D Database</h2>
+        <p class="db-funding-note">
+          Funded by the EU NextGenerationEU through the Recovery and Resilience Plan for Slovakia under the project No. 09I03-03-V04-00234
+        </p>
       </div>
       <div class="db-intro-copy">
         <p>
@@ -592,6 +595,15 @@ const formatNumber = (value: number) => numberFormatter.format(value);
     letter-spacing: -0.02em;
     line-height: 1.05;
     text-wrap: balance;
+  }
+
+  .db-title-group .db-funding-note {
+    max-width: 48ch;
+    margin: 0.25rem 0 0;
+    color: var(--site-text);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    text-wrap: pretty;
   }
 
   .db-intro-copy p {

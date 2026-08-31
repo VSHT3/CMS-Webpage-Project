@@ -86,6 +86,9 @@ const monumentLabel = (count: number) => `${formatNumber(count)} ${count === 1 ?
       <div class="gis-title-group">
         <p class="gis-project-id">09I03-03-V04-00234</p>
         <h2>GIS Database</h2>
+        <p class="gis-funding-note">
+          Funded by the EU NextGenerationEU through the Recovery and Resilience Plan for Slovakia under the project No. 09I03-03-V04-00234
+        </p>
       </div>
 
       <div class="gis-intro-copy">
@@ -804,6 +807,15 @@ const monumentLabel = (count: number) => `${formatNumber(count)} ${count === 1 ?
     letter-spacing: -0.02em;
     line-height: 1.05;
     text-wrap: balance;
+  }
+
+  .gis-title-group .gis-funding-note {
+    max-width: 48ch;
+    margin: 0.25rem 0 0;
+    color: var(--site-text);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    text-wrap: pretty;
   }
 
   .gis-intro-copy > p {

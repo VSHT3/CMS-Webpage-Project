@@ -29,7 +29,7 @@ The catch-all `[...slug].astro` still serves the remaining legacy sources throug
 
 ## PDFs
 
-Most files in `public/assets/pdfs/` are gitignored and live on the persistent Coolify volume. The four agency-branded MayaCal reports are tracked deployment assets. Structure:
+Most files in `public/assets/pdfs/` are gitignored and live on the persistent Coolify volume. Six current grant deliverables are tracked deployment assets: the four MayaCal reports, the funded Potbelly preliminary database, and the Potbelly final report. Structure:
 
 ```
 public/assets/pdfs/
@@ -39,7 +39,7 @@ public/assets/pdfs/
   reports/peten/
 ```
 
-At container startup, `docker/40-seed-mayacal-reports.sh` refreshes the four canonical `grants/mayacal-*.pdf` paths in the mounted PDF volume from the versions bundled with the image.
+At container startup, `docker/40-seed-grant-pdfs.sh` refreshes those six canonical files in the mounted PDF volume from the versions bundled with the image.
 
 ## Deploy
 

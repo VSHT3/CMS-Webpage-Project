@@ -16,6 +16,9 @@ interface Props {
 }
 
 const { title } = Astro.props;
+
+const reportHref = '/assets/pdfs/grants/potbelly-final-report.pdf';
+const reportFilename = 'Final-Report-09I03-03-V04-00234.pdf';
 ---
 
 <Layout
@@ -32,7 +35,37 @@ const { title } = Astro.props;
       </a>
       <p class="resource-project-id">09I03-03-V04-00234</p>
       <h2 id="resource-title">{title}</h2>
-      <p class="resource-placeholder">Content coming soon.</p>
+      <p class="resource-summary">
+        Final report for the project “Preclassic Maya Potbelly Sculptures in Peten, Guatemala and Their Connection to Ancestor Cult.”
+      </p>
+      <div class="resource-actions" aria-label="Final report document actions">
+        <a
+          class="resource-action resource-action--primary"
+          href={reportHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-umami-event="pdf-download"
+          data-umami-event-doc="potbelly-final-report"
+        >
+          Open PDF <span aria-hidden="true">&nearr;</span>
+        </a>
+        <a
+          class="resource-action"
+          href={reportHref}
+          download={reportFilename}
+          data-umami-event="pdf-download"
+          data-umami-event-doc="potbelly-final-report"
+        >
+          Download PDF <span aria-hidden="true">&darr;</span>
+        </a>
+      </div>
+      <div class="resource-viewer">
+        <iframe
+          src={`${reportHref}#view=FitH`}
+          title="Final Report PDF for project 09I03-03-V04-00234"
+          loading="eager"
+        ></iframe>
+      </div>
     </section>
   </div>
 </Layout>
@@ -81,9 +114,95 @@ const { title } = Astro.props;
     text-wrap: balance;
   }
 
-  .resource-placeholder {
+  .resource-summary {
+    max-width: 65ch;
     margin: 1rem 0 0;
-    color: var(--site-text-dim);
-    font-style: italic;
+    color: var(--site-text);
+    font-family: var(--site-font-body);
+    font-size: clamp(1rem, 1.4vw, 1.08rem);
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+
+  .resource-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.5rem 0 2rem;
+  }
+
+  .resource-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 2.75rem;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid color-mix(in oklab, var(--site-gold) 55%, transparent);
+    color: var(--site-gold);
+    font-family: var(--site-font-ui);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+      border-color 180ms var(--site-ease-out),
+      background-color 180ms var(--site-ease-out),
+      color 180ms var(--site-ease-out);
+  }
+
+  .resource-action--primary {
+    border-color: var(--site-gold);
+    background: var(--site-gold);
+    color: var(--site-bg-abyss);
+  }
+
+  .resource-action:hover,
+  .resource-action:focus-visible {
+    border-color: var(--site-gold);
+    background: color-mix(in oklab, var(--site-gold) 12%, transparent);
+    color: var(--site-text-strong);
+  }
+
+  .resource-action--primary:hover,
+  .resource-action--primary:focus-visible {
+    background: color-mix(in oklab, var(--site-gold) 86%, white);
+    color: var(--site-bg-abyss);
+  }
+
+  .resource-action:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--site-gold) 76%, var(--site-text-strong));
+    outline-offset: 4px;
+  }
+
+  .resource-viewer {
+    overflow: hidden;
+    border: 1px solid var(--site-border);
+    background: white;
+  }
+
+  .resource-viewer iframe {
+    display: block;
+    width: 100%;
+    height: clamp(36rem, 76svh, 68rem);
+    border: 0;
+  }
+
+  @media (max-width: 40rem) {
+    .resource-action {
+      flex: 1 1 100%;
+    }
+
+    .resource-viewer iframe {
+      height: max(30rem, 70svh);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .resource-action {
+      transition: none;
+    }
   }
 </style>

@@ -5,8 +5,8 @@ dist/
 # Webstudio raw export — source of truth is legacy/source-html/
 mesoamerica/
 
-# Large binary assets normally live on the production PDF volume. The four
-# agency-branded MayaCal deliverables are tracked so each deploy refreshes them.
+# Large binary assets normally live on the production PDF volume. The six
+# current grant deliverables are tracked so each deploy refreshes them.
 public/assets/pdfs/*
 !public/assets/pdfs/grants/
 public/assets/pdfs/grants/*
@@ -14,6 +14,8 @@ public/assets/pdfs/grants/*
 !public/assets/pdfs/grants/mayacal-report-2.pdf
 !public/assets/pdfs/grants/mayacal-report-3.pdf
 !public/assets/pdfs/grants/mayacal-final-report.pdf
+!public/assets/pdfs/grants/A1-Database-POTBELLY.pdf
+!public/assets/pdfs/grants/potbelly-final-report.pdf
 
 # graphify — commit graph outputs, skip local-only files
 graphify-out/cache/
