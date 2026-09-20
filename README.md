@@ -27,6 +27,8 @@ Native Astro pages in `src/pages/` own matching routes and shadow any same-path 
 
 The catch-all `[...slug].astro` still serves the remaining legacy sources through `WebstudioPage.astro`. `WebstudioPage.astro` renders substantive legacy content and gives heading-only stubs an honest pending state with `noindex`, so search engines do not index them.
 
+The MayaCal tools are available at `/mayacal/almanac-database` and `/mayacal/almanac-model`, linked from the research project and site search. Each Astro page embeds its self-contained application from `public/mayacal/<tool>/viewer/`, with a separate full-screen link. The model application is supplied in `Almanac_model.zip`; keep its scripts, styles, glyphs, and funding logo together when updating it. These assets are bundled into the static build and require no persistent volume.
+
 ## PDFs
 
 Most files in `public/assets/pdfs/` are gitignored and live on the persistent Coolify volume. Six current grant deliverables are tracked deployment assets: the four MayaCal reports, the funded Potbelly preliminary database, and the Potbelly final report. Structure:

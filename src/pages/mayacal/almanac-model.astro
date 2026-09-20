@@ -1,0 +1,208 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ResearchHeader from '../../components/ResearchHeader.astro';
+---
+
+<Layout
+  title="Tzolk’in Almanac Model — MayaCal — Center for Mesoamerican Studies"
+  description="Build standard, circular, and crossover Tzolk’in almanacs step by step and explore Paris Codex P.21 intervals."
+  bodyClass="mayacal-almanac-page"
+>
+  <div class="almanac-shell">
+    <ResearchHeader currentHref="/grants-and-investigations" />
+
+    <a class="almanac-origin" href="/grants-and-investigations#mayacal-project">
+      <span aria-hidden="true">&larr;</span>
+      Back to original project
+    </a>
+
+    <header class="almanac-intro">
+      <div class="almanac-title-group">
+        <p class="almanac-project-id">09I03-03-V04-00243</p>
+        <h2>Tzolk’in Almanac Model</h2>
+      </div>
+
+      <div class="almanac-intro-copy">
+        <p>
+          Build standard, circular, and crossover Tzolk’in almanacs step by step, and explore the intervals recorded in the Paris Codex P.21 table.
+        </p>
+        <p class="almanac-provenance">
+          Project research by Mgr. Jakub Špoták, PhD.
+        </p>
+      </div>
+    </header>
+
+    <section class="almanac-workspace" aria-labelledby="almanac-viewer-title">
+      <div class="almanac-workspace-header">
+        <h3 id="almanac-viewer-title">Almanac Guide</h3>
+        <a
+          class="almanac-fullscreen"
+          href="/mayacal/almanac-model/viewer/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open full screen
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+      <iframe
+        class="almanac-viewer"
+        src="/mayacal/almanac-model/viewer/"
+        title="Tzolk’in Almanac Guide interactive model"
+        loading="eager"
+      ></iframe>
+
+      <noscript>
+        <p class="almanac-noscript">
+          JavaScript is required for the interactive model. <a href="/mayacal/almanac-model/viewer/">Open the Almanac Guide</a> after enabling JavaScript.
+        </p>
+      </noscript>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .almanac-shell {
+    width: min(100%, 90rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .almanac-origin {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.25rem;
+    margin-top: 0.5rem;
+    color: var(--site-teal);
+    font-size: 0.92rem;
+    text-underline-offset: 0.25em;
+  }
+
+  .almanac-origin:hover,
+  .almanac-origin:focus-visible {
+    color: var(--site-text-strong);
+  }
+
+  .almanac-intro {
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(1rem, 2vw, 1.75rem) 0;
+  }
+
+  .almanac-title-group,
+  .almanac-intro-copy {
+    display: grid;
+    align-content: start;
+    gap: 0.8rem;
+  }
+
+  .almanac-project-id {
+    margin: 0;
+    color: var(--site-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .almanac-intro h2 {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .almanac-intro-copy > p {
+    max-width: 68ch;
+    margin: 0;
+    color: var(--site-text);
+    font-size: 1rem;
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+
+  .almanac-intro-copy > .almanac-provenance {
+    color: var(--site-text-dim);
+    font-family: var(--site-font-ui);
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .almanac-workspace {
+    margin-top: clamp(1.25rem, 3vw, 2rem);
+    padding-top: clamp(1.25rem, 3vw, 2rem);
+    border-top: 1px solid var(--site-border);
+  }
+
+  .almanac-workspace-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .almanac-workspace-header h3 {
+    margin: 0;
+    color: var(--site-text-strong);
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .almanac-fullscreen {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--site-teal);
+    font-family: var(--site-font-ui);
+    font-size: 0.84rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .almanac-fullscreen:hover,
+  .almanac-fullscreen:focus-visible {
+    color: var(--site-text-strong);
+  }
+
+  .almanac-viewer {
+    display: block;
+    width: 100%;
+    height: clamp(42rem, 78dvh, 58rem);
+    border: 1px solid var(--site-border);
+    border-radius: 12px;
+    background: var(--site-bg-abyss);
+  }
+
+  .almanac-noscript {
+    max-width: 68ch;
+    margin: 1rem 0 0;
+    color: var(--site-text-dim);
+  }
+
+  @media (min-width: 48rem) {
+    .almanac-intro {
+      grid-template-columns: minmax(15rem, 0.78fr) minmax(0, 1.22fr);
+      gap: clamp(2rem, 6vw, 6rem);
+      align-items: end;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .almanac-workspace-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .almanac-viewer {
+      height: 46rem;
+      border-radius: 8px;
+    }
+  }
+</style>

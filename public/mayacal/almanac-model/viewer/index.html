@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maya Almanac Guide</title>
+  <link rel="stylesheet" href="builder.css">
+</head>
+<body>
+  <div id="app">
+    <header class="hd">
+      <div>
+        <h1 class="hd-title">Almanac Guide</h1>
+        <p class="hd-sub">Create a tzolk'in almanac after the Maya codices, step by step</p>
+      </div>
+      <nav class="hd-nav">
+        <button id="nav-guide" onclick="showView('guide')">Create an almanac</button>
+        <button id="nav-p21" onclick="showView('p21')">Calendar table P.21</button>
+      </nav>
+    </header>
+
+    <div id="guide-view" class="wz">
+      <nav id="wz-steps" class="wz-steps"></nav>
+      <div class="wz-body">
+        <main id="wz-card" class="wz-card"></main>
+        <aside id="wz-preview" class="wz-preview" hidden></aside>
+      </div>
+    </div>
+
+    <main id="p21-view" class="p21-view" hidden></main>
+  </div>
+
+  <script src="calendar.js"></script>
+  <script src="models.js"></script>
+  <script src="templates.js"></script>
+  <script src="guide.js"></script>
+  <script src="p21.js"></script>
+</body>
+</html>

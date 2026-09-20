@@ -147,4 +147,11 @@ export const siteSearchPages = [
     context: 'Research · MayaCal',
     keywords: ['Tzolkin', 'Tzolk’in', 'almanacs', 'Maya codices', 'Dresden Codex', 'Madrid Codex', 'Paris Codex', '09I03-03-V04-00243'],
   },
+  {
+    title: 'Tzolk’in Almanac Model — MayaCal',
+    href: '/mayacal/almanac-model',
+    description: 'Build standard, circular, and crossover Tzolk’in almanacs step by step and explore Paris Codex P.21 intervals.',
+    context: 'Research · MayaCal',
+    keywords: ['Tzolkin', 'Tzolk’in', 'almanacs', 'Almanac Guide', 'standard almanac', 'circular almanac', 'crossover almanac', 'Paris Codex', 'P.21', '09I03-03-V04-00243'],
+  },
 ] satisfies readonly SiteSearchPage[];
