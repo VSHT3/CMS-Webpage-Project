@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { isWithheldPdf } from '../lib/withheld-pdfs';
 
 interface Publication {
   title: string;
@@ -117,14 +118,16 @@ const documentSlug = (href: string) =>
                     <p class="publication-subtitle">{publication.subtitle}</p>
                     {publication.credit && <p class="publication-credit">{publication.credit}</p>}
                   </div>
-                  <a
-                    class="publication-action"
-                    href={publication.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-umami-event="pdf-download"
-                    data-umami-event-doc={documentSlug(publication.href)}
-                  >Open PDF</a>
+                  {!isWithheldPdf(publication.href) && (
+                    <a
+                      class="publication-action"
+                      href={publication.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-umami-event="pdf-download"
+                      data-umami-event-doc={documentSlug(publication.href)}
+                    >Open PDF</a>
+                  )}
                 </li>
               ))}
             </ol>
