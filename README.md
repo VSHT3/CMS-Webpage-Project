@@ -43,6 +43,10 @@ public/assets/pdfs/
 
 At container startup, `docker/40-seed-grant-pdfs.sh` refreshes those six canonical files in the mounted PDF volume from the versions bundled with the image.
 
+The `Temporarily withheld PDFs` section of [`nginx.conf`](nginx.conf) blocks direct requests for the listed paths. Astro uses the same locations to omit PDF buttons and search previews without removing catalogue entries.
+
+To republish a title, keep the existing PDF or upload its replacement to the same path on the Coolify volume. Remove both `location =` blocks under that title (the `/assets/pdfs/` URL and its legacy `/pdfs/` URL), then redeploy to restore the buttons and previews.
+
 ## Deploy
 
 Build with Docker (multi-stage Node → nginx):
@@ -56,4 +60,4 @@ Or push to GitHub and let Coolify build from the Dockerfile. Mount the PDF direc
 - Container path: `/usr/share/nginx/html/assets/pdfs`
 - Host path: `/data/coolify/applications/<app-id>/pdfs`
 
-Live at: [cms.fedu.uniba.sk](https://cms.fedu.uniba.sk)
+Live at: [mesoamerica.eu](https://mesoamerica.eu)

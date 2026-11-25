@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { archaeologicalReportSeries } from '../data/archaeological-reports';
+import { isWithheldPdf } from '../lib/withheld-pdfs';
 
 const archiveHref = 'https://drive.google.com/drive/folders/1La4VhMMrKLhA9mnwJz98koKcTXG0rJNO?usp=sharing';
 ---
@@ -27,7 +28,7 @@ const archiveHref = 'https://drive.google.com/drive/folders/1La4VhMMrKLhA9mnwJz9
 
     <div class="reports-intro reveal-target" style="--reveal-delay: 80ms">
       <p class="reports-lead">
-        Browse the Uaxactun and Petén Noreste archaeological report series. Each entry links directly to its published PDF.
+        Browse the Uaxactun and Petén Noreste archaeological report series and open available PDFs.
       </p>
     </div>
 
@@ -39,29 +40,34 @@ const archiveHref = 'https://drive.google.com/drive/folders/1La4VhMMrKLhA9mnwJz9
           </header>
 
           <ol class="report-list">
-            {series.reports.map((report) => (
-              <li class="report-item" id={report.id}>
-                <div class="report-record">
-                  <h3 class="report-title">{report.title}</h3>
-                  {report.details && <p class="report-details">{report.details}</p>}
-                  <p class="report-year"><span>Year</span> {report.year}</p>
-                </div>
+            {series.reports.map((report) => {
+              const documents = report.documents.filter(({ href }) => !isWithheldPdf(href));
+              return (
+                <li class="report-item" id={report.id}>
+                  <div class="report-record">
+                    <h3 class="report-title">{report.title}</h3>
+                    {report.details && <p class="report-details">{report.details}</p>}
+                    <p class="report-year"><span>Year</span> {report.year}</p>
+                  </div>
 
-                <div class="report-documents" aria-label={`Documents for ${report.title}`}>
-                  {report.documents.map((document) => (
-                    <a
-                      class="report-link"
-                      href={document.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${document.label} for ${report.title}, ${report.year} (opens in a new tab)`}
-                      data-umami-event="pdf-download"
-                      data-umami-event-doc={document.href.split('/').pop()?.replace(/\.pdf$/i, '')}
-                    >{document.label}</a>
-                  ))}
-                </div>
-              </li>
-            ))}
+                  {documents.length > 0 && (
+                    <div class="report-documents" aria-label={`Documents for ${report.title}`}>
+                      {documents.map((document) => (
+                        <a
+                          class="report-link"
+                          href={document.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${document.label} for ${report.title}, ${report.year} (opens in a new tab)`}
+                          data-umami-event="pdf-download"
+                          data-umami-event-doc={document.href.split('/').pop()?.replace(/\.pdf$/i, '')}
+                        >{document.label}</a>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ol>
         </section>
       ))}
