@@ -43,10 +43,6 @@ public/assets/pdfs/
 
 At container startup, `docker/40-seed-grant-pdfs.sh` refreshes those six canonical files in the mounted PDF volume from the versions bundled with the image.
 
-To temporarily withhold a PDF, list its current and legacy URL paths in [`docker/withheld-pdfs.map`](docker/withheld-pdfs.map). The catalogue entry stays visible, PDF buttons and search previews disappear, and nginx returns a non-cacheable 404 for direct requests. The files stay on the Coolify volume.
-
-To restore a publication, keep the existing PDF or upload a replacement to its current path on the volume (use the `/assets/pdfs/` entry for that title). Then remove both paths for that title from the list and redeploy. Leave `withheld-pdfs.map` in place even when it has no entries.
-
 ## Deploy
 
 Build with Docker (multi-stage Node → nginx):
@@ -60,4 +56,4 @@ Or push to GitHub and let Coolify build from the Dockerfile. Mount the PDF direc
 - Container path: `/usr/share/nginx/html/assets/pdfs`
 - Host path: `/data/coolify/applications/<app-id>/pdfs`
 
-Live at: [mesoamerica.eu](https://mesoamerica.eu)
+Live at: [cms.fedu.uniba.sk](https://cms.fedu.uniba.sk)

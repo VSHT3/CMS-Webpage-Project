@@ -2,7 +2,6 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { archaeologicalReportSeries, REPORT_PAGE_PATH } from '../data/archaeological-reports';
 import { rewriteLegacyAssetUrl } from './legacy-pdf-map';
-import { isWithheldPdf } from './withheld-pdfs';
 
 export type PdfSearchItem = {
   title: string;
@@ -99,7 +98,7 @@ export const buildPdfSearchIndex = (): PdfSearchItem[] => {
       const href = rewriteLegacyAssetUrl(
         decodeEntities(attrs.match(/\bhref=["']([^"']*?\.pdf(?:\?[^"']*)?)["']/i)?.[1] ?? '').trim(),
       );
-      if (!href || isWithheldPdf(href)) continue;
+      if (!href) continue;
 
       const downloadName = decodeEntities(attrs.match(/\bdownload=["']([^"']+)["']/i)?.[1] ?? '').trim();
       const filename = getPdfFilename(href, downloadName);
@@ -129,9 +128,8 @@ export const buildPdfSearchIndex = (): PdfSearchItem[] => {
 
   for (const series of archaeologicalReportSeries) {
     for (const report of series.reports) {
-      const documents = report.documents.filter(({ href }) => !isWithheldPdf(href));
-      const hasMultipleDocuments = documents.length > 1;
-      for (const document of documents) {
+      const hasMultipleDocuments = report.documents.length > 1;
+      for (const document of report.documents) {
         const filename = getPdfFilename(document.href);
         const documentLabel = document.label.replace(/^open\s+/i, '').trim();
         const title = hasMultipleDocuments
